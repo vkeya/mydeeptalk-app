@@ -1,4 +1,3 @@
-```ts
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
@@ -7,42 +6,34 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
     const { to, subject, message } = body;
 
+    if (!to || !subject || !message) {
+      return NextResponse.json(
+        { success: false, error: "Missing required fields." },
+        { status: 400 }
+      );
+    }
+
     const data = await resend.emails.send({
-      from: "MyDeepTalk <onboarding@resend.dev>",
+      from: "MyDeepTalk <bookings@updates.mydeeptalk.com>",
       to,
       subject,
       html: `
-        <div>
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
           <h2>MyDeepTalk</h2>
-
           <p>${message}</p>
-
           <hr />
-
-          <p>
-            Supporting emotional wellness, healing and meaningful connection.
-          </p>
+          <p>Supporting emotional wellness, healing and meaningful connection.</p>
         </div>
       `,
     });
 
-    return NextResponse.json({
-      success: true,
-      data,
-    });
-  } catch (error) {
+    return NextResponse.json({ success: true, data });
+  } catch (error: any) {
     return NextResponse.json(
-      {
-        success: false,
-        error,
-      },
-      {
-        status: 500,
-      }
+      { success: false, error: error.message },
+      { status: 500 }
     );
   }
 }
-```
