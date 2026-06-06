@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import {
   collection,
@@ -12,34 +11,47 @@ import {
 import { db } from "@/lib/firebase";
 import { createGoogleMeetEvent } from "../../../../lib/googleCalendar";
 
-export async function GET() {
-  return new Response("OK", { status: 200 });
-}
-
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
 
-    console.log("IntaSend Webhook:", payload);
+    console.log("IntaSend Webhook Payload:", JSON.stringify(payload, null, 2));
 
-    const bookingId = payload.api_ref || payload.invoice?.api_ref;
+    const bookingId =
+      payload?.api_ref ||
+      payload?.invoice?.api_ref ||
+      payload?.ref;
+
+    const paymentState =
+      payload?.state ||
+      payload?.invoice?.state ||
+      payload?.status;
+
+    console.log("Booking ID:", bookingId);
+    console.log("Payment State:", paymentState);
 
     if (!bookingId) {
       return NextResponse.json(
-        { success: false, error: "Missing bookingId" },
+        { success: false, error: "Missing bookingId/api_ref" },
         { status: 400 }
       );
     }
 
+    if (paymentState !== "COMPLETE") {
+      return NextResponse.json({
+        success: true,
+        message: "Payment not complete yet",
+        paymentState,
+      });
+    }
+
     const bookingRef = doc(db, "bookings", bookingId);
 
-    // STEP 1: Mark payment as successful immediately
     await updateDoc(bookingRef, {
       paymentStatus: "paid",
       status: "confirmed",
     });
 
-    // STEP 2: Update payments collection
     const paymentQuery = query(
       collection(db, "payments"),
       where("bookingId", "==", bookingId)
@@ -51,45 +63,17 @@ export async function POST(request: Request) {
       await updateDoc(doc(db, "payments", paymentDoc.id), {
         status: "completed",
         mpesaReceiptNumber:
-          payload.invoice?.mpesa_reference || "",
+          payload?.invoice?.mpesa_reference ||
+          payload?.invoice?.provider_ref ||
+          payload?.trans_id ||
+          "",
       });
-    }
-
-    // STEP 3: Try Google Meet generation separately
-    try {
-      const bookingSnap = await getDoc(bookingRef);
-
-      if (bookingSnap.exists()) {
-        const booking = bookingSnap.data();
-
-        if (
-          booking.clientEmail &&
-          booking.therapistEmail
-        ) {
-          const meetEvent = await createGoogleMeetEvent({
-            clientName: booking.clientName || "Client",
-            clientEmail: booking.clientEmail,
-            therapistName: booking.therapistName,
-            therapistEmail: booking.therapistEmail,
-            sessionDate: booking.sessionDate,
-            sessionTime: booking.sessionTime,
-          });
-
-          await updateDoc(bookingRef, {
-            meetingLink: meetEvent.meetingLink || "",
-            googleEventId: meetEvent.eventId || "",
-          });
-        }
-      }
-    } catch (meetError) {
-      console.error(
-        "Google Meet generation failed:",
-        meetError
-      );
     }
 
     return NextResponse.json({
       success: true,
+      bookingId,
+      paymentState,
     });
   } catch (error: any) {
     console.error("Webhook error:", error);
@@ -99,10 +83,7 @@ export async function POST(request: Request) {
         success: false,
         error: error.message,
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
-
