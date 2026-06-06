@@ -10,7 +10,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { createGoogleMeetEvent } from "@/lib/googleCalendar";
+import { createGoogleMeetEvent } from "../../../../lib/googleCalendar";
 
 export async function GET() {
   return new Response("OK", { status: 200 });
