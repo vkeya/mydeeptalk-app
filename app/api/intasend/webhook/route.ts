@@ -9,7 +9,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { createGoogleMeetEvent } from "../../../../lib/googleCalendar";
+import { createGoogleMeetEvent } from "@/lib/googleCalendar";
 
 export async function GET() {
   return new Response("OK", { status: 200 });
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     await updateDoc(bookingRef, {
       paymentStatus: "paid",
       status: "confirmed",
-	  paidAt: new Date().toISOString(),
+      paidAt: new Date().toISOString(),
     });
 
     const paymentQuery = query(
@@ -67,13 +67,49 @@ export async function POST(request: Request) {
     for (const paymentDoc of paymentSnapshot.docs) {
       await updateDoc(doc(db, "payments", paymentDoc.id), {
         status: "completed",
-		paidAt: new Date().toISOString(),
+        paidAt: new Date().toISOString(),
         mpesaReceiptNumber:
           payload?.invoice?.mpesa_reference ||
           payload?.invoice?.provider_ref ||
           payload?.trans_id ||
           "",
       });
+    }
+
+    console.log("Starting Google Meet generation...");
+
+    try {
+      const bookingSnap = await getDoc(bookingRef);
+
+      if (!bookingSnap.exists()) {
+        console.log("Booking not found for Meet generation:", bookingId);
+      } else {
+        const booking = bookingSnap.data();
+
+        console.log("Booking data for Meet:", booking);
+
+        if (booking.clientEmail && booking.therapistEmail) {
+          const meetEvent = await createGoogleMeetEvent({
+            clientName: booking.clientName || "Client",
+            clientEmail: booking.clientEmail,
+            therapistName: booking.therapistName || "Therapist",
+            therapistEmail: booking.therapistEmail,
+            sessionDate: booking.sessionDate,
+            sessionTime: booking.sessionTime,
+          });
+
+          console.log("Google Meet Event Result:", meetEvent);
+
+          await updateDoc(bookingRef, {
+            meetingLink: meetEvent.meetingLink || "",
+            googleEventId: meetEvent.eventId || "",
+          });
+        } else {
+          console.log("Missing clientEmail or therapistEmail for Meet generation");
+        }
+      }
+    } catch (meetError) {
+      console.error("Google Meet generation failed:", meetError);
     }
 
     return NextResponse.json({
