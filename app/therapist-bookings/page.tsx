@@ -1,23 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   collection,
-  query,
-  where,
+  doc,
   getDocs,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 
 type Booking = {
   id: string;
-  clientId?: string;
-  therapistId?: string;
   clientName?: string;
   clientEmail?: string;
-  therapistName?: string;
-  therapistEmail?: string;
   sessionDate?: string;
   sessionTime?: string;
   sessionFee?: number;
@@ -34,33 +32,26 @@ export default function TherapistBookingsPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        setBookings([]);
         setLoading(false);
         return;
       }
 
       try {
-        const bookingsQuery = query(
+        const q = query(
           collection(db, "bookings"),
           where("therapistId", "==", user.uid)
         );
 
-        const snapshot = await getDocs(bookingsQuery);
+        const snapshot = await getDocs(q);
 
-        const bookingList = snapshot.docs.map((doc) => ({
+        const data = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Booking[];
 
-        bookingList.sort((a, b) => {
-          const dateA = `${a.sessionDate || ""} ${a.sessionTime || ""}`;
-          const dateB = `${b.sessionDate || ""} ${b.sessionTime || ""}`;
-          return dateA.localeCompare(dateB);
-        });
-
-        setBookings(bookingList);
+        setBookings(data);
       } catch (error) {
-        console.error("Error fetching therapist bookings:", error);
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -69,116 +60,191 @@ export default function TherapistBookingsPage() {
     return () => unsubscribe();
   }, []);
 
+  const totalEarnings = useMemo(() => {
+    return bookings
+      .filter(
+        (booking) =>
+          booking.paymentStatus === "paid" &&
+          booking.status === "completed"
+      )
+      .reduce(
+        (sum, booking) => sum + Number(booking.sessionFee || 0),
+        0
+      );
+  }, [bookings]);
+
+  async function markCompleted(id: string) {
+    try {
+      await updateDoc(doc(db, "bookings", id), {
+        status: "completed",
+      });
+
+      setBookings((prev) =>
+        prev.map((booking) =>
+          booking.id === id
+            ? { ...booking, status: "completed" }
+            : booking
+        )
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function cancelSession(id: string) {
+    try {
+      await updateDoc(doc(db, "bookings", id), {
+        status: "cancelled",
+      });
+
+      setBookings((prev) =>
+        prev.map((booking) =>
+          booking.id === id
+            ? { ...booking, status: "cancelled" }
+            : booking
+        )
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const upcomingSessions = bookings.filter(
+    (booking) =>
+      booking.status === "confirmed"
+  );
+
+  const completedSessions = bookings.filter(
+    (booking) =>
+      booking.status === "completed"
+  );
+
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 p-6">
-        <p>Loading therapist bookings...</p>
+      <main className="p-6">
+        <p>Loading...</p>
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="mb-6 text-3xl font-bold text-gray-900">
-          Therapist Bookings
+      <div className="mx-auto max-w-6xl">
+
+        <h1 className="text-3xl font-bold mb-6">
+          Therapist Dashboard
         </h1>
 
-        {bookings.length === 0 ? (
-          <div className="rounded-lg bg-white p-6 shadow">
-            <p className="text-gray-600">
-              No client bookings found yet.
-            </p>
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
+
+          <div className="bg-white p-6 rounded-xl shadow">
+            <p className="text-gray-500">Upcoming Sessions</p>
+            <h2 className="text-3xl font-bold">
+              {upcomingSessions.length}
+            </h2>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {bookings.map((booking) => (
-              <div
-                key={booking.id}
-                className="rounded-lg bg-white p-5 shadow"
+
+          <div className="bg-white p-6 rounded-xl shadow">
+            <p className="text-gray-500">Completed Sessions</p>
+            <h2 className="text-3xl font-bold">
+              {completedSessions.length}
+            </h2>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow">
+            <p className="text-gray-500">Total Earnings</p>
+            <h2 className="text-3xl font-bold text-green-600">
+              KES {totalEarnings}
+            </h2>
+          </div>
+
+        </div>
+
+        <h2 className="text-2xl font-semibold mb-4">
+          Upcoming Sessions
+        </h2>
+
+        <div className="space-y-4 mb-10">
+          {upcomingSessions.map((booking) => (
+            <div
+              key={booking.id}
+              className="bg-white p-5 rounded-xl shadow"
+            >
+              <p>
+                <strong>Client:</strong>{" "}
+                {booking.clientName}
+              </p>
+
+              <p>
+                <strong>Date:</strong>{" "}
+                {booking.sessionDate}
+              </p>
+
+              <p>
+                <strong>Time:</strong>{" "}
+                {booking.sessionTime}
+              </p>
+
+              <p>
+                <strong>Fee:</strong> KES{" "}
+                {booking.sessionFee}
+              </p>
+
+              {booking.meetingLink && (
+                <a
+                  href={booking.meetingLink}
+                  target="_blank"
+                  className="inline-block mt-4 mr-3 bg-green-600 text-white px-4 py-2 rounded"
+                >
+                  Join Session
+                </a>
+              )}
+
+              <button
+                onClick={() => markCompleted(booking.id)}
+                className="bg-blue-600 text-white px-4 py-2 rounded mr-3"
               >
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    {booking.clientName || "Client"}
-                  </h2>
+                Mark Completed
+              </button>
 
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-medium ${
-                      booking.status === "confirmed"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {booking.status === "confirmed"
-                      ? "Confirmed"
-                      : "Pending"}
-                  </span>
-                </div>
+              <button
+                onClick={() => cancelSession(booking.id)}
+                className="bg-red-600 text-white px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          ))}
+        </div>
 
-                <div className="grid gap-3 text-sm text-gray-700 md:grid-cols-2">
-                  <p>
-                    <strong>Client Email:</strong>{" "}
-                    {booking.clientEmail || "Not available"}
-                  </p>
+        <h2 className="text-2xl font-semibold mb-4">
+          Completed Sessions
+        </h2>
 
-                  <p>
-                    <strong>Date:</strong>{" "}
-                    {booking.sessionDate || "Not set"}
-                  </p>
+        <div className="space-y-4">
+          {completedSessions.map((booking) => (
+            <div
+              key={booking.id}
+              className="bg-white p-5 rounded-xl shadow"
+            >
+              <p>
+                <strong>Client:</strong>{" "}
+                {booking.clientName}
+              </p>
 
-                  <p>
-                    <strong>Time:</strong>{" "}
-                    {booking.sessionTime || "Not set"}
-                  </p>
+              <p>
+                <strong>Date:</strong>{" "}
+                {booking.sessionDate}
+              </p>
 
-                  <p>
-                    <strong>Fee:</strong> KES{" "}
-                    {booking.sessionFee || 0}
-                  </p>
+              <p>
+                <strong>Amount Earned:</strong> KES{" "}
+                {booking.sessionFee}
+              </p>
+            </div>
+          ))}
+        </div>
 
-                  <p>
-                    <strong>Payment:</strong>{" "}
-                    <span
-                      className={
-                        booking.paymentStatus === "paid"
-                          ? "font-semibold text-green-700"
-                          : "font-semibold text-red-600"
-                      }
-                    >
-                      {booking.paymentStatus === "paid"
-                        ? "Paid"
-                        : "Unpaid"}
-                    </span>
-                  </p>
-
-                  <p>
-                    <strong>Paid At:</strong>{" "}
-                    {booking.paidAt
-                      ? new Date(booking.paidAt).toLocaleString()
-                      : "Not paid yet"}
-                  </p>
-                </div>
-
-                <div className="mt-4 border-t pt-4">
-                  {booking.meetingLink ? (
-                    <a
-                      href={booking.meetingLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
-                    >
-                      Join Session
-                    </a>
-                  ) : (
-                    <p className="text-sm text-gray-500">
-                      Meeting link will be shared after confirmation.
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </main>
   );
