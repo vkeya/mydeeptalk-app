@@ -5,137 +5,181 @@ import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   collection,
-  getDocs,
   query,
   where,
-  doc,
-  updateDoc,
+  getDocs,
 } from "firebase/firestore";
 
+type Booking = {
+  id: string;
+  clientId?: string;
+  therapistId?: string;
+  clientName?: string;
+  clientEmail?: string;
+  therapistName?: string;
+  therapistEmail?: string;
+  sessionDate?: string;
+  sessionTime?: string;
+  sessionFee?: number;
+  paymentStatus?: string;
+  status?: string;
+  paidAt?: string;
+  meetingLink?: string;
+};
+
 export default function TherapistBookingsPage() {
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-
-  async function fetchBookings(userId: string) {
-    const q = query(
-      collection(db, "bookings"),
-      where("therapistId", "==", userId)
-    );
-
-    const snapshot = await getDocs(q);
-
-    const list: any[] = [];
-
-    snapshot.forEach((docItem) => {
-      list.push({
-        id: docItem.id,
-        ...docItem.data(),
-      });
-    });
-
-    setBookings(list);
-    setLoading(false);
-  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        setBookings([]);
         setLoading(false);
         return;
       }
 
-      fetchBookings(user.uid);
+      try {
+        const bookingsQuery = query(
+          collection(db, "bookings"),
+          where("therapistId", "==", user.uid)
+        );
+
+        const snapshot = await getDocs(bookingsQuery);
+
+        const bookingList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Booking[];
+
+        bookingList.sort((a, b) => {
+          const dateA = `${a.sessionDate || ""} ${a.sessionTime || ""}`;
+          const dateB = `${b.sessionDate || ""} ${b.sessionTime || ""}`;
+          return dateA.localeCompare(dateB);
+        });
+
+        setBookings(bookingList);
+      } catch (error) {
+        console.error("Error fetching therapist bookings:", error);
+      } finally {
+        setLoading(false);
+      }
     });
 
     return () => unsubscribe();
   }, []);
 
-  async function updateBookingStatus(id: string, status: string) {
-    await updateDoc(doc(db, "bookings", id), {
-      status,
-    });
-
-    const user = auth.currentUser;
-    if (user) {
-      fetchBookings(user.uid);
-    }
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F3EC] p-10">
-        Loading bookings...
-      </div>
+      <main className="min-h-screen bg-gray-50 p-6">
+        <p>Loading therapist bookings...</p>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F3EC] p-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white shadow-lg">
-          <h1 className="text-4xl font-bold">Therapist Bookings</h1>
-          <p className="mt-4 text-white/80">
-            Review, accept, reject and manage client sessions.
-          </p>
-        </div>
+    <main className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto max-w-5xl">
+        <h1 className="mb-6 text-3xl font-bold text-gray-900">
+          Therapist Bookings
+        </h1>
 
-        {bookings.length === 0 && (
-          <div className="mt-8 rounded-3xl bg-white p-10 shadow-lg">
-            No client bookings yet.
+        {bookings.length === 0 ? (
+          <div className="rounded-lg bg-white p-6 shadow">
+            <p className="text-gray-600">
+              No client bookings found yet.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {bookings.map((booking) => (
+              <div
+                key={booking.id}
+                className="rounded-lg bg-white p-5 shadow"
+              >
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {booking.clientName || "Client"}
+                  </h2>
+
+                  <span
+                    className={`rounded-full px-3 py-1 text-sm font-medium ${
+                      booking.status === "confirmed"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {booking.status === "confirmed"
+                      ? "Confirmed"
+                      : "Pending"}
+                  </span>
+                </div>
+
+                <div className="grid gap-3 text-sm text-gray-700 md:grid-cols-2">
+                  <p>
+                    <strong>Client Email:</strong>{" "}
+                    {booking.clientEmail || "Not available"}
+                  </p>
+
+                  <p>
+                    <strong>Date:</strong>{" "}
+                    {booking.sessionDate || "Not set"}
+                  </p>
+
+                  <p>
+                    <strong>Time:</strong>{" "}
+                    {booking.sessionTime || "Not set"}
+                  </p>
+
+                  <p>
+                    <strong>Fee:</strong> KES{" "}
+                    {booking.sessionFee || 0}
+                  </p>
+
+                  <p>
+                    <strong>Payment:</strong>{" "}
+                    <span
+                      className={
+                        booking.paymentStatus === "paid"
+                          ? "font-semibold text-green-700"
+                          : "font-semibold text-red-600"
+                      }
+                    >
+                      {booking.paymentStatus === "paid"
+                        ? "Paid"
+                        : "Unpaid"}
+                    </span>
+                  </p>
+
+                  <p>
+                    <strong>Paid At:</strong>{" "}
+                    {booking.paidAt
+                      ? new Date(booking.paidAt).toLocaleString()
+                      : "Not paid yet"}
+                  </p>
+                </div>
+
+                <div className="mt-4 border-t pt-4">
+                  {booking.meetingLink ? (
+                    <a
+                      href={booking.meetingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                    >
+                      Join Session
+                    </a>
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      Meeting link will be shared after confirmation.
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
-
-        <div className="mt-8 space-y-6">
-          {bookings.map((booking) => (
-            <div
-              key={booking.id}
-              className="rounded-3xl bg-white p-8 shadow-lg"
-            >
-              <h2 className="text-2xl font-bold text-[#0F4C5C]">
-                Therapy Session
-              </h2>
-
-              <div className="mt-4 space-y-2 text-gray-700">
-                <p>
-                  <strong>Date:</strong> {booking.sessionDate}
-                </p>
-                <p>
-                  <strong>Time:</strong> {booking.sessionTime}
-                </p>
-                <p>
-                  <strong>Status:</strong> {booking.status}
-                </p>
-                <p>
-                  <strong>Payment:</strong> {booking.paymentStatus}
-                </p>
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                <button
-                  onClick={() => updateBookingStatus(booking.id, "accepted")}
-                  className="rounded-full bg-green-600 px-5 py-3 text-white hover:bg-green-700"
-                >
-                  Accept
-                </button>
-
-                <button
-                  onClick={() => updateBookingStatus(booking.id, "rejected")}
-                  className="rounded-full bg-red-600 px-5 py-3 text-white hover:bg-red-700"
-                >
-                  Reject
-                </button>
-
-                <button
-                  onClick={() => updateBookingStatus(booking.id, "completed")}
-                  className="rounded-full bg-[#0F4C5C] px-5 py-3 text-white hover:bg-[#0b3945]"
-                >
-                  Mark Completed
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
-    </div>
+    </main>
   );
 }

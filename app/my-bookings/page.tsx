@@ -1,23 +1,44 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   collection,
-  getDocs,
   query,
   where,
+  getDocs,
+  orderBy,
 } from "firebase/firestore";
+import Link from "next/link";
+
+type Booking = {
+  id: string;
+  clientId?: string;
+  therapistId?: string;
+  clientName?: string;
+  therapistName?: string;
+  clientEmail?: string;
+  therapistEmail?: string;
+  sessionDate?: string;
+  sessionTime?: string;
+  sessionFee?: number;
+  paymentStatus?: string;
+  status?: string;
+  paidAt?: string;
+  meetingLink?: string;
+  googleEventId?: string;
+  type?: "client" | "therapist";
+};
 
 export default function MyBookingsPage() {
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        setBookings([]);
         setLoading(false);
         return;
       }
@@ -33,33 +54,37 @@ export default function MyBookingsPage() {
           where("therapistId", "==", user.uid)
         );
 
-        const clientSnapshot = await getDocs(clientQuery);
-        const therapistSnapshot = await getDocs(therapistQuery);
+        const [clientSnap, therapistSnap] = await Promise.all([
+          getDocs(clientQuery),
+          getDocs(therapistQuery),
+        ]);
 
-        const list: any[] = [];
+        const clientBookings: Booking[] = clientSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          type: "client",
+        })) as Booking[];
 
-        clientSnapshot.forEach((docItem) => {
-          list.push({
-            id: docItem.id,
-            ...docItem.data(),
-            viewType: "client",
-          });
+        const therapistBookings: Booking[] = therapistSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          type: "therapist",
+        })) as Booking[];
+
+        const allBookings = [...clientBookings, ...therapistBookings];
+
+        allBookings.sort((a, b) => {
+          const dateA = `${a.sessionDate || ""} ${a.sessionTime || ""}`;
+          const dateB = `${b.sessionDate || ""} ${b.sessionTime || ""}`;
+          return dateA.localeCompare(dateB);
         });
 
-        therapistSnapshot.forEach((docItem) => {
-          list.push({
-            id: docItem.id,
-            ...docItem.data(),
-            viewType: "therapist",
-          });
-        });
-
-        setBookings(list);
+        setBookings(allBookings);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching bookings:", error);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -67,59 +92,70 @@ export default function MyBookingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F3EC] p-10">
-        Loading bookings...
-      </div>
+      <main className="min-h-screen bg-gray-50 p-6">
+        <p>Loading bookings...</p>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F3EC] p-8">
-      <div className="mx-auto max-w-6xl">
+    <main className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto max-w-5xl">
+        <h1 className="mb-6 text-3xl font-bold text-gray-900">
+          My Bookings
+        </h1>
 
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-[#0F4C5C]">
-            My Bookings
-          </h1>
-
-          <p className="mt-3 text-gray-600">
-            Manage your therapy sessions.
-          </p>
-        </div>
-
-        {bookings.length === 0 && (
-          <div className="rounded-3xl bg-white p-10 shadow-lg">
-            No bookings yet.
-          </div>
-        )}
-
-        <div className="space-y-6">
-
-          {bookings.map((booking) => (
-            <div
-              key={booking.id}
-              className="rounded-3xl bg-white p-8 shadow-lg"
+        {bookings.length === 0 ? (
+          <div className="rounded-lg bg-white p-6 shadow">
+            <p className="text-gray-600">No bookings found yet.</p>
+            <Link
+              href="/therapists"
+              className="mt-4 inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             >
+              Browse Therapists
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {bookings.map((booking) => (
+              <div
+                key={booking.id}
+                className="rounded-lg bg-white p-5 shadow"
+              >
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {booking.type === "client"
+                      ? `Session with ${booking.therapistName || "Therapist"}`
+                      : `Session with ${booking.clientName || "Client"}`}
+                  </h2>
 
-              <div className="flex flex-col gap-6 md:flex-row md:justify-between">
+                  <span
+                    className={`rounded-full px-3 py-1 text-sm font-medium ${
+                      booking.status === "confirmed"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {booking.status === "confirmed"
+                      ? "Confirmed"
+                      : "Pending"}
+                  </span>
+                </div>
 
-                <div className="space-y-3">
-
+                <div className="grid gap-3 text-sm text-gray-700 md:grid-cols-2">
                   <p>
                     <strong>Date:</strong>{" "}
-                    {booking.sessionDate}
+                    {booking.sessionDate || "Not set"}
                   </p>
 
                   <p>
                     <strong>Time:</strong>{" "}
-                    {booking.sessionTime}
+                    {booking.sessionTime || "Not set"}
                   </p>
 
                   <p>
-                    <strong>Status:</strong>{" "}
-                    <span className="font-semibold text-[#0F4C5C]">
-                      {booking.status}
-                    </span>
+                    <strong>Fee:</strong> KES{" "}
+                    {booking.sessionFee || 0}
                   </p>
 
                   <p>
@@ -127,53 +163,58 @@ export default function MyBookingsPage() {
                     <span
                       className={
                         booking.paymentStatus === "paid"
-                          ? "font-semibold text-green-600"
+                          ? "font-semibold text-green-700"
                           : "font-semibold text-red-600"
                       }
                     >
-                      {booking.paymentStatus}
+                      {booking.paymentStatus === "paid"
+                        ? "Paid"
+                        : "Unpaid"}
                     </span>
                   </p>
 
                   <p>
-                    <strong>Viewing As:</strong>{" "}
-                    {booking.viewType}
+                    <strong>Paid At:</strong>{" "}
+                    {booking.paidAt
+                      ? new Date(booking.paidAt).toLocaleString()
+                      : "Not paid yet"}
                   </p>
 
+                  <p>
+                    <strong>Booking ID:</strong> {booking.id}
+                  </p>
                 </div>
 
-                <div className="flex flex-col gap-4">
-
-                  {booking.paymentStatus === "unpaid" &&
-                    booking.viewType === "client" && (
-                      <Link
-                        href={`/payment/${booking.id}`}
-                        className="rounded-full bg-[#0F4C5C] px-6 py-3 text-center font-semibold text-white hover:bg-[#0b3945]"
-                      >
-                        Pay Now
-                      </Link>
-                    )}
-
-                  {booking.meetingLink && (
+                <div className="mt-4 border-t pt-4">
+                  {booking.meetingLink ? (
                     <a
                       href={booking.meetingLink}
                       target="_blank"
-                      className="rounded-full bg-green-600 px-6 py-3 text-center font-semibold text-white"
+                      rel="noopener noreferrer"
+                      className="inline-block rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
                     >
                       Join Session
                     </a>
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      Meeting link will be shared after confirmation.
+                    </p>
                   )}
 
+                  {booking.paymentStatus !== "paid" && booking.type === "client" && (
+                    <Link
+                      href={`/payment/${booking.id}`}
+                      className="ml-0 mt-3 inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 md:ml-3 md:mt-0"
+                    >
+                      Complete Payment
+                    </Link>
+                  )}
                 </div>
-
               </div>
-
-            </div>
-          ))}
-
-        </div>
-
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </main>
   );
 }
