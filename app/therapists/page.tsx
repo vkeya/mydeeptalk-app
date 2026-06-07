@@ -1,180 +1,180 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import Link from "next/link";
 import { db } from "@/lib/firebase";
+import {
+  collection,
+  getDocs,
+} from "firebase/firestore";
+
+type Therapist = {
+  id: string;
+  fullName?: string;
+  bio?: string;
+  specialties?: string[];
+  languages?: string[];
+  yearsExperience?: number;
+  sessionFee?: number;
+  country?: string;
+  city?: string;
+  averageRating?: number;
+  reviewCount?: number;
+};
+
+type Review = {
+  therapistId: string;
+  rating: number;
+};
 
 export default function TherapistsPage() {
-  const [therapists, setTherapists] = useState<any[]>([]);
+  const [therapists, setTherapists] = useState<Therapist[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const [gender, setGender] = useState("");
-  const [specialty, setSpecialty] = useState("");
-  const [language, setLanguage] = useState("");
 
   useEffect(() => {
     async function fetchTherapists() {
-      const q = query(
-        collection(db, "therapists"),
-        where("status", "==", "approved")
-      );
+      try {
+        const therapistsSnap = await getDocs(
+          collection(db, "therapists")
+        );
 
-      const snapshot = await getDocs(q);
+        const reviewsSnap = await getDocs(
+          collection(db, "reviews")
+        );
 
-      const list: any[] = [];
-      snapshot.forEach((document) => {
-        list.push({ id: document.id, ...document.data() });
-      });
+        const reviews = reviewsSnap.docs.map(
+          (doc) => doc.data()
+        ) as Review[];
 
-      setTherapists(list);
-      setLoading(false);
+        const therapistList = therapistsSnap.docs.map((doc) => {
+          const therapist = {
+            id: doc.id,
+            ...doc.data(),
+          } as Therapist;
+
+          const therapistReviews = reviews.filter(
+            (review) =>
+              review.therapistId === therapist.id
+          );
+
+          const reviewCount = therapistReviews.length;
+
+          const averageRating =
+            reviewCount > 0
+              ? therapistReviews.reduce(
+                  (sum, review) =>
+                    sum + review.rating,
+                  0
+                ) / reviewCount
+              : 0;
+
+          return {
+            ...therapist,
+            averageRating,
+            reviewCount,
+          };
+        });
+
+        therapistList.sort(
+          (a, b) =>
+            (b.averageRating || 0) -
+            (a.averageRating || 0)
+        );
+
+        setTherapists(therapistList);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchTherapists();
   }, []);
 
-  const filteredTherapists = therapists.filter((therapist) => {
-    const matchesGender = gender ? therapist.gender === gender : true;
-
-    const matchesSpecialty = specialty
-      ? therapist.specialties?.some((item: string) =>
-          item.toLowerCase().includes(specialty.toLowerCase())
-        )
-      : true;
-
-    const matchesLanguage = language
-      ? therapist.languages?.some((item: string) =>
-          item.toLowerCase().includes(language.toLowerCase())
-        )
-      : true;
-
-    return matchesGender && matchesSpecialty && matchesLanguage;
-  });
-
   if (loading) {
-    return <div className="p-10">Loading therapists...</div>;
+    return (
+      <main className="p-6">
+        <p>Loading therapists...</p>
+      </main>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F3EC] p-8">
-      <div className="mb-8 rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white shadow-lg">
-        <h1 className="text-4xl font-bold">Find a Therapist</h1>
-        <p className="mt-4 max-w-2xl text-white/80">
-          Browse verified therapists by specialty, language, gender, experience and session fee.
-        </p>
-      </div>
+    <main className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto max-w-7xl">
+        <h1 className="mb-8 text-3xl font-bold">
+          Find a Therapist
+        </h1>
 
-      <div className="mb-8 grid gap-4 rounded-3xl bg-white p-6 shadow-lg md:grid-cols-3">
-        <select
-          className="rounded-xl border p-3 text-gray-700 outline-none focus:border-[#0F4C5C]"
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
-        >
-          <option value="">All Genders</option>
-          <option value="Female">Female</option>
-          <option value="Male">Male</option>
-          <option value="Prefer not to say">Prefer not to say</option>
-        </select>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {therapists.map((therapist) => (
+            <div
+              key={therapist.id}
+              className="rounded-xl bg-white p-6 shadow"
+            >
+              <h2 className="text-2xl font-bold">
+                {therapist.fullName}
+              </h2>
 
-        <input
-          className="rounded-xl border p-3 text-gray-700 outline-none focus:border-[#0F4C5C]"
-          placeholder="Search specialty e.g. trauma"
-          value={specialty}
-          onChange={(e) => setSpecialty(e.target.value)}
-        />
+              <div className="mt-2">
+                {therapist.reviewCount! > 0 ? (
+                  <>
+                    <p className="font-semibold text-yellow-500">
+                      ⭐ {therapist.averageRating?.toFixed(1)}
+                    </p>
 
-        <input
-          className="rounded-xl border p-3 text-gray-700 outline-none focus:border-[#0F4C5C]"
-          placeholder="Search language e.g. Swahili"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-        />
-      </div>
+                    <p className="text-sm text-gray-500">
+                      ({therapist.reviewCount} reviews)
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-gray-400">
+                    No reviews yet
+                  </p>
+                )}
+              </div>
 
-      {filteredTherapists.length === 0 && (
-        <div className="rounded-2xl bg-white p-8 shadow">
-          <p className="text-gray-600">No therapists match your search.</p>
-        </div>
-      )}
+              <p className="mt-4 text-gray-600">
+                {therapist.bio}
+              </p>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredTherapists.map((therapist) => (
-          <div
-            key={therapist.id}
-            className="rounded-3xl bg-white p-7 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
-          >
-            <div className="mb-5 flex items-center gap-4">
-              {therapist.photoUrl ? (
-                <img
-                  src={therapist.photoUrl}
-                  alt={therapist.fullName}
-                  className="h-16 w-16 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E2954E]/20 text-xl font-bold text-[#0F4C5C]">
-                  {therapist.fullName?.charAt(0)}
-                </div>
-              )}
+              <div className="mt-4 space-y-2 text-sm text-gray-700">
+                <p>
+                  <strong>Experience:</strong>{" "}
+                  {therapist.yearsExperience} years
+                </p>
 
-              <div>
-                <h2 className="text-xl font-bold text-[#0F4C5C]">
-                  {therapist.fullName}
-                </h2>
-                <p className="text-sm text-gray-500">
-                  {therapist.city}, {therapist.country}
+                <p>
+                  <strong>Languages:</strong>{" "}
+                  {therapist.languages?.join(", ")}
+                </p>
+
+                <p>
+                  <strong>Fee:</strong> KES{" "}
+                  {therapist.sessionFee}
                 </p>
               </div>
-            </div>
 
-            <p className="line-clamp-3 text-sm leading-6 text-gray-600">
-              {therapist.bio}
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              {therapist.specialties?.slice(0, 3).map((item: string) => (
-                <span
-                  key={item}
-                  className="rounded-full bg-[#F7F3EC] px-3 py-1 text-xs text-[#0F4C5C]"
+              <div className="mt-6 flex gap-3">
+                <Link
+                  href={`/therapists/${therapist.id}`}
+                  className="rounded bg-gray-700 px-4 py-2 text-white"
                 >
-                  {item}
-                </span>
-              ))}
-            </div>
+                  View Profile
+                </Link>
 
-            <div className="mt-5 space-y-2 text-sm text-gray-700">
-              <p>
-                <strong>Gender:</strong> {therapist.gender}
-              </p>
-              <p>
-                <strong>Experience:</strong> {therapist.yearsExperience} years
-              </p>
-              <p>
-                <strong>Languages:</strong> {therapist.languages?.join(", ")}
-              </p>
-              <p>
-                <strong>Fee:</strong> KES {therapist.sessionFee}
-              </p>
+                <Link
+                  href={`/book-session/${therapist.id}`}
+                  className="rounded bg-blue-600 px-4 py-2 text-white"
+                >
+                  Book Session
+                </Link>
+              </div>
             </div>
-
-            <div className="mt-6 flex gap-3">
-              <Link
-                href={`/therapists/${therapist.id}`}
-                className="flex-1 rounded-full border border-[#0F4C5C] px-4 py-3 text-center text-sm font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
-              >
-                View Profile
-              </Link>
-
-              <Link
-                href={`/book-session/${therapist.id}`}
-                className="flex-1 rounded-full bg-[#0F4C5C] px-4 py-3 text-center text-sm font-semibold text-white hover:bg-[#0b3945]"
-              >
-                Book
-              </Link>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

@@ -1,175 +1,229 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
+import Link from "next/link";
 import { db } from "@/lib/firebase";
-import ReviewForm from "@/components/ReviewForm";
-import TherapistReviews from "@/components/TherapistReviews";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+} from "firebase/firestore";
 
-export default function TherapistDetailPage() {
+type Therapist = {
+  fullName?: string;
+  bio?: string;
+  specialties?: string[];
+  languages?: string[];
+  yearsExperience?: number;
+  sessionFee?: number;
+  country?: string;
+  city?: string;
+};
+
+type Review = {
+  rating: number;
+  comment: string;
+  therapistName?: string;
+};
+
+export default function TherapistProfilePage() {
   const params = useParams();
   const therapistId = params.id as string;
 
-  const [therapist, setTherapist] = useState<any>(null);
+  const [therapist, setTherapist] = useState<Therapist | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [averageRating, setAverageRating] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchTherapist() {
+    async function fetchData() {
       try {
+        // Therapist
         const therapistRef = doc(db, "therapists", therapistId);
         const therapistSnap = await getDoc(therapistRef);
 
         if (therapistSnap.exists()) {
-          setTherapist({
-            id: therapistSnap.id,
-            ...therapistSnap.data(),
-          });
+          setTherapist(therapistSnap.data() as Therapist);
         }
 
-        setLoading(false);
+        // Reviews
+        const reviewsSnap = await getDocs(collection(db, "reviews"));
+
+        const therapistReviews = reviewsSnap.docs
+          .map((doc) => doc.data() as Review)
+          .filter(
+            (review: any) =>
+              review.therapistId === therapistId
+          );
+
+        setReviews(therapistReviews);
+
+        if (therapistReviews.length > 0) {
+          const avg =
+            therapistReviews.reduce(
+              (sum, review) => sum + review.rating,
+              0
+            ) / therapistReviews.length;
+
+          setAverageRating(avg);
+        }
       } catch (error) {
         console.error(error);
+      } finally {
         setLoading(false);
       }
     }
 
-    if (therapistId) {
-      fetchTherapist();
-    }
+    fetchData();
   }, [therapistId]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F3EC] p-10">
-        Loading therapist...
-      </div>
+      <main className="p-6">
+        <p>Loading profile...</p>
+      </main>
     );
   }
 
   if (!therapist) {
     return (
-      <div className="min-h-screen bg-[#F7F3EC] p-10">
-        Therapist not found.
-      </div>
+      <main className="p-6">
+        <p>Therapist not found.</p>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F3EC] p-8">
+    <main className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-5xl">
-        <div className="rounded-3xl bg-white p-10 shadow-lg">
-          <div className="flex flex-col items-center gap-8 md:flex-row">
-            {therapist.photoUrl ? (
-              <img
-                src={therapist.photoUrl}
-                alt={therapist.fullName}
-                className="h-40 w-40 rounded-full object-cover shadow"
-              />
+
+        <div className="bg-white rounded-xl shadow p-8">
+
+          <h1 className="text-4xl font-bold">
+            {therapist.fullName}
+          </h1>
+
+          <div className="mt-3">
+            {reviews.length > 0 ? (
+              <>
+                <p className="text-yellow-500 font-bold text-xl">
+                  ⭐ {averageRating.toFixed(1)}
+                </p>
+
+                <p className="text-gray-500">
+                  {reviews.length} reviews
+                </p>
+              </>
             ) : (
-              <div className="flex h-40 w-40 items-center justify-center rounded-full bg-[#E2954E]/20 text-6xl font-bold text-[#0F4C5C]">
-                {therapist.fullName?.charAt(0)}
-              </div>
-            )}
-
-            <div className="flex-1">
-              <h1 className="text-4xl font-bold text-[#0F4C5C]">
-                {therapist.fullName}
-              </h1>
-
-              <p className="mt-2 text-gray-500">
-                {therapist.city}, {therapist.country}
+              <p className="text-gray-400">
+                No reviews yet
               </p>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {Array.isArray(therapist.specialties) &&
-                  therapist.specialties.map((item: string) => (
-                    <span
-                      key={item}
-                      className="rounded-full bg-[#F7F3EC] px-4 py-2 text-sm text-[#0F4C5C]"
-                    >
-                      {item}
-                    </span>
-                  ))}
-              </div>
-
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl bg-[#F7F3EC] p-4">
-                  <p className="text-sm text-gray-500">Experience</p>
-
-                  <p className="text-xl font-bold text-[#0F4C5C]">
-                    {therapist.yearsExperience} years
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-[#F7F3EC] p-4">
-                  <p className="text-sm text-gray-500">Session Fee</p>
-
-                  <p className="text-xl font-bold text-[#0F4C5C]">
-                    KES {therapist.sessionFee}
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
-        </div>
-
-        <div className="mt-8 rounded-3xl bg-white p-10 shadow-lg">
-          <h2 className="text-2xl font-bold text-[#0F4C5C]">About</h2>
-
-          <p className="mt-6 leading-8 text-gray-600">{therapist.bio}</p>
-        </div>
-
-        <div className="mt-8 rounded-3xl bg-white p-10 shadow-lg">
-          <h2 className="text-2xl font-bold text-[#0F4C5C]">Languages</h2>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            {Array.isArray(therapist.languages) &&
-              therapist.languages.map((language: string) => (
-                <span
-                  key={language}
-                  className="rounded-full border border-[#0F4C5C] px-4 py-2 text-[#0F4C5C]"
-                >
-                  {language}
-                </span>
-              ))}
-          </div>
-        </div>
-
-        <div className="mt-8 rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-center text-white shadow-lg">
-          <h2 className="text-3xl font-bold">
-            Ready to Begin Your Healing Journey?
-          </h2>
-
-          <p className="mt-4 text-white/80">
-            Schedule a session and take the first step toward emotional wellness.
-          </p>
-
-          <Link
-            href={`/book-session/${therapist.id}`}
-            className="mt-8 inline-block rounded-full bg-[#E2954E] px-8 py-4 font-semibold text-white hover:bg-[#d07f34]"
-          >
-            Book Session
-          </Link>
-        </div>
-
-        <TherapistReviews therapistId={therapist.id} />
-
-        <div className="mt-8 rounded-3xl bg-white p-10 shadow-lg">
-          <h2 className="text-2xl font-bold text-[#0F4C5C]">
-            Leave a Review
-          </h2>
-
-          <p className="mt-4 text-gray-600">
-            Share your experience to help others find the right support.
-          </p>
 
           <div className="mt-8">
-            <ReviewForm therapistId={therapist.id} />
+
+            <h2 className="text-2xl font-semibold mb-3">
+              About
+            </h2>
+
+            <p className="text-gray-700">
+              {therapist.bio}
+            </p>
+
           </div>
+
+          <div className="mt-8 grid md:grid-cols-2 gap-6">
+
+            <div>
+              <h3 className="font-semibold text-lg mb-2">
+                Specialties
+              </h3>
+
+              <p>
+                {therapist.specialties?.join(", ")}
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg mb-2">
+                Languages
+              </h3>
+
+              <p>
+                {therapist.languages?.join(", ")}
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg mb-2">
+                Experience
+              </h3>
+
+              <p>
+                {therapist.yearsExperience} years
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg mb-2">
+                Session Fee
+              </h3>
+
+              <p>
+                KES {therapist.sessionFee}
+              </p>
+            </div>
+
+          </div>
+
+          <div className="mt-10">
+            <Link
+              href={`/book-session/${therapistId}`}
+              className="bg-blue-600 text-white px-6 py-3 rounded"
+            >
+              Book Session
+            </Link>
+          </div>
+
         </div>
+
+        <div className="mt-10">
+
+          <h2 className="text-3xl font-bold mb-6">
+            Client Reviews
+          </h2>
+
+          <div className="space-y-4">
+
+            {reviews.length === 0 ? (
+              <div className="bg-white p-5 rounded-xl shadow">
+                No reviews yet.
+              </div>
+            ) : (
+              reviews.map((review, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-5 rounded-xl shadow"
+                >
+                  <p className="text-yellow-500 font-bold">
+                    {"⭐".repeat(review.rating)}
+                  </p>
+
+                  <p className="mt-3 text-gray-700">
+                    {review.comment}
+                  </p>
+                </div>
+              ))
+            )}
+
+          </div>
+
+        </div>
+
       </div>
-    </div>
+    </main>
   );
 }

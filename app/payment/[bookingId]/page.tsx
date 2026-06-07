@@ -1,8 +1,7 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import {
   addDoc,
@@ -14,6 +13,7 @@ import {
 
 export default function PaymentPage() {
   const params = useParams();
+  const router = useRouter();
   const bookingId = params.bookingId as string;
 
   const [booking, setBooking] = useState<any>(null);
@@ -84,7 +84,6 @@ export default function PaymentPage() {
       });
 
       const text = await response.text();
-
       console.log("IntaSend response:", text);
 
       const result = JSON.parse(text);
@@ -111,6 +110,8 @@ export default function PaymentPage() {
       alert(
         "STK Push sent successfully. Please check your phone and enter your M-Pesa PIN."
       );
+
+      router.push("/my-bookings");
     } catch (err: any) {
       console.error(err);
       alert(err.message || "Payment request failed.");
@@ -166,15 +167,11 @@ export default function PaymentPage() {
 
             <p className="mt-4 text-gray-600">Date</p>
 
-            <p className="font-semibold">
-              {booking.sessionDate}
-            </p>
+            <p className="font-semibold">{booking.sessionDate}</p>
 
             <p className="mt-4 text-gray-600">Time</p>
 
-            <p className="font-semibold">
-              {booking.sessionTime}
-            </p>
+            <p className="font-semibold">{booking.sessionTime}</p>
 
             <p className="mt-4 text-gray-600">Amount</p>
 
@@ -183,10 +180,7 @@ export default function PaymentPage() {
             </p>
           </div>
 
-          <form
-            onSubmit={handlePayment}
-            className="mt-8 space-y-5"
-          >
+          <form onSubmit={handlePayment} className="mt-8 space-y-5">
             <input
               type="tel"
               placeholder="2547XXXXXXXX"
@@ -201,9 +195,7 @@ export default function PaymentPage() {
               disabled={paying}
               className="w-full rounded-full bg-[#0F4C5C] p-4 font-semibold text-white hover:bg-[#0b3945]"
             >
-              {paying
-                ? "Sending STK Push..."
-                : "Pay with M-Pesa"}
+              {paying ? "Sending STK Push..." : "Pay with M-Pesa"}
             </button>
           </form>
         </div>
