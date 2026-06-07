@@ -54,6 +54,7 @@ export async function POST(request: Request) {
     await updateDoc(bookingRef, {
       paymentStatus: "paid",
       status: "confirmed",
+	  paidAt: new Date().toISOString(),
     });
 
     const paymentQuery = query(
@@ -66,6 +67,7 @@ export async function POST(request: Request) {
     for (const paymentDoc of paymentSnapshot.docs) {
       await updateDoc(doc(db, "payments", paymentDoc.id), {
         status: "completed",
+		paidAt: new Date().toISOString(),
         mpesaReceiptNumber:
           payload?.invoice?.mpesa_reference ||
           payload?.invoice?.provider_ref ||
