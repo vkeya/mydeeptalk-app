@@ -11,6 +11,10 @@ import {
 import { db } from "@/lib/firebase";
 import { createGoogleMeetEvent } from "../../../../lib/googleCalendar";
 
+export async function GET() {
+  return new Response("OK", { status: 200 });
+}
+
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
