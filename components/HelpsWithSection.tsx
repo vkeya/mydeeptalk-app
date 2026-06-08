@@ -3,6 +3,7 @@ import Link from "next/link";
 const pillars = [
   {
     title: "Relationships",
+    slug: "relationships",
     icon: "❤️",
     description:
       "Strengthen connection and navigate life's most important relationships.",
@@ -20,6 +21,7 @@ const pillars = [
   },
   {
     title: "Parenting",
+    slug: "parenting",
     icon: "👨‍👩‍👧‍👦",
     description:
       "Support for parents raising emotionally healthy children while caring for themselves.",
@@ -36,6 +38,7 @@ const pillars = [
   },
   {
     title: "Trauma & Healing",
+    slug: "trauma-healing",
     icon: "🌿",
     description:
       "Healing from painful experiences and finding hope again.",
@@ -52,6 +55,7 @@ const pillars = [
   },
   {
     title: "Mental & Emotional Wellness",
+    slug: "mental-emotional-wellness",
     icon: "🧠",
     description:
       "Building emotional resilience and healthier coping.",
@@ -68,6 +72,7 @@ const pillars = [
   },
   {
     title: "Addiction & Recovery",
+    slug: "addiction-recovery",
     icon: "🔄",
     description:
       "Rebuilding life one step at a time.",
@@ -84,6 +89,7 @@ const pillars = [
   },
   {
     title: "Self-Discovery & Purpose",
+    slug: "self-discovery-purpose",
     icon: "✨",
     description:
       "Understand yourself and discover the life you were created for.",
@@ -100,6 +106,7 @@ const pillars = [
   },
   {
     title: "Men's Wellness",
+    slug: "mens-wellness",
     icon: "👨",
     description:
       "A safe place for men to talk openly.",
@@ -116,6 +123,7 @@ const pillars = [
   },
   {
     title: "Women's Wellness",
+    slug: "womens-wellness",
     icon: "👩",
     description:
       "Support for women navigating life's many roles.",
@@ -132,6 +140,7 @@ const pillars = [
   },
   {
     title: "Faith & Spiritual Wellness",
+    slug: "faith-spiritual-wellness",
     icon: "🙏",
     description:
       "Healing while honoring your values and beliefs.",
@@ -147,6 +156,7 @@ const pillars = [
   },
   {
     title: "Life Challenges & Transitions",
+    slug: "life-challenges-transitions",
     icon: "🌍",
     description:
       "Because life changes can feel overwhelming.",
@@ -200,12 +210,22 @@ export default function HelpsWithSection() {
 
               <div className="mt-5 space-y-2">
                 {pillar.items.map((item) => (
-                  <div key={item} className="flex items-center gap-2 text-gray-700">
-                    <span className="text-[#2C7A7B]">✓</span>
+                  <div
+                    key={item}
+                    className="flex items-center gap-2 text-gray-700"
+                  >
+                    <span className="font-bold text-[#2C7A7B]">✓</span>
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
+
+              <Link
+                href={`/areas/${pillar.slug}`}
+                className="mt-6 inline-block font-semibold text-[#0F4C5C] hover:underline"
+              >
+                Learn More →
+              </Link>
             </div>
           ))}
         </div>
