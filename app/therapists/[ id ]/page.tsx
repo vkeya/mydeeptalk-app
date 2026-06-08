@@ -4,12 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-} from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 type Therapist = {
   fullName?: string;
@@ -20,9 +15,12 @@ type Therapist = {
   sessionFee?: number;
   country?: string;
   city?: string;
+  status?: string;
+  profilePhoto?: string;
 };
 
 type Review = {
+  therapistId?: string;
   rating: number;
   comment: string;
   therapistName?: string;
@@ -40,7 +38,6 @@ export default function TherapistProfilePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        // Therapist
         const therapistRef = doc(db, "therapists", therapistId);
         const therapistSnap = await getDoc(therapistRef);
 
@@ -48,29 +45,23 @@ export default function TherapistProfilePage() {
           setTherapist(therapistSnap.data() as Therapist);
         }
 
-        // Reviews
         const reviewsSnap = await getDocs(collection(db, "reviews"));
 
         const therapistReviews = reviewsSnap.docs
           .map((doc) => doc.data() as Review)
-          .filter(
-            (review: any) =>
-              review.therapistId === therapistId
-          );
+          .filter((review) => review.therapistId === therapistId);
 
         setReviews(therapistReviews);
 
         if (therapistReviews.length > 0) {
           const avg =
-            therapistReviews.reduce(
-              (sum, review) => sum + review.rating,
-              0
-            ) / therapistReviews.length;
+            therapistReviews.reduce((sum, review) => sum + review.rating, 0) /
+            therapistReviews.length;
 
           setAverageRating(avg);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error loading therapist profile:", error);
       } finally {
         setLoading(false);
       }
@@ -81,7 +72,7 @@ export default function TherapistProfilePage() {
 
   if (loading) {
     return (
-      <main className="p-6">
+      <main className="min-h-screen bg-gray-50 p-6">
         <p>Loading profile...</p>
       </main>
     );
@@ -89,141 +80,157 @@ export default function TherapistProfilePage() {
 
   if (!therapist) {
     return (
-      <main className="p-6">
+      <main className="min-h-screen bg-gray-50 p-6">
         <p>Therapist not found.</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-5xl">
-
-        <div className="bg-white rounded-xl shadow p-8">
-
-          <h1 className="text-4xl font-bold">
-            {therapist.fullName}
-          </h1>
-
-          <div className="mt-3">
-            {reviews.length > 0 ? (
-              <>
-                <p className="text-yellow-500 font-bold text-xl">
-                  ⭐ {averageRating.toFixed(1)}
-                </p>
-
-                <p className="text-gray-500">
-                  {reviews.length} reviews
-                </p>
-              </>
+    <main className="min-h-screen bg-[#F7F3EC] p-6">
+      <div className="mx-auto max-w-6xl">
+        <div className="rounded-3xl bg-white p-8 shadow-lg md:p-10">
+          <div className="flex flex-col gap-8 md:flex-row md:items-start">
+            {therapist.profilePhoto ? (
+              <img
+                src={therapist.profilePhoto}
+                alt={therapist.fullName || "Therapist"}
+                className="h-40 w-40 rounded-full object-cover shadow-lg"
+              />
             ) : (
-              <p className="text-gray-400">
-                No reviews yet
-              </p>
+              <div className="flex h-40 w-40 items-center justify-center rounded-full bg-[#F7F3EC] text-5xl font-bold text-[#0F4C5C] shadow-lg">
+                {therapist.fullName?.charAt(0)?.toUpperCase() || "T"}
+              </div>
             )}
-          </div>
 
-          <div className="mt-8">
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-4xl font-bold text-[#0F4C5C]">
+                  {therapist.fullName || "Therapist"}
+                </h1>
 
-            <h2 className="text-2xl font-semibold mb-3">
-              About
-            </h2>
+                {therapist.status === "approved" && (
+                  <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
+                    ✓ Verified Therapist
+                  </span>
+                )}
+              </div>
 
-            <p className="text-gray-700">
-              {therapist.bio}
-            </p>
+              <div className="mt-4">
+                {reviews.length > 0 ? (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p className="text-xl font-bold text-yellow-500">
+                      ⭐ {averageRating.toFixed(1)}
+                    </p>
 
-          </div>
+                    <p className="text-gray-500">
+                      {reviews.length} review{reviews.length === 1 ? "" : "s"}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-gray-400">No reviews yet</p>
+                )}
+              </div>
 
-          <div className="mt-8 grid md:grid-cols-2 gap-6">
-
-            <div>
-              <h3 className="font-semibold text-lg mb-2">
-                Specialties
-              </h3>
-
-              <p>
-                {therapist.specialties?.join(", ")}
+              <p className="mt-4 text-gray-600">
+                {[therapist.city, therapist.country].filter(Boolean).join(", ") ||
+                  "Online"}
               </p>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href={`/book-session/${therapistId}`}
+                  className="rounded-full bg-[#0F4C5C] px-6 py-3 font-semibold text-white hover:bg-[#0b3945]"
+                >
+                  Book Session
+                </Link>
+
+                <Link
+                  href="/therapists"
+                  className="rounded-full border border-[#0F4C5C] px-6 py-3 font-semibold text-[#0F4C5C]"
+                >
+                  Back to Therapists
+                </Link>
+              </div>
             </div>
-
-            <div>
-              <h3 className="font-semibold text-lg mb-2">
-                Languages
-              </h3>
-
-              <p>
-                {therapist.languages?.join(", ")}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg mb-2">
-                Experience
-              </h3>
-
-              <p>
-                {therapist.yearsExperience} years
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg mb-2">
-                Session Fee
-              </h3>
-
-              <p>
-                KES {therapist.sessionFee}
-              </p>
-            </div>
-
           </div>
 
           <div className="mt-10">
-            <Link
-              href={`/book-session/${therapistId}`}
-              className="bg-blue-600 text-white px-6 py-3 rounded"
-            >
-              Book Session
-            </Link>
+            <h2 className="mb-3 text-2xl font-semibold text-[#0F4C5C]">
+              About
+            </h2>
+
+            <p className="leading-7 text-gray-700">
+              {therapist.bio || "No bio provided yet."}
+            </p>
           </div>
 
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            <InfoCard
+              title="Specialties"
+              value={
+                therapist.specialties?.length
+                  ? therapist.specialties.join(", ")
+                  : "Not specified"
+              }
+            />
+
+            <InfoCard
+              title="Languages"
+              value={
+                therapist.languages?.length
+                  ? therapist.languages.join(", ")
+                  : "Not specified"
+              }
+            />
+
+            <InfoCard
+              title="Experience"
+              value={`${therapist.yearsExperience || 0} years`}
+            />
+
+            <InfoCard
+              title="Session Fee"
+              value={`KES ${therapist.sessionFee || 0}`}
+            />
+          </div>
         </div>
 
         <div className="mt-10">
-
-          <h2 className="text-3xl font-bold mb-6">
+          <h2 className="mb-6 text-3xl font-bold text-[#0F4C5C]">
             Client Reviews
           </h2>
 
           <div className="space-y-4">
-
             {reviews.length === 0 ? (
-              <div className="bg-white p-5 rounded-xl shadow">
-                No reviews yet.
+              <div className="rounded-2xl bg-white p-6 shadow">
+                <p className="text-gray-600">No reviews yet.</p>
               </div>
             ) : (
               reviews.map((review, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-5 rounded-xl shadow"
-                >
-                  <p className="text-yellow-500 font-bold">
+                <div key={index} className="rounded-2xl bg-white p-6 shadow">
+                  <p className="font-bold text-yellow-500">
                     {"⭐".repeat(review.rating)}
                   </p>
 
                   <p className="mt-3 text-gray-700">
-                    {review.comment}
+                    {review.comment || "No comment provided."}
                   </p>
                 </div>
               ))
             )}
-
           </div>
-
         </div>
-
       </div>
     </main>
+  );
+}
+
+function InfoCard({ title, value }: { title: string; value: string }) {
+  return (
+    <div className="rounded-2xl bg-[#F7F3EC] p-6">
+      <h3 className="mb-2 text-lg font-semibold text-[#0F4C5C]">{title}</h3>
+      <p className="text-gray-700">{value}</p>
+    </div>
   );
 }

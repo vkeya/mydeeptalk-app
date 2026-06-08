@@ -92,6 +92,13 @@ export default function AdminDashboardPage() {
         <p className="mb-8 text-gray-600">
           MyDeepTalk platform overview.
         </p>
+		
+		<a
+           href="/admin-assessments"
+           className="mb-8 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 font-semibold text-white"
+        >
+           View Assessment Analytics
+		</a>
 
         <div className="grid gap-5 md:grid-cols-3">
           <StatCard title="Total Bookings" value={stats.totalBookings} />
