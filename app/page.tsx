@@ -8,6 +8,7 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import FAQSection from "@/components/FAQSection";
 import CTASection from "@/components/CTASection";
 import SelfAssessmentSection from "@/components/SelfAssessmentSection";
+import HelpsWithSection from "@/components/HelpsWithSection";
 
 
 export default function HomePage() {
@@ -17,7 +18,7 @@ export default function HomePage() {
       <StatsSection />
 	  
 	  <SelfAssessmentSection />
-	  
+	  <HelpsWithSection />
       <PillarsSection />
       <ClientJourneySection />
       <FeaturedTherapistsSection />
