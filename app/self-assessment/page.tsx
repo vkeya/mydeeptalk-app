@@ -2,6 +2,12 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { auth, db } from "@/lib/firebase";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
 
 type Area =
   | "Emotional Wellness"
@@ -152,7 +158,7 @@ function getLevel(score: number) {
     title: "Strongly Consider Support",
     message:
       "Your responses suggest that support could be important right now. Speaking to a therapist may help you feel less alone and more supported.",
-    };
+  };
 }
 
 function getRecommendations(area: Area) {
@@ -196,6 +202,8 @@ export default function SelfAssessmentPage() {
   const [started, setStarted] = useState(false);
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const completed = answers.length === questions.length;
 
@@ -225,6 +233,59 @@ export default function SelfAssessmentPage() {
   const level = getLevel(totalScore);
   const progress = Math.round((answers.length / questions.length) * 100);
 
+  async function saveResult(finalAnswers: number[]) {
+    if (saved || saving) return;
+
+    try {
+      setSaving(true);
+
+      const user = auth.currentUser;
+      const finalScore = finalAnswers.reduce((sum, score) => sum + score, 0);
+
+      const areaScores: Record<Area, number> = {
+        "Emotional Wellness": 0,
+        Relationships: 0,
+        "Healing From The Past": 0,
+        "Self-Worth": 0,
+        "Burnout & Stress": 0,
+        "Purpose & Direction": 0,
+      };
+
+      finalAnswers.forEach((score, index) => {
+        areaScores[questions[index].area] += score;
+      });
+
+      const finalPrimaryArea = Object.entries(areaScores).sort(
+        (a, b) => b[1] - a[1]
+      )[0][0] as Area;
+
+      const finalLevel = getLevel(finalScore);
+
+      await addDoc(collection(db, "assessmentResults"), {
+        userId: user?.uid || null,
+        userEmail: user?.email || null,
+        isAnonymous: !user,
+        score: finalScore,
+        maxScore: 30,
+        level: finalLevel.title,
+        primaryArea: finalPrimaryArea,
+        answers: finalAnswers.map((score, index) => ({
+          question: questions[index].text,
+          area: questions[index].area,
+          score,
+        })),
+        recommendations: getRecommendations(finalPrimaryArea),
+        createdAt: serverTimestamp(),
+      });
+
+      setSaved(true);
+    } catch (error) {
+      console.error("Failed to save assessment:", error);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   function answerQuestion(score: number) {
     const updated = [...answers];
     updated[current] = score;
@@ -232,6 +293,8 @@ export default function SelfAssessmentPage() {
 
     if (current < questions.length - 1) {
       setCurrent(current + 1);
+    } else {
+      saveResult(updated);
     }
   }
 
@@ -245,6 +308,8 @@ export default function SelfAssessmentPage() {
     setStarted(false);
     setCurrent(0);
     setAnswers([]);
+    setSaved(false);
+    setSaving(false);
   }
 
   if (!started) {
@@ -270,7 +335,7 @@ export default function SelfAssessmentPage() {
               <div className="rounded-2xl bg-[#F7F3EC] p-4">
                 <h3 className="font-semibold text-[#0F4C5C]">Private</h3>
                 <p className="text-sm text-gray-600">
-                  Your answers stay with you in this first version.
+                  You can take this check-in even without an account.
                 </p>
               </div>
 
@@ -335,6 +400,11 @@ export default function SelfAssessmentPage() {
                   {primaryArea}
                 </h2>
               </div>
+            </div>
+
+            <div className="mt-4 text-sm text-gray-500">
+              {saving && "Saving your result..."}
+              {saved && "Your result has been saved."}
             </div>
 
             <div className="mt-8 rounded-2xl bg-[#F7F3EC] p-6">
