@@ -28,7 +28,11 @@ type Review = {
 
 export default function TherapistProfilePage() {
   const params = useParams();
-  const therapistId = params.id as string;
+  console.log("params =", params);
+  const therapistId = Array.isArray(params.id)
+  ? params.id[0]
+  : params.id;
+  console.log("therapistId =", therapistId);
 
   const [therapist, setTherapist] = useState<Therapist | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -38,13 +42,35 @@ export default function TherapistProfilePage() {
   useEffect(() => {
     async function fetchData() {
       try {
+		  
+		if (!therapistId) {
+          console.error("No therapistId found in route params:", params);
+          setLoading(false);
+          return;
+        }
+		
+        console.log("Looking for therapist:", therapistId);
+
         const therapistRef = doc(db, "therapists", therapistId);
+
         const therapistSnap = await getDoc(therapistRef);
+
+        console.log("Document exists?", therapistSnap.exists());
+
+        if (therapistSnap.exists()) {
+          console.log("Data =", therapistSnap.data());
+          setTherapist(therapistSnap.data() as Therapist);
+        }
+		
+	
 
         if (therapistSnap.exists()) {
           setTherapist(therapistSnap.data() as Therapist);
         }
 
+        console.log("Firestore doc exists:", therapistSnap.exists());
+        console.log("Document ID:", therapistId);
+		
         const reviewsSnap = await getDocs(collection(db, "reviews"));
 
         const therapistReviews = reviewsSnap.docs
