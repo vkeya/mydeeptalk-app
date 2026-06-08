@@ -4,56 +4,161 @@ const pillars = [
   {
     title: "Relationships",
     icon: "❤️",
-    text: "Improve communication, rebuild trust, navigate conflict, and strengthen emotional connection.",
-    items: ["Marriage", "Dating", "Trust", "Conflict", "Loneliness"],
+    description:
+      "Strengthen connection and navigate life's most important relationships.",
+    items: [
+      "Marriage difficulties",
+      "Communication problems",
+      "Trust and betrayal",
+      "Emotional intimacy",
+      "Conflict resolution",
+      "Loneliness",
+      "Dating challenges",
+      "Attachment styles",
+      "Divorce recovery",
+    ],
   },
   {
     title: "Parenting",
     icon: "👨‍👩‍👧‍👦",
-    text: "Support for parents raising emotionally healthy children while managing stress and family pressure.",
-    items: ["Teenagers", "Co-parenting", "Parent burnout", "Family communication"],
+    description:
+      "Support for parents raising emotionally healthy children while caring for themselves.",
+    items: [
+      "Parenting stress",
+      "Single parenting",
+      "Co-parenting",
+      "Raising teenagers",
+      "Child behaviour",
+      "Parent burnout",
+      "Family communication",
+      "Work-life balance",
+    ],
   },
   {
     title: "Trauma & Healing",
     icon: "🌿",
-    text: "Gentle support for painful experiences, grief, betrayal, shame, and unresolved emotional wounds.",
-    items: ["Grief", "Betrayal", "Childhood wounds", "Divorce recovery"],
+    description:
+      "Healing from painful experiences and finding hope again.",
+    items: [
+      "Childhood wounds",
+      "Grief and loss",
+      "Betrayal trauma",
+      "Emotional abuse",
+      "Shame and guilt",
+      "PTSD",
+      "Forgiveness",
+      "Life after loss",
+    ],
   },
   {
     title: "Mental & Emotional Wellness",
     icon: "🧠",
-    text: "Build resilience, manage stress, and develop healthier ways of coping with emotional overwhelm.",
-    items: ["Anxiety", "Stress", "Burnout", "Low self-esteem"],
+    description:
+      "Building emotional resilience and healthier coping.",
+    items: [
+      "Anxiety",
+      "Depression",
+      "Stress",
+      "Burnout",
+      "Panic attacks",
+      "Anger management",
+      "Sleep difficulties",
+      "Low self-esteem",
+    ],
   },
   {
     title: "Addiction & Recovery",
     icon: "🔄",
-    text: "Support and accountability for rebuilding life after harmful patterns or compulsive behaviours.",
-    items: ["Alcohol", "Pornography", "Gambling", "Relapse prevention"],
+    description:
+      "Rebuilding life one step at a time.",
+    items: [
+      "Pornography addiction",
+      "Alcohol addiction",
+      "Drug abuse",
+      "Gambling addiction",
+      "Compulsive behaviours",
+      "Relapse prevention",
+      "Accountability",
+      "Recovery support",
+    ],
   },
   {
     title: "Self-Discovery & Purpose",
     icon: "✨",
-    text: "Understand yourself better, grow in confidence, and build a life aligned with your values.",
-    items: ["Identity", "Purpose", "Boundaries", "Personal growth"],
+    description:
+      "Understand yourself and discover the life you were created for.",
+    items: [
+      "Identity",
+      "Confidence",
+      "Self-worth",
+      "Life transitions",
+      "Career uncertainty",
+      "Purpose",
+      "Boundaries",
+      "Personal growth",
+    ],
   },
   {
     title: "Men's Wellness",
     icon: "👨",
-    text: "A safe space for men to talk openly about pressure, identity, fatherhood, emotions, and relationships.",
-    items: ["Fatherhood", "Pressure", "Masculinity", "Loneliness"],
+    description:
+      "A safe place for men to talk openly.",
+    items: [
+      "Fatherhood",
+      "Masculinity",
+      "Career pressure",
+      "Burnout",
+      "Relationships",
+      "Loneliness",
+      "Identity",
+      "Midlife transitions",
+    ],
   },
   {
     title: "Women's Wellness",
     icon: "👩",
-    text: "Support for women navigating motherhood, relationships, self-worth, work-life balance, and transitions.",
-    items: ["Motherhood", "Self-worth", "Postpartum", "Work-life balance"],
+    description:
+      "Support for women navigating life's many roles.",
+    items: [
+      "Motherhood",
+      "Pregnancy",
+      "Postpartum wellbeing",
+      "Fertility struggles",
+      "Self-esteem",
+      "Relationships",
+      "Stress",
+      "Work-life balance",
+    ],
   },
   {
     title: "Faith & Spiritual Wellness",
     icon: "🙏",
-    text: "Explore healing, hope, forgiveness, purpose, and emotional wellbeing while respecting your values.",
-    items: ["Hope", "Forgiveness", "Meaning", "Spiritual struggles"],
+    description:
+      "Healing while honoring your values and beliefs.",
+    items: [
+      "Faith and mental health",
+      "Hope",
+      "Meaning",
+      "Forgiveness",
+      "Spiritual struggles",
+      "Identity",
+      "Life transitions",
+    ],
+  },
+  {
+    title: "Life Challenges & Transitions",
+    icon: "🌍",
+    description:
+      "Because life changes can feel overwhelming.",
+    items: [
+      "Career changes",
+      "Financial stress",
+      "Relocation",
+      "Academic pressure",
+      "Retirement",
+      "Relationship transitions",
+      "Major life decisions",
+    ],
   },
 ];
 
@@ -89,16 +194,16 @@ export default function HelpsWithSection() {
                 {pillar.title}
               </h3>
 
-              <p className="mt-3 text-gray-700">{pillar.text}</p>
+              <p className="mt-3 leading-7 text-gray-700">
+                {pillar.description}
+              </p>
 
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="mt-5 space-y-2">
                 {pillar.items.map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full bg-white px-3 py-1 text-sm text-gray-700"
-                  >
-                    {item}
-                  </span>
+                  <div key={item} className="flex items-center gap-2 text-gray-700">
+                    <span className="text-[#2C7A7B]">✓</span>
+                    <span>{item}</span>
+                  </div>
                 ))}
               </div>
             </div>
