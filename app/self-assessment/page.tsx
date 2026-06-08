@@ -431,19 +431,39 @@ export default function SelfAssessmentPage() {
             </div>
 
             <div className="mt-8 flex flex-wrap gap-4">
+
+              <Link
+                href="/journal"
+                className="rounded-full border border-[#0F4C5C] px-6 py-3 font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+              >
+                📖 Write in Journal
+              </Link>
+
               <Link
                 href="/therapists"
                 className="rounded-full bg-[#0F4C5C] px-6 py-3 font-semibold text-white hover:bg-[#0b3945]"
               >
-                Find a Therapist
+                🧠 Find a Therapist
+              </Link>
+
+  
+              <Link
+                href={`/areas/${primaryArea
+                .toLowerCase()
+                .replace(/ & /g, "-")
+                .replace(/\s+/g, "-")}`}
+                className="rounded-full border border-[#2C7A7B] px-6 py-3 font-semibold text-[#2C7A7B]"
+              >
+                🌿 Explore Growth Area
               </Link>
 
               <button
                 onClick={restart}
-                className="rounded-full border border-[#0F4C5C] px-6 py-3 font-semibold text-[#0F4C5C]"
+                className="rounded-full border border-gray-400 px-6 py-3 font-semibold text-gray-600"
               >
                 Retake Check-In
               </button>
+
             </div>
           </div>
         </section>
