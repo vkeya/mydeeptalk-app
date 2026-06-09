@@ -24,3 +24,38 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+input,
+select,
+textarea {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6b7280;
+}
+
+input[type="file"] {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+input[type="file"]::file-selector-button {
+  color: #ffffff;
+  background-color: #0F4C5C;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+label,
+p,
+span,
+td,
+th {
+  color: inherit;
+}
