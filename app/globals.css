@@ -59,3 +59,22 @@ td,
 th {
   color: inherit;
 }
+
+@media (max-width: 768px) {
+  .text-gray-400,
+  .text-gray-500,
+  .text-gray-600 {
+    color: #374151 !important;
+  }
+
+  input,
+  select,
+  textarea {
+    color: #111827 !important;
+    background-color: #ffffff !important;
+  }
+
+  label {
+    color: #111827 !important;
+  }
+}
