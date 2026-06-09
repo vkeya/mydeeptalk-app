@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
@@ -22,6 +23,8 @@ type WeeklySlot = {
 };
 
 export default function TherapistAvailabilityPage() {
+  const router = useRouter();
+
   const [weeklySlots, setWeeklySlots] = useState<WeeklySlot[]>(
     days.map((day) => ({
       day,
@@ -143,7 +146,9 @@ export default function TherapistAvailabilityPage() {
         { merge: true }
       );
 
-      alert("Availability saved successfully.");
+      alert("Availability saved successfully. Returning to your dashboard...");
+
+      router.push("/dashboard");
     } catch (error) {
       console.error("Error saving availability:", error);
       alert("Error saving availability.");
