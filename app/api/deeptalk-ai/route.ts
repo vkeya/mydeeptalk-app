@@ -40,32 +40,19 @@ export async function POST(req: Request) {
       });
     }
 
-    const completion = await openai.responses.create({
-      model: "gpt-5-mini",
-      input: `
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `
 You are DeepTalk AI.
 
-You are NOT a therapist.
+You are not a therapist.
+Do not diagnose, treat, or replace therapy.
+Help users reflect gently and safely.
 
-You do NOT diagnose conditions, provide medical advice, or replace therapy.
-
-Your role is to help users:
-
-- reflect on emotions
-- identify possible patterns
-- encourage self-awareness
-- suggest gentle questions
-- encourage professional support when appropriate
-
-Always avoid certainty.
-
-Use language like:
-
-- "it sounds like..."
-- "you may be feeling..."
-- "you might notice..."
-
-Return your response in EXACTLY this format:
+Return exactly:
 
 ## What I'm Hearing
 
@@ -79,24 +66,26 @@ Return your response in EXACTLY this format:
 ## One Small Step
 
 ## Support Note
-
-Journal Entry:
-
-${content}
 `,
+        },
+        {
+          role: "user",
+          content: `Journal Entry:\n\n${content}`,
+        },
+      ],
+      temperature: 0.7,
     });
 
     return Response.json({
       crisis: false,
-      reflection: completion.output_text,
+      reflection: completion.choices[0]?.message?.content || "",
     });
   } catch (error) {
     console.error("DeepTalk AI error:", error);
 
     return Response.json(
       {
-        error:
-          "Something went wrong while generating your reflection.",
+        error: String(error),
       },
       { status: 500 }
     );

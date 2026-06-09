@@ -61,6 +61,9 @@ export default function JournalEntryPage() {
       });
 
       const data = await response.json();
+	  
+	  console.log(data);
+	  alert(JSON.stringify(data));
 
       if (data.crisis) {
         setCrisisMessage(data.message);
