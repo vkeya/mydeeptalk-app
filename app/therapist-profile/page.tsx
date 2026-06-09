@@ -73,15 +73,25 @@ export default function TherapistProfilePage() {
     setLoading(true);
 
     try {
+	  console.log("1. Starting profile save");
+	  
       let profilePhoto = "";
 
       if (photoFile) {
+		console.log("2. Uploading photo to Cloudinary");
+		
         profilePhoto = await uploadToCloudinary(
           photoFile,
           `mydeeptalk/therapist-photos/${user.uid}`
         );
+      
+        console.log("3. Cloudinary upload complete:", profilePhoto);
+	  } else {
+        console.log("2. No photo selected");
       }
 
+      console.log("4. Saving therapist profile to Firestore");
+	  
       await setDoc(
         doc(db, "therapists", user.uid),
         {
@@ -112,7 +122,8 @@ export default function TherapistProfilePage() {
         },
         { merge: true }
       );
-
+      console.log("5. Firestore save complete");
+	  
       alert("Profile saved successfully");
       router.push("/dashboard");
     } catch (error: any) {
