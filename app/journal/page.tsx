@@ -66,42 +66,44 @@ export default function JournalPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, () => {
-    loadEntries();
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      setEntries([]);
+      setLoading(false);
+      return;
+    }
+
+    await loadEntries(user.uid);
   });
 
   return () => unsubscribe();
 }, []);
 
-  async function loadEntries() {
-    try {
-      const user = auth.currentUser;
+  async function loadEntries(userId: string) {
+  setLoading(true);
 
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+  try {
+    const q = query(
+      collection(db, "journalEntries"),
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc")
+    );
 
-      const q = query(
-        collection(db, "journalEntries"),
-        where("userId", "==", user.uid),
-        orderBy("createdAt", "desc")
-      );
+    const snapshot = await getDocs(q);
 
-      const snapshot = await getDocs(q);
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as JournalEntry[];
 
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as JournalEntry[];
-
-      setEntries(data);
-    } catch (error) {
-      console.error("Error loading journal entries:", error);
-    } finally {
-      setLoading(false);
-    }
+    setEntries(data);
+  } catch (error) {
+    console.error("Error loading journal entries:", error);
+    setEntries([]);
+  } finally {
+    setLoading(false);
   }
+}
 
   async function saveEntry(e: React.FormEvent) {
     e.preventDefault();
@@ -142,7 +144,7 @@ export default function JournalPage() {
       setArea(areas[0]);
       setPrompt(prompts[Math.floor(Math.random() * prompts.length)]);
 
-      await loadEntries();
+      await loadEntries(user.uid);
 
       alert("Journal entry saved.");
     } catch (error) {
