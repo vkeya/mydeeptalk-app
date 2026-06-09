@@ -413,6 +413,69 @@ export default async function AreaPage({
             ))}
           </div>
         </section>
+		
+		<section className="mt-8 rounded-3xl bg-white p-8 shadow">
+          <h2 className="text-2xl font-bold text-[#0F4C5C]">
+              What Healing Can Look Like
+          </h2>
+
+          <div className="mt-5 space-y-4 leading-8 text-gray-700">
+          <p>
+               Healing does not mean becoming perfect. It means becoming more aware,
+               more honest, and more compassionate with yourself.
+          </p>
+
+          <p>
+               Healing may look like healthier boundaries, better communication,
+               emotional regulation, deeper relationships, or simply feeling lighter
+               and more at peace.
+          </p>
+
+          <p>
+               Growth is often gradual. Small steps matter.
+          </p>
+          </div>
+        </section>
+		
+		<section className="mt-8 rounded-3xl bg-white p-8 shadow">
+          <h2 className="text-2xl font-bold text-[#0F4C5C]">
+              When Therapy May Help
+          </h2>
+
+          <div className="mt-5 space-y-3 text-gray-700">
+          <div>✓ You feel overwhelmed and do not know where to begin.</div>
+
+          <div>✓ Old patterns keep repeating despite your efforts.</div>
+
+          <div>✓ Stress, anxiety, or emotional pain are affecting daily life.</div>
+
+          <div>✓ You want a safe place to process your experiences.</div>
+
+          <div>✓ You want support without judgment.</div>
+         </div>
+        </section>
+		
+		<section className="mt-8 rounded-3xl bg-white p-8 shadow">
+          <h2 className="text-2xl font-bold text-[#0F4C5C]">
+              How MyDeepTalk Supports You
+          </h2>
+
+          <div className="mt-5 space-y-4 leading-8 text-gray-700">
+          <p>
+               MyDeepTalk helps you begin with self-awareness before life becomes too
+               heavy.
+          </p>
+
+          <p>
+               Through self-discovery, guided journaling, and access to verified
+               therapists, we provide a gentle path toward healing and growth.
+          </p>
+
+          <p>
+               You do not have to figure everything out alone.
+          </p>
+         </div>
+        </section>
 
         <section className="mt-10 rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white">
           <h2 className="text-3xl font-bold">

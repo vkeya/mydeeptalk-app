@@ -5,7 +5,7 @@ export default function HeroSection() {
     <section className="px-8 py-24">
       <div className="mx-auto grid max-w-7xl items-center gap-16 md:grid-cols-2">
         <div>
-          <p className="mb-4 font-semibold text-[#E2954E]">
+          <p className="mb-4 font-semibold uppercase tracking-widest text-[#E2954E]">
             Preventive Emotional Wellness
           </p>
 
@@ -14,30 +14,36 @@ export default function HeroSection() {
           </h1>
 
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            MyDeepTalk helps you reflect, heal and connect with verified
-            therapists through a safe emotional wellness platform built for Africa.
+            MyDeepTalk is an AI-powered emotional wellness platform built in
+            Africa to help people reflect, heal, and connect with trusted
+            therapists before stress, burnout, and relationship struggles
+            become overwhelming.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
               href="/signup"
-              className="rounded-full bg-[#0F4C5C] px-8 py-4 font-semibold text-white hover:bg-[#0b3945]"
+              className="rounded-full bg-[#0F4C5C] px-8 py-4 font-semibold text-white transition hover:bg-[#0b3945]"
             >
               Start Your Journey
             </Link>
 
             <Link
-              href="/therapists"
+              href="/self-assessment"
               className="rounded-full border border-[#0F4C5C] px-8 py-4 font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
             >
-              Find a Therapist
+              Free Self-Discovery Check-In
             </Link>
           </div>
         </div>
 
         <div className="rounded-[2rem] bg-white p-8 shadow-2xl">
           <div className="rounded-[2rem] bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white">
-            <h2 className="text-3xl font-bold">
+            <p className="font-semibold uppercase tracking-widest text-white/80">
+              Self-Discovery Before Crisis
+            </p>
+
+            <h2 className="mt-4 text-3xl font-bold">
               Healing should not begin only after collapse.
             </h2>
 
@@ -48,13 +54,15 @@ export default function HeroSection() {
 
             <div className="mt-8 grid gap-4">
               <div className="rounded-2xl bg-white/10 p-5">
-                Self-discovery reflections
+                ✨ Guided self-discovery and reflection
               </div>
+
               <div className="rounded-2xl bg-white/10 p-5">
-                Verified therapist support
+                ❤️ Trusted therapist support
               </div>
+
               <div className="rounded-2xl bg-white/10 p-5">
-                Safe online sessions
+                🌿 Long-term healing and growth
               </div>
             </div>
           </div>

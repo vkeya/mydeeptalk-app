@@ -6,7 +6,7 @@ const pillars = [
     slug: "relationships",
     icon: "❤️",
     description:
-      "Strengthen connection and navigate life's most important relationships.",
+      "Strengthen communication, rebuild trust, and create healthier emotional connection.",
     items: [
       "Marriage difficulties",
       "Communication problems",
@@ -24,7 +24,7 @@ const pillars = [
     slug: "parenting",
     icon: "👨‍👩‍👧‍👦",
     description:
-      "Support for parents raising emotionally healthy children while caring for themselves.",
+      "Support for parents raising emotionally healthy children while also caring for themselves.",
     items: [
       "Parenting stress",
       "Single parenting",
@@ -41,7 +41,7 @@ const pillars = [
     slug: "trauma-healing",
     icon: "🌿",
     description:
-      "Healing from painful experiences and finding hope again.",
+      "Gently process painful experiences and begin rebuilding safety, hope, and strength.",
     items: [
       "Childhood wounds",
       "Grief and loss",
@@ -58,7 +58,7 @@ const pillars = [
     slug: "mental-emotional-wellness",
     icon: "🧠",
     description:
-      "Building emotional resilience and healthier coping.",
+      "Build emotional awareness, resilience, and healthier ways of coping with life.",
     items: [
       "Anxiety",
       "Depression",
@@ -75,7 +75,7 @@ const pillars = [
     slug: "addiction-recovery",
     icon: "🔄",
     description:
-      "Rebuilding life one step at a time.",
+      "Find support, accountability, and practical steps for rebuilding life one day at a time.",
     items: [
       "Pornography addiction",
       "Alcohol addiction",
@@ -92,7 +92,7 @@ const pillars = [
     slug: "self-discovery-purpose",
     icon: "✨",
     description:
-      "Understand yourself and discover the life you were created for.",
+      "Understand your identity, values, patterns, and the life you are becoming.",
     items: [
       "Identity",
       "Confidence",
@@ -109,7 +109,7 @@ const pillars = [
     slug: "mens-wellness",
     icon: "👨",
     description:
-      "A safe place for men to talk openly.",
+      "A safe space for men to speak honestly about pressure, identity, emotions, and relationships.",
     items: [
       "Fatherhood",
       "Masculinity",
@@ -126,7 +126,7 @@ const pillars = [
     slug: "womens-wellness",
     icon: "👩",
     description:
-      "Support for women navigating life's many roles.",
+      "Support for women navigating identity, motherhood, relationships, purpose, and emotional wellbeing.",
     items: [
       "Motherhood",
       "Pregnancy",
@@ -143,7 +143,7 @@ const pillars = [
     slug: "faith-spiritual-wellness",
     icon: "🙏",
     description:
-      "Healing while honoring your values and beliefs.",
+      "Explore healing, hope, meaning, forgiveness, and emotional wellness while honoring your values.",
     items: [
       "Faith and mental health",
       "Hope",
@@ -159,7 +159,7 @@ const pillars = [
     slug: "life-challenges-transitions",
     icon: "🌍",
     description:
-      "Because life changes can feel overwhelming.",
+      "Find clarity and emotional support when life changes feel uncertain or overwhelming.",
     items: [
       "Career changes",
       "Financial stress",
@@ -186,9 +186,9 @@ export default function HelpsWithSection() {
           </h2>
 
           <p className="mt-5 text-lg text-gray-600">
-            MyDeepTalk helps you understand yourself, strengthen relationships,
-            process difficult experiences, and connect with the right support
-            before life becomes overwhelming.
+            MyDeepTalk helps you understand yourself before life becomes too
+            heavy. Begin with self-discovery, reflect through guided journaling,
+            and connect with verified therapists when deeper support is needed.
           </p>
         </div>
 
@@ -224,20 +224,24 @@ export default function HelpsWithSection() {
                 href={`/areas/${pillar.slug}`}
                 className="mt-6 inline-block font-semibold text-[#0F4C5C] hover:underline"
               >
-                Learn More →
+                Explore this area →
               </Link>
             </div>
           ))}
         </div>
 
         <div className="mt-16 rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-center text-white shadow-lg md:p-12">
-          <h3 className="text-3xl font-bold">
+          <p className="text-sm font-semibold uppercase tracking-widest text-white/80">
+            Self-discovery before crisis
+          </p>
+
+          <h3 className="mt-3 text-3xl font-bold">
             You do not have to figure everything out alone.
           </h3>
 
           <p className="mx-auto mt-4 max-w-3xl text-white/85">
-            Whether you are navigating stress, parenting, relationships, trauma,
-            addiction, or simply trying to understand yourself better,
+            Whether you are navigating relationships, parenting, trauma,
+            addiction, stress, or questions about who you are becoming,
             MyDeepTalk gives you a gentle place to begin.
           </p>
 
@@ -251,7 +255,7 @@ export default function HelpsWithSection() {
 
             <Link
               href="/therapists"
-              className="rounded-full border border-white px-6 py-3 font-semibold text-white"
+              className="rounded-full border border-white px-6 py-3 font-semibold text-white hover:bg-white hover:text-[#0F4C5C]"
             >
               Find a Therapist
             </Link>
