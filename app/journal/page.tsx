@@ -7,7 +7,7 @@ import {
   addDoc,
   collection,
   getDocs,
-  orderBy,
+
   query,
   serverTimestamp,
   where,
@@ -86,7 +86,7 @@ export default function JournalPage() {
     const q = query(
       collection(db, "journalEntries"),
       where("userId", "==", userId),
-      orderBy("createdAt", "desc")
+      
     );
 
     const snapshot = await getDocs(q);
@@ -94,7 +94,12 @@ export default function JournalPage() {
     const data = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    })) as JournalEntry[];
+    })) 
+	.sort((a: any, b: any) => {
+    const dateA = a.createdAt?.toDate?.() || new Date(0);
+    const dateB = b.createdAt?.toDate?.() || new Date(0);
+    return dateB.getTime() - dateA.getTime();
+    })as JournalEntry[];
 
     setEntries(data);
   } catch (error) {
@@ -128,7 +133,7 @@ export default function JournalPage() {
     setSaving(true);
 
     try {
-      await addDoc(collection(db, "journalEntries"), {
+      const docRef = await addDoc(collection(db, "journalEntries"), {
         userId: user.uid,
         userEmail: user.email,
         mood,
@@ -138,6 +143,9 @@ export default function JournalPage() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+	  
+	  console.log("Journal saved with ID:", docRef.id);
+      alert(`Journal entry saved: ${docRef.id}`);
 
       setContent("");
       setMood("");
