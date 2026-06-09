@@ -26,8 +26,8 @@ export default function TherapistAvailabilityPage() {
     days.map((day) => ({
       day,
       enabled: false,
-      startTime: "09:00",
-      endTime: "17:00",
+      startTime: "",
+      endTime: "",
     }))
   );
 
@@ -52,7 +52,20 @@ export default function TherapistAvailabilityPage() {
           const data = snap.data();
 
           if (Array.isArray(data.weeklySlots)) {
-            setWeeklySlots(data.weeklySlots);
+            const savedSlots = days.map((day) => {
+              const found = data.weeklySlots.find(
+                (slot: WeeklySlot) => slot.day === day
+              );
+
+              return {
+                day,
+                enabled: found?.enabled || false,
+                startTime: found?.startTime || "",
+                endTime: found?.endTime || "",
+              };
+            });
+
+            setWeeklySlots(savedSlots);
           }
 
           if (data.sessionDuration) {
@@ -76,7 +89,15 @@ export default function TherapistAvailabilityPage() {
   ) {
     setWeeklySlots((prev) =>
       prev.map((slot, i) =>
-        i === index ? { ...slot, [field]: value } : slot
+        i === index
+          ? {
+              ...slot,
+              [field]: value,
+              ...(field === "enabled" && value === false
+                ? { startTime: "", endTime: "" }
+                : {}),
+            }
+          : slot
       )
     );
   }
@@ -95,6 +116,16 @@ export default function TherapistAvailabilityPage() {
 
     if (activeSlots.length === 0) {
       alert("Please select at least one available day.");
+      return;
+    }
+
+    const invalidSlot = activeSlots.find(
+      (slot) =>
+        !slot.startTime || !slot.endTime || slot.startTime >= slot.endTime
+    );
+
+    if (invalidSlot) {
+      alert(`Please check the start and end time for ${invalidSlot.day}.`);
       return;
     }
 
@@ -136,8 +167,8 @@ export default function TherapistAvailabilityPage() {
           <h1 className="text-4xl font-bold">Set Weekly Availability</h1>
 
           <p className="mt-4 text-white/90">
-            Choose the days and times you are usually available for client
-            sessions.
+            Choose the days and exact time ranges you are available. Each day
+            can have a different schedule.
           </p>
         </div>
 
@@ -158,6 +189,11 @@ export default function TherapistAvailabilityPage() {
                 <option value="60">60 minutes</option>
                 <option value="90">90 minutes</option>
               </select>
+
+              <p className="mt-2 text-sm text-gray-700">
+                This controls how client booking slots are generated from your
+                available time range.
+              </p>
             </div>
 
             <div className="space-y-4">
@@ -180,27 +216,54 @@ export default function TherapistAvailabilityPage() {
                     </label>
 
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <input
-                        type="time"
-                        value={slot.startTime}
-                        disabled={!slot.enabled}
-                        onChange={(e) =>
-                          updateSlot(index, "startTime", e.target.value)
-                        }
-                        className="rounded-xl border border-gray-300 bg-white p-3 text-gray-900 disabled:opacity-50"
-                      />
+                      <div>
+                        <label className="mb-1 block text-sm font-semibold text-gray-700">
+                          Start
+                        </label>
 
-                      <input
-                        type="time"
-                        value={slot.endTime}
-                        disabled={!slot.enabled}
-                        onChange={(e) =>
-                          updateSlot(index, "endTime", e.target.value)
-                        }
-                        className="rounded-xl border border-gray-300 bg-white p-3 text-gray-900 disabled:opacity-50"
-                      />
+                        <input
+                          type="time"
+                          value={slot.startTime}
+                          disabled={!slot.enabled}
+                          required={slot.enabled}
+                          onChange={(e) =>
+                            updateSlot(index, "startTime", e.target.value)
+                          }
+                          className="w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900 disabled:bg-gray-100 disabled:text-gray-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-sm font-semibold text-gray-700">
+                          End
+                        </label>
+
+                        <input
+                          type="time"
+                          value={slot.endTime}
+                          disabled={!slot.enabled}
+                          required={slot.enabled}
+                          onChange={(e) =>
+                            updateSlot(index, "endTime", e.target.value)
+                          }
+                          className="w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900 disabled:bg-gray-100 disabled:text-gray-500"
+                        />
+                      </div>
                     </div>
                   </div>
+
+                  {!slot.enabled && (
+                    <p className="mt-3 text-sm text-gray-700">
+                      Not available on {slot.day}.
+                    </p>
+                  )}
+
+                  {slot.enabled && slot.startTime && slot.endTime && (
+                    <p className="mt-3 text-sm font-semibold text-[#2C7A7B]">
+                      Available on {slot.day} from {slot.startTime} to{" "}
+                      {slot.endTime}.
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
