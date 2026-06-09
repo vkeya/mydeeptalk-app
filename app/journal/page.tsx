@@ -297,54 +297,55 @@ export default function JournalPage() {
             ) : (
               <div className="mt-6 space-y-4">
                 {entries.map((entry) => (
-                  <div
-                    key={entry.id}
-                    className="rounded-2xl bg-[#F7F3EC] p-5"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="font-semibold text-[#0F4C5C]">
-                        {entry.mood}
-                      </p>
+  <div
+    key={entry.id}
+    className="rounded-2xl bg-[#F7F3EC] p-5"
+  >
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <p className="font-semibold text-[#0F4C5C]">
+        {entry.mood}
+      </p>
 
-                      <p className="text-sm text-gray-500">
-                        {entry.createdAt?.toDate
-                          ? entry.createdAt.toDate().toLocaleString()
-                          : ""}
-                      </p>
-                    </div>
+      <p className="text-sm text-gray-500">
+        {entry.createdAt?.toDate
+          ? entry.createdAt.toDate().toLocaleString()
+          : ""}
+      </p>
+    </div>
 
-                    {entry.area && (
-                      <p className="mt-2 text-sm font-semibold text-[#2C7A7B]">
-                        {entry.area}
-                      </p>
-                    )}
+    {entry.area && (
+      <p className="mt-2 text-sm font-semibold text-[#2C7A7B]">
+        {entry.area}
+      </p>
+    )}
 
-                    <p className="mt-3 text-sm font-semibold text-gray-600">
-                      {entry.prompt}
-                    </p>
+    <p className="mt-3 text-sm font-semibold text-gray-600">
+      {entry.prompt}
+    </p>
 
-                    <p className="mt-3 line-clamp-4 whitespace-pre-line text-gray-700">
-                      {entry.content}
-                    </p>
+    <p className="mt-3 line-clamp-4 whitespace-pre-line text-gray-700">
+      {entry.content}
+    </p>
 
-                    <div className="mt-5 flex flex-wrap gap-3">
-                      <Link
-                        href={`/journal/${entry.id}`}
-                        className="rounded-full border border-[#0F4C5C] px-4 py-2 text-sm font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
-                      >
-                        View Entry
-                      </Link>
+    <div className="mt-5 flex flex-wrap gap-3">
+      <Link
+        href={`/journal/${entry.id}`}
+        className="rounded-full border border-[#0F4C5C] px-4 py-2 text-sm font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+      >
+        View Entry
+      </Link>
 
-                      <button
-                        type="button"
-                        className="rounded-full bg-[#0F4C5C] px-4 py-2 text-sm font-semibold text-white opacity-60"
-                        disabled
-                      >
-                        Reflect with DeepTalk AI Soon
-                      </button>
-                    </div>
-                  </div>
-                ))}
+      <Link
+        href={`/journal/${entry.id}`}
+        className="rounded-full bg-[#0F4C5C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0b3945]"
+      >
+        Reflect with DeepTalk AI
+      </Link>
+    </div>
+  </div>
+))}
+
+                    
               </div>
             )}
           </section>
