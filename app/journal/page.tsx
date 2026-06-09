@@ -329,21 +329,21 @@ export default function JournalPage() {
         {entry.content}
       </p>
 
-      <div className="mt-5 flex flex-wrap gap-3">
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <Link
           href={`/journal/${entry.id}`}
-          className="rounded-full border border-[#0F4C5C] px-4 py-2 text-sm font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+          className="rounded-full border-2 border-[#0F4C5C] bg-white px-4 py-3 text-center text-sm font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
         >
           View Entry
         </Link>
 
         <Link
           href={`/journal/${entry.id}`}
-          className="rounded-full bg-[#0F4C5C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0b3945]"
+          className="rounded-full bg-[#E2954E] px-4 py-3 text-center text-sm font-bold text-white hover:bg-[#d07f34]"
         >
           Reflect with DeepTalk AI
         </Link>
-      </div>
+       </div>
     </div>
   ))}
 </div>
