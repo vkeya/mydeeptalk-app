@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -65,8 +66,12 @@ export default function JournalPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, () => {
     loadEntries();
-  }, []);
+  });
+
+  return () => unsubscribe();
+}, []);
 
   async function loadEntries() {
     try {
