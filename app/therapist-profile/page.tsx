@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
 export default function TherapistProfilePage() {
   const router = useRouter();
@@ -19,7 +19,52 @@ export default function TherapistProfilePage() {
   const [city, setCity] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState("");
+
+  const [existingProfile, setExistingProfile] = useState<any>(null);
+  const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadProfile() {
+      const user = auth.currentUser;
+
+      if (!user) {
+        setPageLoading(false);
+        return;
+      }
+
+      try {
+        const profileRef = doc(db, "therapists", user.uid);
+        const profileSnap = await getDoc(profileRef);
+
+        if (profileSnap.exists()) {
+          const data = profileSnap.data();
+
+          setExistingProfile(data);
+          setFullName(data.fullName || "");
+          setGender(data.gender || "");
+          setBio(data.bio || "");
+          setSpecialties(
+            Array.isArray(data.specialties) ? data.specialties.join(", ") : ""
+          );
+          setLanguages(
+            Array.isArray(data.languages) ? data.languages.join(", ") : ""
+          );
+          setYearsExperience(data.yearsExperience?.toString() || "");
+          setSessionFee(data.sessionFee?.toString() || "");
+          setCountry(data.country || "");
+          setCity(data.city || "");
+          setPhotoPreview(data.profilePhoto || data.photoUrl || "");
+        }
+      } catch (error) {
+        console.error("Error loading therapist profile:", error);
+      } finally {
+        setPageLoading(false);
+      }
+    }
+
+    loadProfile();
+  }, []);
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -73,25 +118,21 @@ export default function TherapistProfilePage() {
     setLoading(true);
 
     try {
-	  console.log("1. Starting profile save");
-	  
-      let profilePhoto = "";
+      let uploadedPhotoUrl = "";
 
       if (photoFile) {
-		console.log("2. Uploading photo to Cloudinary");
-		
-        profilePhoto = await uploadToCloudinary(
+        uploadedPhotoUrl = await uploadToCloudinary(
           photoFile,
           `mydeeptalk/therapist-photos/${user.uid}`
         );
-      
-        console.log("3. Cloudinary upload complete:", profilePhoto);
-	  } else {
-        console.log("2. No photo selected");
       }
 
-      console.log("4. Saving therapist profile to Firestore");
-	  
+      const finalPhotoUrl =
+        uploadedPhotoUrl ||
+        existingProfile?.profilePhoto ||
+        existingProfile?.photoUrl ||
+        "";
+
       await setDoc(
         doc(db, "therapists", user.uid),
         {
@@ -112,19 +153,25 @@ export default function TherapistProfilePage() {
           sessionFee: Number(sessionFee),
           country,
           city,
-          profilePhoto,
-          photoUrl: profilePhoto,
-          storageProvider: "cloudinary",
-          status: "pending",
+          profilePhoto: finalPhotoUrl,
+          photoUrl: finalPhotoUrl,
+          storageProvider: finalPhotoUrl ? "cloudinary" : "",
+          status: existingProfile?.status || "pending",
+          credentialsStatus: existingProfile?.credentialsStatus || "not_uploaded",
+          credentialsUploaded: existingProfile?.credentialsUploaded || false,
           profileComplete: true,
-          createdAt: serverTimestamp(),
+          createdAt: existingProfile?.createdAt || serverTimestamp(),
           updatedAt: serverTimestamp(),
         },
         { merge: true }
       );
-      console.log("5. Firestore save complete");
-	  
-      alert("Profile saved successfully");
+
+      alert(
+        existingProfile
+          ? "Profile updated successfully"
+          : "Profile saved successfully"
+      );
+
       router.push("/dashboard");
     } catch (error: any) {
       console.error("Therapist profile save error:", error);
@@ -132,6 +179,14 @@ export default function TherapistProfilePage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen bg-[#F7F3EC] p-8 text-[#0F4C5C]">
+        Loading therapist profile...
+      </div>
+    );
   }
 
   return (
@@ -144,6 +199,12 @@ export default function TherapistProfilePage() {
             Complete your professional profile so clients can find and trust
             you.
           </p>
+
+          {existingProfile?.status && (
+            <p className="mt-4 inline-block rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white">
+              Current status: {existingProfile.status}
+            </p>
+          )}
         </div>
 
         <div className="mt-8 rounded-3xl bg-white p-10 shadow-lg">
@@ -266,7 +327,13 @@ export default function TherapistProfilePage() {
               disabled={loading}
               className="w-full rounded-full bg-[#0F4C5C] p-4 font-semibold text-white hover:bg-[#0b3945] disabled:opacity-70"
             >
-              {loading ? "Saving..." : "Save Profile"}
+              {loading
+                ? existingProfile
+                  ? "Updating..."
+                  : "Saving..."
+                : existingProfile
+                ? "Update Profile"
+                : "Save Profile"}
             </button>
           </form>
         </div>
