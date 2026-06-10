@@ -19,9 +19,9 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* =========================
+/* =================================
    DEFAULT TEXT COLORS
-========================= */
+================================= */
 
 p,
 span,
@@ -33,7 +33,6 @@ small {
   color: #111827;
 }
 
-/* Headings */
 h1,
 h2,
 h3,
@@ -44,9 +43,18 @@ strong {
   color: #111827;
 }
 
-/* =========================
+/* =================================
+   LINKS
+================================= */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* =================================
    FORMS
-========================= */
+================================= */
 
 input,
 select,
@@ -57,7 +65,7 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: #374151 !important;
+  color: #6b7280 !important;
   opacity: 1 !important;
 }
 
@@ -77,41 +85,17 @@ input[type="file"]::file-selector-button {
   cursor: pointer;
 }
 
-/* =========================
-   FIX FAINT TAILWIND TEXT
-========================= */
+/* =================================
+   BUTTONS
+================================= */
 
-.text-gray-400,
-.text-gray-500,
-.text-gray-600,
-.text-gray-700,
-.text-gray-800 {
-  color: #111827 !important;
+button {
+  cursor: pointer;
 }
 
-.text-\[\#2C7A7B\] {
-  color: #111827 !important;
-}
-
-.text-\[\#E2954E\] {
-  color: #E2954E !important;
-}
-
-/* Preserve white text */
-.text-white,
-.text-white *,
-[class*="text-white"] {
-  color: #ffffff !important;
-}
-
-.text-white\/70,
-.text-white\/80 {
-  color: rgba(255, 255, 255, 0.95) !important;
-}
-
-/* =========================
+/* =================================
    DISABLED FIELDS
-========================= */
+================================= */
 
 button:disabled,
 input:disabled,
@@ -122,9 +106,50 @@ textarea:disabled {
   background-color: #e5e7eb !important;
 }
 
-/* =========================
+/* =================================
+   TAILWIND TEXT FIXES
+================================= */
+
+.text-gray-400,
+.text-gray-500,
+.text-gray-600,
+.text-gray-700,
+.text-gray-800 {
+  color: #111827 !important;
+}
+
+/* Convert problematic teal text to dark */
+.text-\[\#2C7A7B\] {
+  color: #111827 !important;
+}
+
+/* Preserve orange accent */
+.text-\[\#E2954E\] {
+  color: #E2954E !important;
+}
+
+/* Explicit white text only */
+.text-white {
+  color: #ffffff !important;
+}
+
+.text-white\/70,
+.text-white\/80,
+.text-white\/90 {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* =================================
+   TABLES
+================================= */
+
+table {
+  color: #111827;
+}
+
+/* =================================
    MOBILE READABILITY
-========================= */
+================================= */
 
 @media (max-width: 768px) {
   body {
@@ -137,8 +162,8 @@ textarea:disabled {
   li,
   td,
   th {
-    font-weight: 600;
     color: #111827 !important;
+    font-weight: 500;
   }
 
   h1 {
@@ -149,5 +174,10 @@ textarea:disabled {
   h2 {
     font-size: 1.6rem;
     line-height: 2rem;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    line-height: 1.8rem;
   }
 }
