@@ -130,7 +130,9 @@ export default function TherapistProfilePage() {
     }
 
     if (!agreementAccepted) {
-      alert("Please accept the Professional Services Agreement before continuing.");
+      alert(
+        "Please accept the Professional Services Agreement before continuing."
+      );
       return;
     }
 
@@ -202,14 +204,16 @@ export default function TherapistProfilePage() {
 
   if (pageLoading) {
     return (
-      <div className="min-h-screen bg-[#F7F3EC] p-8 text-[#0F4C5C]">
-        Loading therapist profile...
-      </div>
+      <main className="min-h-screen bg-[#F7F3EC] p-8">
+        <p className="font-bold text-[#0F4C5C]">
+          Loading therapist profile...
+        </p>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F3EC] p-8">
+    <main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
       {currentUserId && !agreementAccepted && (
         <TherapistAgreementModal
           userId={currentUserId}
@@ -217,26 +221,32 @@ export default function TherapistProfilePage() {
         />
       )}
 
-      <div className="mx-auto max-w-4xl">
-        <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white shadow-lg">
-          <h1 className="text-4xl font-bold">Therapist Profile</h1>
+      <div className="mx-auto max-w-5xl">
+        <section className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
+          <p className="mb-3 font-bold uppercase tracking-wide text-white">
+            Therapist Profile
+          </p>
 
-          <p className="mt-4 text-white/90">
-            Complete your professional profile so clients can find and trust
-            you.
+          <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
+            Complete Your Professional Profile
+          </h1>
+
+          <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
+            Complete your professional profile so clients can find, understand,
+            and trust your work.
           </p>
 
           {existingProfile?.status && (
-            <p className="mt-4 inline-block rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white">
+            <p className="mt-5 inline-block rounded-full bg-white/20 px-4 py-2 text-sm font-bold text-white">
               Current status: {existingProfile.status}
             </p>
           )}
-        </div>
+        </section>
 
-        <div className="mt-8 rounded-3xl bg-white p-10 shadow-lg">
+        <section className="mt-8 rounded-3xl bg-white p-6 shadow-lg md:p-10">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="rounded-2xl bg-[#F7F3EC] p-6">
-              <label className="mb-3 block font-semibold text-[#0F4C5C]">
+              <label className="mb-3 block font-bold text-[#0F4C5C]">
                 Profile Photo
               </label>
 
@@ -247,7 +257,7 @@ export default function TherapistProfilePage() {
                   className="mb-4 h-32 w-32 rounded-full object-cover shadow"
                 />
               ) : (
-                <div className="mb-4 flex h-32 w-32 items-center justify-center rounded-full bg-white text-sm text-gray-700 shadow">
+                <div className="mb-4 flex h-32 w-32 items-center justify-center rounded-full bg-white text-sm font-bold text-gray-900 shadow">
                   No photo
                 </div>
               )}
@@ -256,17 +266,17 @@ export default function TherapistProfilePage() {
                 type="file"
                 accept="image/*"
                 onChange={handlePhotoChange}
-                className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-[#0F4C5C] file:px-4 file:py-2 file:font-semibold file:text-white"
+                className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-[#0F4C5C] file:px-4 file:py-2 file:font-bold file:text-white"
               />
 
-              <p className="mt-3 text-sm font-medium text-gray-800">
-                Upload a clear, professional photo. This helps clients feel
-                more comfortable booking with you.
+              <p className="mt-3 text-sm font-bold text-gray-900">
+                Upload a clear, professional photo. This helps clients feel more
+                comfortable booking with you.
               </p>
             </div>
 
             <input
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 placeholder:text-gray-500"
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
               placeholder="Full Name"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
@@ -274,7 +284,7 @@ export default function TherapistProfilePage() {
             />
 
             <select
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900"
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
               value={gender}
               onChange={(e) => setGender(e.target.value)}
               required
@@ -287,7 +297,7 @@ export default function TherapistProfilePage() {
 
             <textarea
               rows={5}
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 placeholder:text-gray-500"
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
               placeholder="Tell clients about yourself..."
               value={bio}
               onChange={(e) => setBio(e.target.value)}
@@ -295,7 +305,7 @@ export default function TherapistProfilePage() {
             />
 
             <input
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 placeholder:text-gray-500"
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
               placeholder="Specialties (comma separated)"
               value={specialties}
               onChange={(e) => setSpecialties(e.target.value)}
@@ -303,7 +313,7 @@ export default function TherapistProfilePage() {
             />
 
             <input
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 placeholder:text-gray-500"
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
               placeholder="Languages (comma separated)"
               value={languages}
               onChange={(e) => setLanguages(e.target.value)}
@@ -313,7 +323,7 @@ export default function TherapistProfilePage() {
             <div className="grid gap-6 md:grid-cols-2">
               <input
                 type="number"
-                className="rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 placeholder:text-gray-500"
+                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
                 placeholder="Years of Experience"
                 value={yearsExperience}
                 onChange={(e) => setYearsExperience(e.target.value)}
@@ -322,7 +332,7 @@ export default function TherapistProfilePage() {
 
               <input
                 type="number"
-                className="rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 placeholder:text-gray-500"
+                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
                 placeholder="Session Fee (KES)"
                 value={sessionFee}
                 onChange={(e) => setSessionFee(e.target.value)}
@@ -332,7 +342,7 @@ export default function TherapistProfilePage() {
 
             <div className="grid gap-6 md:grid-cols-2">
               <input
-                className="rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 placeholder:text-gray-500"
+                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
                 placeholder="Country"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
@@ -340,7 +350,7 @@ export default function TherapistProfilePage() {
               />
 
               <input
-                className="rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 placeholder:text-gray-500"
+                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
                 placeholder="City"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
@@ -351,7 +361,7 @@ export default function TherapistProfilePage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-[#0F4C5C] p-4 font-semibold text-white hover:bg-[#0b3945] disabled:opacity-70"
+              className="w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945] disabled:opacity-70"
             >
               {loading
                 ? existingProfile
@@ -362,8 +372,8 @@ export default function TherapistProfilePage() {
                 : "Save Profile"}
             </button>
           </form>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

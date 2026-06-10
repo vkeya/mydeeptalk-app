@@ -86,30 +86,32 @@ export default function TherapistsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#F7F3EC] px-6 py-16">
+    <main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
       <div className="mx-auto max-w-7xl">
-        <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white shadow-lg">
-          <p className="text-sm font-semibold uppercase tracking-widest text-[#E2954E]">
+        <section className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
+          <p className="mb-3 font-bold uppercase tracking-wide text-white">
             MyDeepTalk Therapist Network
           </p>
 
-          <h1 className="mt-3 text-4xl font-bold">
+          <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
             Find Support That Fits Your Journey
           </h1>
 
-          <p className="mt-5 max-w-3xl leading-8 text-white/85">
+          <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
             Browse verified therapists, explore their specialties, and book a
             private online session when you are ready for deeper support.
           </p>
-        </div>
+        </section>
 
         {loading ? (
           <div className="mt-10 rounded-3xl bg-white p-10 text-center shadow-lg">
-            <p className="text-gray-600">Loading verified therapists...</p>
+            <p className="font-bold text-[#0F4C5C]">
+              Loading verified therapists...
+            </p>
           </div>
         ) : therapists.length === 0 ? (
-          <div className="mt-10 rounded-3xl bg-white p-10 text-center shadow-lg">
-            <p className="text-sm font-semibold uppercase tracking-widest text-[#E2954E]">
+          <section className="mt-10 rounded-3xl bg-white p-8 text-center shadow-lg md:p-10">
+            <p className="font-bold uppercase tracking-wide text-[#0F4C5C]">
               Therapist onboarding in progress
             </p>
 
@@ -117,13 +119,13 @@ export default function TherapistsPage() {
               We Are Building a Trusted Therapist Network
             </h2>
 
-            <p className="mx-auto mt-5 max-w-2xl leading-8 text-gray-600">
+            <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-8 text-gray-900">
               MyDeepTalk is carefully onboarding and verifying qualified
               professionals before making them available for bookings. This
               helps us protect trust, safety, and quality.
             </p>
 
-            <p className="mx-auto mt-4 max-w-2xl leading-8 text-gray-600">
+            <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-8 text-gray-900">
               While therapist profiles are being reviewed, you can begin with a
               free self-discovery check-in and guided reflection.
             </p>
@@ -131,25 +133,25 @@ export default function TherapistsPage() {
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Link
                 href="/self-assessment"
-                className="rounded-full bg-[#0F4C5C] px-6 py-3 font-semibold text-white hover:bg-[#0b3945]"
+                className="rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white hover:bg-[#0b3945]"
               >
                 Begin Free Check-In
               </Link>
 
               <Link
                 href="/for-therapists"
-                className="rounded-full border border-[#0F4C5C] px-6 py-3 font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+                className="rounded-full border-2 border-[#0F4C5C] bg-white px-6 py-3 font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
               >
                 Join as a Therapist
               </Link>
             </div>
-          </div>
+          </section>
         ) : (
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <section className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {therapists.map((therapist) => (
-              <div
+              <article
                 key={therapist.id}
-                className="rounded-3xl bg-white p-6 shadow transition hover:-translate-y-1 hover:shadow-lg"
+                className="rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
               >
                 <div className="mb-5 flex items-center gap-4">
                   {therapist.profilePhoto ? (
@@ -165,11 +167,11 @@ export default function TherapistsPage() {
                   )}
 
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">
+                    <h2 className="text-2xl font-bold text-[#0F4C5C]">
                       {therapist.fullName || "Verified Therapist"}
                     </h2>
 
-                    <span className="mt-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                    <span className="mt-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-gray-900">
                       ✓ Verified Therapist
                     </span>
                   </div>
@@ -177,24 +179,26 @@ export default function TherapistsPage() {
 
                 {therapist.reviewCount && therapist.reviewCount > 0 ? (
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-yellow-500">
+                    <p className="font-bold text-[#0F4C5C]">
                       ⭐ {therapist.averageRating?.toFixed(1)}
                     </p>
 
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm font-bold text-gray-900">
                       ({therapist.reviewCount} reviews)
                     </p>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-400">No reviews yet</p>
+                  <p className="text-sm font-bold text-gray-900">
+                    No reviews yet
+                  </p>
                 )}
 
-                <p className="mt-4 line-clamp-3 text-gray-600">
+                <p className="mt-4 line-clamp-3 text-base font-semibold leading-7 text-gray-900">
                   {therapist.bio ||
                     "A verified therapist ready to support your emotional wellness journey."}
                 </p>
 
-                <div className="mt-4 space-y-2 text-sm text-gray-700">
+                <div className="mt-5 space-y-2 text-sm font-semibold text-gray-900">
                   <p>
                     <strong>Experience:</strong>{" "}
                     {therapist.yearsExperience || 0} years
@@ -221,31 +225,31 @@ export default function TherapistsPage() {
                       .join(", ") || "Online"}
                   </p>
 
-                  <p className="text-base font-semibold text-[#0F4C5C]">
+                  <p className="pt-2 text-lg font-bold text-[#0F4C5C]">
                     {therapist.sessionFee
                       ? `KES ${therapist.sessionFee}`
                       : "Fee not specified"}
                   </p>
                 </div>
 
-                <div className="mt-6 flex flex-wrap gap-3">
+                <div className="mt-6 grid gap-3 sm:grid-cols-2">
                   <Link
                     href={`/therapist/${therapist.id}`}
-                    className="rounded-full border border-[#0F4C5C] px-4 py-2 text-sm font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+                    className="rounded-full border-2 border-[#0F4C5C] bg-white px-4 py-3 text-center text-sm font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
                   >
                     View Profile
                   </Link>
 
                   <Link
                     href={`/book-session/${therapist.id}`}
-                    className="rounded-full bg-[#0F4C5C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0b3945]"
+                    className="rounded-full bg-[#0F4C5C] px-4 py-3 text-center text-sm font-bold text-white hover:bg-[#0b3945]"
                   >
                     Book Session
                   </Link>
                 </div>
-              </div>
+              </article>
             ))}
-          </div>
+          </section>
         )}
       </div>
     </main>

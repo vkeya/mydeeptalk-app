@@ -146,8 +146,7 @@ export default function TherapistAvailabilityPage() {
         { merge: true }
       );
 
-      alert("Availability saved successfully. Returning to your dashboard...");
-
+      
       router.push("/dashboard");
     } catch (error) {
       console.error("Error saving availability:", error);
@@ -159,35 +158,41 @@ export default function TherapistAvailabilityPage() {
 
   if (pageLoading) {
     return (
-      <main className="min-h-screen bg-[#F7F3EC] p-8 text-[#0F4C5C]">
-        Loading availability...
+      <main className="min-h-screen bg-[#F7F3EC] p-8">
+        <p className="font-bold text-[#0F4C5C]">Loading availability...</p>
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
-      <div className="mx-auto max-w-4xl">
-        <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white shadow-lg">
-          <h1 className="text-4xl font-bold">Set Weekly Availability</h1>
+      <div className="mx-auto max-w-5xl">
+        <section className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
+          <p className="mb-3 font-bold uppercase tracking-wide text-white">
+            Therapist Availability
+          </p>
 
-          <p className="mt-4 text-white/90">
-            Choose the days and exact time ranges you are available. Each day
+          <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
+            Set Weekly Availability
+          </h1>
+
+          <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
+            Choose the exact days and time ranges you are available. Each day
             can have a different schedule.
           </p>
-        </div>
+        </section>
 
-        <div className="mt-8 rounded-3xl bg-white p-8 shadow-lg">
+        <section className="mt-8 rounded-3xl bg-white p-6 shadow-lg md:p-8">
           <form onSubmit={handleSaveAvailability} className="space-y-8">
-            <div>
-              <label className="mb-3 block font-semibold text-[#0F4C5C]">
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <label className="mb-3 block font-bold text-[#0F4C5C]">
                 Session Duration
               </label>
 
               <select
                 value={sessionDuration}
                 onChange={(e) => setSessionDuration(e.target.value)}
-                className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900"
+                className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
               >
                 <option value="30">30 minutes</option>
                 <option value="45">45 minutes</option>
@@ -195,7 +200,7 @@ export default function TherapistAvailabilityPage() {
                 <option value="90">90 minutes</option>
               </select>
 
-              <p className="mt-2 text-sm font-semibold text-gray-900">
+              <p className="mt-3 text-base font-semibold leading-7 text-gray-900">
                 This controls how client booking slots are generated from your
                 available time range.
               </p>
@@ -205,10 +210,10 @@ export default function TherapistAvailabilityPage() {
               {weeklySlots.map((slot, index) => (
                 <div
                   key={slot.day}
-                  className="rounded-2xl border border-gray-200 bg-[#F7F3EC] p-5"
+                  className="rounded-2xl border border-gray-200 bg-[#F7F3EC] p-5 shadow-sm"
                 >
-                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <label className="flex items-center gap-3 font-semibold text-[#0F4C5C]">
+                  <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                    <label className="flex items-center gap-3 text-lg font-bold text-[#0F4C5C]">
                       <input
                         type="checkbox"
                         checked={slot.enabled}
@@ -220,10 +225,10 @@ export default function TherapistAvailabilityPage() {
                       {slot.day}
                     </label>
 
-                    <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="grid w-full gap-4 sm:grid-cols-2 md:max-w-md">
                       <div>
-                        <label className="mb-1 block text-sm font-semibold text-gray-700">
-                          Start
+                        <label className="mb-2 block text-sm font-bold text-gray-900">
+                          Start Time
                         </label>
 
                         <input
@@ -234,13 +239,13 @@ export default function TherapistAvailabilityPage() {
                           onChange={(e) =>
                             updateSlot(index, "startTime", e.target.value)
                           }
-                          className="w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900 disabled:bg-gray-200 disabled:text-gray-800"
+                          className="w-full rounded-xl border border-gray-300 bg-white p-3 font-semibold text-gray-900 disabled:bg-gray-200 disabled:text-gray-900"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-sm font-semibold text-gray-700">
-                          End
+                        <label className="mb-2 block text-sm font-bold text-gray-900">
+                          End Time
                         </label>
 
                         <input
@@ -251,20 +256,20 @@ export default function TherapistAvailabilityPage() {
                           onChange={(e) =>
                             updateSlot(index, "endTime", e.target.value)
                           }
-                          className="w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900 disabled:bg-gray-100 disabled:text-gray-500"
+                          className="w-full rounded-xl border border-gray-300 bg-white p-3 font-semibold text-gray-900 disabled:bg-gray-200 disabled:text-gray-900"
                         />
                       </div>
                     </div>
                   </div>
 
                   {!slot.enabled && (
-                    <p className="mt-3 text-sm font-semibold text-gray-900">
+                    <p className="mt-4 rounded-xl bg-white p-3 text-sm font-bold text-gray-900">
                       Not available on {slot.day}.
                     </p>
                   )}
 
                   {slot.enabled && slot.startTime && slot.endTime && (
-                    <p className="mt-3 text-sm font-semibold text-[#0F4C5C]">
+                    <p className="mt-4 rounded-xl bg-white p-3 text-sm font-bold text-[#0F4C5C]">
                       Available on {slot.day} from {slot.startTime} to{" "}
                       {slot.endTime}.
                     </p>
@@ -276,12 +281,12 @@ export default function TherapistAvailabilityPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-[#0F4C5C] p-4 font-semibold text-white hover:bg-[#0b3945] disabled:opacity-70"
+              className="w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945] disabled:opacity-70"
             >
               {loading ? "Saving..." : "Save Availability"}
             </button>
           </form>
-        </div>
+        </section>
       </div>
     </main>
   );

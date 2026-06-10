@@ -8,6 +8,15 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import DashboardLayout from "@/components/DashboardLayout";
 
+type DashboardCard = {
+  title: string;
+  description: string;
+  href: string;
+  buttonText: string;
+  primary?: boolean;
+  icon: string;
+};
+
 export default function DashboardPage() {
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
@@ -45,237 +54,265 @@ export default function DashboardPage() {
   }
 
   if (loading) {
-    return <div className="p-10">Loading dashboard...</div>;
+    return (
+      <main className="min-h-screen bg-[#F7F3EC] p-10">
+        <p className="font-bold text-[#0F4C5C]">Loading dashboard...</p>
+      </main>
+    );
   }
+
+  const role = userData?.role;
 
   return (
     <DashboardLayout
       userName={userData?.fullName}
-      role={userData?.role}
+      role={role}
       onLogout={handleLogout}
     >
-      <div className="mb-8 rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white shadow-lg">
-        <h1 className="text-4xl font-bold">Welcome to MyDeepTalk</h1>
-        <p className="mt-4 text-lg text-white/80">
-          Supporting emotional wellness, healing, self-discovery and meaningful
+      <section className="mb-10 rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
+        <p className="mb-3 font-bold uppercase tracking-wide text-white">
+          MyDeepTalk Dashboard
+        </p>
+
+        <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
+          Welcome, {userData?.fullName || "Friend"}
+        </h1>
+
+        <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
+          Supporting emotional wellness, healing, self-discovery, and meaningful
           connection.
         </p>
-      </div>
+      </section>
 
-      {userData?.role === "client" && (
-        <>
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-3xl bg-white p-8 shadow-lg transition hover:shadow-xl">
-              <h2 className="text-xl font-bold text-[#0F4C5C]">
-                Find a Therapist
-              </h2>
-              <p className="mt-3 text-gray-600">
-                Browse verified therapists by gender, language, specialty and
-                experience.
-              </p>
-
-              <Link
-                href="/therapists"
-                className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-6 py-3 text-white hover:bg-[#0b3945]"
-              >
-                Find Therapist
-              </Link>
-            </div>
-
-            <div className="rounded-3xl bg-white p-8 shadow-lg transition hover:shadow-xl">
-              <h2 className="text-xl font-bold text-[#0F4C5C]">My Bookings</h2>
-              <p className="mt-3 text-gray-600">
-                View your upcoming therapy sessions, booking status and payment
-                details.
-              </p>
-
-              <Link
-                href="/my-bookings"
-                className="mt-6 inline-block rounded-full border border-[#0F4C5C] px-6 py-3 text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
-              >
-                View Bookings
-              </Link>
-            </div>
-          </div>
-
-          <WellnessTools />
-        </>
-      )}
-
-      {userData?.role === "therapist" && (
-        <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-3xl bg-white p-8 shadow-lg transition hover:shadow-xl">
-              <h2 className="text-xl font-bold text-[#0F4C5C]">Profile</h2>
-              <p className="mt-3 text-gray-600">
-                Complete your therapist profile so clients can discover and
-                understand your work.
-              </p>
-
-              <Link
-                href="/therapist-profile"
-                className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-6 py-3 text-white hover:bg-[#0b3945]"
-              >
-                Complete Profile
-              </Link>
-            </div>
-
-            <div className="rounded-3xl bg-white p-8 shadow-lg transition hover:shadow-xl">
-              <h2 className="text-xl font-bold text-[#0F4C5C]">
-                Credentials
-              </h2>
-              <p className="mt-3 text-gray-600">
-                Upload your license, certificate, photo and professional
-                documents for verification.
-              </p>
-
-              <Link
-                href="/therapist-credentials"
-                className="mt-6 inline-block rounded-full border border-[#0F4C5C] px-6 py-3 text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
-              >
-                Upload
-              </Link>
-            </div>
-
-            <div className="rounded-3xl bg-white p-8 shadow-lg transition hover:shadow-xl">
-              <h2 className="text-xl font-bold text-[#0F4C5C]">
-                Availability
-              </h2>
-              <p className="mt-3 text-gray-600">
-                Set your available days and times so clients can book suitable
-                sessions.
-              </p>
-
-              <Link
-                href="/therapist-availability"
-                className="mt-6 inline-block rounded-full border border-[#0F4C5C] px-6 py-3 text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
-              >
-                Set Availability
-              </Link>
-            </div>
-
-            <div className="rounded-3xl bg-white p-8 shadow-lg transition hover:shadow-xl">
-              <h2 className="text-xl font-bold text-[#0F4C5C]">Bookings</h2>
-              <p className="mt-3 text-gray-600">
-                View client bookings, session status and upcoming appointments.
-              </p>
-
-              <Link
-                href="/my-bookings"
-                className="mt-6 inline-block rounded-full border border-[#0F4C5C] px-6 py-3 text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
-              >
-                View Bookings
-              </Link>
-
-              <Link
-                href="/therapist-bookings"
-                className="ml-0 mt-4 inline-block rounded-full border border-[#0F4C5C] px-6 py-3 text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white lg:ml-0"
-              >
-                Manage Bookings
-              </Link>
-            </div>
-          </div>
-
-          <WellnessTools />
-        </>
-      )}
-
-      {userData?.role === "admin" && (
-        <>
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-3xl bg-white p-8 shadow-lg transition hover:shadow-xl">
-              <h2 className="text-xl font-bold text-[#0F4C5C]">
-                Therapist Approvals
-              </h2>
-              <p className="mt-3 text-gray-600">
-                Review therapist profiles, credentials and approval status before
-                they appear publicly.
-              </p>
-
-              <Link
-                href="/admin-therapists"
-                className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-6 py-3 text-white hover:bg-[#0b3945]"
-              >
-                Review Therapists
-              </Link>
-            </div>
-
-            <div className="rounded-3xl bg-white p-8 shadow-lg transition hover:shadow-xl">
-              <h2 className="text-xl font-bold text-[#0F4C5C]">
-                Assessment Analytics
-              </h2>
-              <p className="mt-3 text-gray-600">
-                View self-assessment results, growth areas, anonymous check-ins
-                and support trends.
-              </p>
-
-              <Link
-                href="/admin-assessments"
-                className="mt-6 inline-block rounded-full border border-[#0F4C5C] px-6 py-3 text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
-              >
-                View Analytics
-              </Link>
-            </div>
-          </div>
-
-          <WellnessTools />
-        </>
-      )}
+      {role === "client" && <ClientDashboard />}
+      {role === "therapist" && <TherapistDashboard />}
+      {role === "admin" && <AdminDashboard />}
     </DashboardLayout>
   );
 }
 
-function WellnessTools() {
+function ClientDashboard() {
+  const cards: DashboardCard[] = [
+    {
+      icon: "🧑‍⚕️",
+      title: "Find a Therapist",
+      description:
+        "Browse verified therapists by specialty, language, gender, experience, and availability.",
+      href: "/therapists",
+      buttonText: "Find Therapist",
+      primary: true,
+    },
+    {
+      icon: "📅",
+      title: "My Sessions",
+      description:
+        "View your upcoming sessions, booking status, payment details, and session history.",
+      href: "/my-bookings",
+      buttonText: "View Sessions",
+    },
+  ];
+
   return (
-    <div className="mt-10">
-      <h2 className="text-3xl font-bold text-[#0F4C5C]">Wellness Tools</h2>
+    <>
+      <SectionTitle
+        title="Your Healing Journey"
+        description="Start with awareness, then connect with support when you need it."
+      />
 
-      <p className="mt-2 text-gray-600">
-        Continue your self-discovery journey with private reflection and
-        emotional check-ins.
+      <DashboardCardGrid cards={cards} />
+
+      <WellnessTools />
+    </>
+  );
+}
+
+function TherapistDashboard() {
+  const cards: DashboardCard[] = [
+    {
+      icon: "👤",
+      title: "Profile",
+      description:
+        "Complete and update your professional profile so clients can understand your work.",
+      href: "/therapist-profile",
+      buttonText: "Update Profile",
+      primary: true,
+    },
+    {
+      icon: "📄",
+      title: "Credentials",
+      description:
+        "Upload your license, certificate, profile photo, and professional documents for verification.",
+      href: "/therapist-credentials",
+      buttonText: "Upload Documents",
+    },
+    {
+      icon: "🕒",
+      title: "Availability",
+      description:
+        "Set your available days and time ranges so clients can book suitable sessions.",
+      href: "/therapist-availability",
+      buttonText: "Set Availability",
+    },
+    {
+      icon: "📆",
+      title: "Bookings",
+      description:
+        "Manage client bookings, session status, completed sessions, and earnings.",
+      href: "/therapist-bookings",
+      buttonText: "Manage Bookings",
+    },
+  ];
+
+  return (
+    <>
+      <SectionTitle
+        title="Professional Practice"
+        description="Manage your profile, credentials, availability, and therapy sessions."
+      />
+
+      <DashboardCardGrid cards={cards} />
+
+      <WellnessTools title="Personal Wellness" />
+    </>
+  );
+}
+
+function AdminDashboard() {
+  const cards: DashboardCard[] = [
+    {
+      icon: "✅",
+      title: "Therapist Approvals",
+      description:
+        "Review therapist profiles, credentials, verification status, and approval decisions.",
+      href: "/admin-therapists",
+      buttonText: "Review Therapists",
+      primary: true,
+    },
+    {
+      icon: "📊",
+      title: "Assessment Analytics",
+      description:
+        "View self-assessment results, growth areas, anonymous check-ins, and platform trends.",
+      href: "/admin-assessments",
+      buttonText: "View Analytics",
+    },
+  ];
+
+  return (
+    <>
+      <SectionTitle
+        title="Admin Center"
+        description="Manage platform quality, approvals, and emotional wellness insights."
+      />
+
+      <DashboardCardGrid cards={cards} />
+
+      <WellnessTools />
+    </>
+  );
+}
+
+function SectionTitle({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="mb-6">
+      <h2 className="text-3xl font-bold text-[#0F4C5C]">{title}</h2>
+
+      <p className="mt-2 max-w-3xl text-base font-semibold leading-7 text-gray-900">
+        {description}
       </p>
+    </div>
+  );
+}
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
+function DashboardCardGrid({ cards }: { cards: DashboardCard[] }) {
+  return (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      {cards.map((card) => (
+        <Link
+          key={card.title}
+          href={card.href}
+          className="group rounded-3xl bg-white p-7 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+        >
+          <div className="text-4xl">{card.icon}</div>
+
+          <h3 className="mt-5 text-2xl font-bold text-[#0F4C5C]">
+            {card.title}
+          </h3>
+
+          <p className="mt-3 min-h-[84px] text-base font-semibold leading-7 text-gray-900">
+            {card.description}
+          </p>
+
+          <div
+            className={`mt-6 inline-block rounded-full px-5 py-3 text-sm font-bold transition ${
+              card.primary
+                ? "bg-[#0F4C5C] text-white group-hover:bg-[#0b3945]"
+                : "border-2 border-[#0F4C5C] text-[#0F4C5C] group-hover:bg-[#0F4C5C] group-hover:text-white"
+            }`}
+          >
+            {card.buttonText}
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function WellnessTools({ title = "Wellness Tools" }: { title?: string }) {
+  return (
+    <section className="mt-12">
+      <SectionTitle
+        title={title}
+        description="Continue your self-discovery journey with private reflection and emotional check-ins."
+      />
+
+      <div className="grid gap-6 md:grid-cols-2">
         <Link
           href="/journal"
-          className="rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+          className="group rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
         >
           <div className="text-5xl">📖</div>
 
-          <h3 className="mt-4 text-2xl font-bold text-[#0F4C5C]">
+          <h3 className="mt-5 text-2xl font-bold text-[#0F4C5C]">
             My Journal
           </h3>
 
-          <p className="mt-3 leading-7 text-gray-600">
-            Record your thoughts, emotions and reflections in a safe and private
+          <p className="mt-3 text-base font-semibold leading-7 text-gray-900">
+            Record your thoughts, emotions, and reflections in a safe and private
             space.
           </p>
 
-          <div className="mt-6 font-semibold text-[#0F4C5C]">
+          <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white group-hover:bg-[#0b3945]">
             Open Journal →
           </div>
         </Link>
 
         <Link
           href="/self-assessment"
-          className="rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+          className="group rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
         >
           <div className="text-5xl">🧠</div>
 
-          <h3 className="mt-4 text-2xl font-bold text-[#0F4C5C]">
+          <h3 className="mt-5 text-2xl font-bold text-[#0F4C5C]">
             Self-Discovery Check-In
           </h3>
 
-          <p className="mt-3 leading-7 text-gray-600">
+          <p className="mt-3 text-base font-semibold leading-7 text-gray-900">
             Understand your emotional wellbeing and identify areas where you may
-            need support.
+            need more support.
           </p>
 
-          <div className="mt-6 font-semibold text-[#0F4C5C]">
+          <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white group-hover:bg-[#0b3945]">
             Start Assessment →
           </div>
         </Link>
       </div>
-    </div>
+    </section>
   );
 }

@@ -11,7 +11,6 @@ export default function TherapistCredentialsPage() {
   const [licenseNumber, setLicenseNumber] = useState("");
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
   const [certificateFile, setCertificateFile] = useState<File | null>(null);
-  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -56,8 +55,8 @@ export default function TherapistCredentialsPage() {
       return;
     }
 
-    if (!licenseFile || !certificateFile || !profilePhoto) {
-      alert("Please upload all required documents.");
+    if (!licenseFile || !certificateFile) {
+      alert("Please upload your license and certificate.");
       return;
     }
 
@@ -75,11 +74,6 @@ export default function TherapistCredentialsPage() {
         `mydeeptalk/therapist-certificates/${user.uid}`
       );
 
-      const photoUrl = await uploadToCloudinary(
-        profilePhoto,
-        `mydeeptalk/therapist-photos/${user.uid}`
-      );
-
       await setDoc(
         doc(db, "therapistCredentials", user.uid),
         {
@@ -87,7 +81,6 @@ export default function TherapistCredentialsPage() {
           licenseNumber,
           licenseUrl,
           certificateUrl,
-          photoUrl,
           storageProvider: "cloudinary",
           status: "pending",
           uploadedAt: serverTimestamp(),
@@ -100,17 +93,15 @@ export default function TherapistCredentialsPage() {
         {
           credentialsUploaded: true,
           credentialsStatus: "pending",
-          photoUrl,
-          profilePhoto: photoUrl,
         },
         { merge: true }
       );
 
-      setMessage("Documents uploaded successfully.");
+      setMessage("Documents uploaded successfully. Returning to dashboard...");
 
       setTimeout(() => {
         router.push("/dashboard");
-      }, 2000);
+      }, 1200);
     } catch (error: any) {
       console.error("Credential upload error:", error);
       setMessage(error.message || "Could not upload documents.");
@@ -120,86 +111,100 @@ export default function TherapistCredentialsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F3EC] p-8">
-      <div className="mx-auto max-w-3xl">
-        <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white shadow-lg">
-          <h1 className="text-4xl font-bold">Credentials Verification</h1>
-
-          <p className="mt-4 text-white/90">
-            Upload your professional documents to become a verified therapist.
+    <main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
+      <div className="mx-auto max-w-5xl">
+        <section className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
+          <p className="mb-3 font-bold uppercase tracking-wide text-white">
+            Therapist Verification
           </p>
-        </div>
 
-        <div className="mt-8 rounded-3xl bg-white p-10 shadow-lg">
+          <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
+            Credentials Verification
+          </h1>
+
+          <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
+            Upload your professional documents so MyDeepTalk can review and
+            verify your therapist profile.
+          </p>
+        </section>
+
+        <section className="mt-8 rounded-3xl bg-white p-6 shadow-lg md:p-10">
           {message && (
-            <div className="mb-6 rounded-2xl bg-green-100 p-4 font-semibold text-green-800">
+            <div className="mb-6 rounded-2xl bg-green-100 p-5 text-base font-bold text-gray-900">
               {message}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            <div>
-              <label className="mb-3 block font-semibold text-[#0F4C5C]">
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <label className="mb-3 block font-bold text-[#0F4C5C]">
                 License / Registration Number
               </label>
 
               <input
-                className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 placeholder:text-gray-500"
+                className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
                 value={licenseNumber}
                 onChange={(e) => setLicenseNumber(e.target.value)}
+                placeholder="Enter your license or registration number"
                 required
               />
             </div>
 
-            <div>
-              <label className="mb-3 block font-semibold text-[#0F4C5C]">
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <label className="mb-3 block font-bold text-[#0F4C5C]">
                 Professional License
               </label>
 
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png"
-                className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-[#0F4C5C] file:px-4 file:py-2 file:font-semibold file:text-white"
+                className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-[#0F4C5C] file:px-4 file:py-2 file:font-bold file:text-white"
                 onChange={(e) => setLicenseFile(e.target.files?.[0] || null)}
                 required
               />
 
-              <p className="mt-2 text-sm font-semibold text-gray-900">
+              <p className="mt-3 text-sm font-bold text-gray-900">
                 Accepted formats: PDF, JPG, JPEG, PNG.
               </p>
             </div>
 
-            <div>
-              <label className="mb-3 block font-semibold text-[#0F4C5C]">
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <label className="mb-3 block font-bold text-[#0F4C5C]">
                 Certificate / Qualification
               </label>
 
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png"
-                className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-[#0F4C5C] file:px-4 file:py-2 file:font-semibold file:text-white"
+                className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-[#0F4C5C] file:px-4 file:py-2 file:font-bold file:text-white"
                 onChange={(e) =>
                   setCertificateFile(e.target.files?.[0] || null)
                 }
                 required
               />
 
-              <p className="mt-2 text-sm font-semibold text-gray-900">
-                Upload your certificate or qualification document.
+              <p className="mt-3 text-sm font-bold text-gray-900">
+                Upload your professional certificate or qualification document.
               </p>
             </div>
 
+            <div className="rounded-2xl border-l-4 border-yellow-500 bg-yellow-100 p-5">
+              <p className="text-base font-bold leading-7 text-gray-900">
+                Your documents will be reviewed before your profile is approved
+                and shown publicly to clients.
+              </p>
+            </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-[#0F4C5C] p-4 font-semibold text-white hover:bg-[#0b3945] disabled:opacity-70"
+              className="w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945] disabled:opacity-70"
             >
               {loading ? "Uploading..." : "Submit For Verification"}
             </button>
           </form>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

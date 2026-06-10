@@ -64,6 +64,15 @@ export default function MyBookingsPage() {
     return () => unsubscribe();
   }, []);
 
+  const pendingSessions = useMemo(
+    () =>
+      bookings.filter(
+        (booking) =>
+          booking.status === "pending" || booking.paymentStatus === "unpaid"
+      ),
+    [bookings]
+  );
+
   const upcomingSessions = useMemo(
     () => bookings.filter((booking) => booking.status === "confirmed"),
     [bookings]
@@ -116,7 +125,7 @@ export default function MyBookingsPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F7F3EC] p-6 text-[#0F4C5C]">
-        <p className="font-semibold">Loading bookings...</p>
+        <p className="font-bold">Loading your sessions...</p>
       </main>
     );
   }
@@ -124,133 +133,80 @@ export default function MyBookingsPage() {
   return (
     <main className="min-h-screen bg-[#F7F3EC] p-6">
       <div className="mx-auto max-w-6xl">
-        <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg">
-          <h1 className="text-4xl font-bold">My Sessions</h1>
-
-          <p className="mt-3 text-white/90">
-            View your upcoming, completed, and cancelled therapy sessions.
+        <section className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg">
+          <p className="mb-3 font-bold uppercase tracking-wide text-white">
+            MyDeepTalk Sessions
           </p>
-        </div>
 
-        <div className="my-10 grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <p className="font-semibold text-[#0F4C5C]">Upcoming Sessions</p>
+          <h1 className="text-4xl font-bold text-white">My Sessions</h1>
 
-            <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
-              {upcomingSessions.length}
-            </h2>
-          </div>
+          <p className="mt-3 max-w-3xl text-base font-semibold leading-8 text-white">
+            View your pending, upcoming, completed, and cancelled therapy
+            sessions.
+          </p>
+        </section>
 
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <p className="font-semibold text-[#0F4C5C]">Completed Sessions</p>
+        <section className="my-10 grid gap-4 md:grid-cols-4">
+          <SummaryCard title="Pending" value={pendingSessions.length} />
+          <SummaryCard title="Upcoming" value={upcomingSessions.length} />
+          <SummaryCard title="Completed" value={completedSessions.length} />
+          <SummaryCard title="Cancelled" value={cancelledSessions.length} />
+        </section>
 
-            <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
-              {completedSessions.length}
-            </h2>
-          </div>
+        <SessionSection title="Pending Sessions">
+          {pendingSessions.length === 0 ? (
+            <EmptyState text="No pending sessions." />
+          ) : (
+            pendingSessions.map((booking) => (
+              <SessionCard key={booking.id} booking={booking}>
+                <p className="mt-4 rounded-2xl bg-yellow-100 p-4 font-bold text-gray-900">
+                  Payment or confirmation may still be pending.
+                </p>
+              </SessionCard>
+            ))
+          )}
+        </SessionSection>
 
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <p className="font-semibold text-[#0F4C5C]">Cancelled Sessions</p>
-
-            <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
-              {cancelledSessions.length}
-            </h2>
-          </div>
-        </div>
-
-        <h2 className="mb-4 text-3xl font-bold text-[#0F4C5C]">
-          Upcoming Sessions
-        </h2>
-
-        <div className="mb-10 space-y-4">
+        <SessionSection title="Upcoming Sessions">
           {upcomingSessions.length === 0 ? (
-            <div className="rounded-2xl bg-white p-6 shadow">
-              <p className="font-semibold text-gray-900">
-                No upcoming sessions.
-              </p>
-            </div>
+            <EmptyState text="No upcoming sessions." />
           ) : (
             upcomingSessions.map((booking) => (
-              <div
-                key={booking.id}
-                className="rounded-2xl bg-white p-6 shadow"
-              >
-                <p className="text-gray-900">
-                  <strong>Therapist:</strong>{" "}
-                  {booking.therapistName || "Therapist"}
-                </p>
-
-                <p className="text-gray-900">
-                  <strong>Date:</strong> {booking.sessionDate || "Not set"}
-                </p>
-
-                <p className="text-gray-900">
-                  <strong>Time:</strong> {booking.sessionTime || "Not set"}
-                </p>
-
-                <p className="text-gray-900">
-                  <strong>Payment:</strong>{" "}
-                  {booking.paymentStatus || "unpaid"}
-                </p>
-
+              <SessionCard key={booking.id} booking={booking}>
                 {booking.meetingLink ? (
                   <a
                     href={booking.meetingLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 inline-block rounded-full bg-green-700 px-5 py-3 font-semibold text-white"
+                    className="mt-5 inline-block rounded-full bg-green-700 px-5 py-3 font-bold text-white"
                   >
                     Join Session
                   </a>
                 ) : (
-                  <p className="mt-3 text-sm font-semibold text-gray-900">
+                  <p className="mt-4 rounded-2xl bg-[#F7F3EC] p-4 font-bold text-gray-900">
                     Meeting link will appear after confirmation.
                   </p>
                 )}
-              </div>
+              </SessionCard>
             ))
           )}
-        </div>
+        </SessionSection>
 
-        <h2 className="mb-4 text-3xl font-bold text-[#0F4C5C]">
-          Session History
-        </h2>
-
-        <div className="space-y-4">
+        <SessionSection title="Session History">
           {completedSessions.length === 0 ? (
-            <div className="rounded-2xl bg-white p-6 shadow">
-              <p className="font-semibold text-gray-900">
-                No completed sessions yet.
-              </p>
-            </div>
+            <EmptyState text="No completed sessions yet." />
           ) : (
             completedSessions.map((booking) => (
-              <div
-                key={booking.id}
-                className="rounded-2xl bg-white p-6 shadow"
-              >
-                <p className="text-gray-900">
-                  <strong>Therapist:</strong>{" "}
-                  {booking.therapistName || "Therapist"}
-                </p>
+              <SessionCard key={booking.id} booking={booking}>
+                <p className="mt-4 font-bold text-green-700">Completed</p>
 
-                <p className="text-gray-900">
-                  <strong>Date:</strong> {booking.sessionDate || "Not set"}
-                </p>
-
-                <p className="text-gray-900">
-                  <strong>Time:</strong> {booking.sessionTime || "Not set"}
-                </p>
-
-                <p className="font-bold text-green-700">Completed</p>
-
-                <div className="mt-4 border-t pt-4">
+                <div className="mt-5 border-t border-gray-200 pt-5">
                   <label className="mb-2 block font-bold text-[#0F4C5C]">
                     Rating
                   </label>
 
                   <select
-                    className="mb-3 rounded border border-gray-300 bg-white p-3 text-gray-900"
+                    className="mb-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900 md:w-auto"
                     value={ratings[booking.id] || 5}
                     onChange={(e) =>
                       setRatings({
@@ -267,7 +223,7 @@ export default function MyBookingsPage() {
                   </select>
 
                   <textarea
-                    className="mb-3 w-full rounded border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-600"
+                    className="mb-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-700"
                     placeholder="Share your experience..."
                     value={comments[booking.id] || ""}
                     onChange={(e) =>
@@ -280,16 +236,98 @@ export default function MyBookingsPage() {
 
                   <button
                     onClick={() => submitReview(booking)}
-                    className="rounded-full bg-[#0F4C5C] px-5 py-3 font-semibold text-white hover:bg-[#0b3945]"
+                    className="rounded-full bg-[#0F4C5C] px-5 py-3 font-bold text-white hover:bg-[#0b3945]"
                   >
                     Submit Review
                   </button>
                 </div>
-              </div>
+              </SessionCard>
             ))
           )}
-        </div>
+        </SessionSection>
+
+        <SessionSection title="Cancelled Sessions">
+          {cancelledSessions.length === 0 ? (
+            <EmptyState text="No cancelled sessions." />
+          ) : (
+            cancelledSessions.map((booking) => (
+              <SessionCard key={booking.id} booking={booking}>
+                <p className="mt-4 font-bold text-red-700">Cancelled</p>
+              </SessionCard>
+            ))
+          )}
+        </SessionSection>
       </div>
     </main>
+  );
+}
+
+function SummaryCard({ title, value }: { title: string; value: number }) {
+  return (
+    <div className="rounded-2xl bg-white p-6 shadow">
+      <p className="font-bold text-[#0F4C5C]">{title} Sessions</p>
+
+      <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">{value}</h2>
+    </div>
+  );
+}
+
+function SessionSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="mb-10">
+      <h2 className="mb-4 text-3xl font-bold text-[#0F4C5C]">{title}</h2>
+
+      <div className="space-y-4">{children}</div>
+    </section>
+  );
+}
+
+function EmptyState({ text }: { text: string }) {
+  return (
+    <div className="rounded-2xl bg-white p-6 shadow">
+      <p className="font-bold text-gray-900">{text}</p>
+    </div>
+  );
+}
+
+function SessionCard({
+  booking,
+  children,
+}: {
+  booking: Booking;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl bg-white p-6 shadow">
+      <div className="space-y-2 text-base font-semibold text-gray-900">
+        <p>
+          <strong>Therapist:</strong> {booking.therapistName || "Therapist"}
+        </p>
+
+        <p>
+          <strong>Date:</strong> {booking.sessionDate || "Not set"}
+        </p>
+
+        <p>
+          <strong>Time:</strong> {booking.sessionTime || "Not set"}
+        </p>
+
+        <p>
+          <strong>Payment:</strong> {booking.paymentStatus || "unpaid"}
+        </p>
+
+        <p>
+          <strong>Status:</strong> {booking.status || "pending"}
+        </p>
+      </div>
+
+      {children}
+    </div>
   );
 }
