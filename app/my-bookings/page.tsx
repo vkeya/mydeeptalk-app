@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import {
+  addDoc,
   collection,
   getDocs,
   query,
-  where,
-  addDoc,
   serverTimestamp,
+  where,
 } from "firebase/firestore";
 
 type Booking = {
@@ -115,58 +115,82 @@ export default function MyBookingsPage() {
 
   if (loading) {
     return (
-      <main className="p-6">
-        <p>Loading bookings...</p>
+      <main className="min-h-screen bg-[#F7F3EC] p-6 text-[#0F4C5C]">
+        <p className="font-semibold">Loading bookings...</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
+    <main className="min-h-screen bg-[#F7F3EC] p-6">
       <div className="mx-auto max-w-6xl">
-        <h1 className="mb-8 text-3xl font-bold">My Sessions</h1>
+        <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg">
+          <h1 className="text-4xl font-bold">My Sessions</h1>
 
-        <div className="mb-10 grid gap-4 md:grid-cols-3">
-          <div className="rounded-xl bg-white p-6 shadow">
-            <p className="text-gray-500">Upcoming Sessions</p>
-            <h2 className="text-3xl font-bold">{upcomingSessions.length}</h2>
+          <p className="mt-3 text-white/90">
+            View your upcoming, completed, and cancelled therapy sessions.
+          </p>
+        </div>
+
+        <div className="my-10 grid gap-4 md:grid-cols-3">
+          <div className="rounded-2xl bg-white p-6 shadow">
+            <p className="font-bold text-[#0F4C5C]">Upcoming Sessions</p>
+
+            <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
+              {upcomingSessions.length}
+            </h2>
           </div>
 
-          <div className="rounded-xl bg-white p-6 shadow">
-            <p className="text-gray-500">Completed Sessions</p>
-            <h2 className="text-3xl font-bold">{completedSessions.length}</h2>
+          <div className="rounded-2xl bg-white p-6 shadow">
+            <p className="font-bold text-[#0F4C5C]">Completed Sessions</p>
+
+            <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
+              {completedSessions.length}
+            </h2>
           </div>
 
-          <div className="rounded-xl bg-white p-6 shadow">
-            <p className="text-gray-500">Cancelled Sessions</p>
-            <h2 className="text-3xl font-bold">{cancelledSessions.length}</h2>
+          <div className="rounded-2xl bg-white p-6 shadow">
+            <p className="font-bold text-[#0F4C5C]">Cancelled Sessions</p>
+
+            <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
+              {cancelledSessions.length}
+            </h2>
           </div>
         </div>
 
-        <h2 className="mb-4 text-2xl font-semibold">Upcoming Sessions</h2>
+        <h2 className="mb-4 text-3xl font-bold text-[#0F4C5C]">
+          Upcoming Sessions
+        </h2>
 
         <div className="mb-10 space-y-4">
           {upcomingSessions.length === 0 ? (
-            <div className="rounded-xl bg-white p-5 shadow">
-              <p className="text-gray-600">No upcoming sessions.</p>
+            <div className="rounded-2xl bg-white p-6 shadow">
+              <p className="font-medium text-gray-800">
+                No upcoming sessions.
+              </p>
             </div>
           ) : (
             upcomingSessions.map((booking) => (
-              <div key={booking.id} className="rounded-xl bg-white p-5 shadow">
-                <p>
-                  <strong>Therapist:</strong> {booking.therapistName || "Therapist"}
+              <div
+                key={booking.id}
+                className="rounded-2xl bg-white p-6 shadow"
+              >
+                <p className="text-gray-900">
+                  <strong>Therapist:</strong>{" "}
+                  {booking.therapistName || "Therapist"}
                 </p>
 
-                <p>
+                <p className="text-gray-900">
                   <strong>Date:</strong> {booking.sessionDate || "Not set"}
                 </p>
 
-                <p>
+                <p className="text-gray-900">
                   <strong>Time:</strong> {booking.sessionTime || "Not set"}
                 </p>
 
-                <p>
-                  <strong>Payment:</strong> {booking.paymentStatus || "unpaid"}
+                <p className="text-gray-900">
+                  <strong>Payment:</strong>{" "}
+                  {booking.paymentStatus || "unpaid"}
                 </p>
 
                 {booking.meetingLink ? (
@@ -174,12 +198,12 @@ export default function MyBookingsPage() {
                     href={booking.meetingLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 inline-block rounded bg-green-600 px-4 py-2 text-white"
+                    className="mt-4 inline-block rounded-full bg-green-700 px-5 py-3 font-semibold text-white"
                   >
                     Join Session
                   </a>
                 ) : (
-                  <p className="mt-3 text-sm text-gray-500">
+                  <p className="mt-3 text-sm font-medium text-gray-800">
                     Meeting link will appear after confirmation.
                   </p>
                 )}
@@ -188,35 +212,45 @@ export default function MyBookingsPage() {
           )}
         </div>
 
-        <h2 className="mb-4 text-2xl font-semibold">Session History</h2>
+        <h2 className="mb-4 text-3xl font-bold text-[#0F4C5C]">
+          Session History
+        </h2>
 
         <div className="space-y-4">
           {completedSessions.length === 0 ? (
-            <div className="rounded-xl bg-white p-5 shadow">
-              <p className="text-gray-600">No completed sessions yet.</p>
+            <div className="rounded-2xl bg-white p-6 shadow">
+              <p className="font-medium text-gray-800">
+                No completed sessions yet.
+              </p>
             </div>
           ) : (
             completedSessions.map((booking) => (
-              <div key={booking.id} className="rounded-xl bg-white p-5 shadow">
-                <p>
-                  <strong>Therapist:</strong> {booking.therapistName || "Therapist"}
+              <div
+                key={booking.id}
+                className="rounded-2xl bg-white p-6 shadow"
+              >
+                <p className="text-gray-900">
+                  <strong>Therapist:</strong>{" "}
+                  {booking.therapistName || "Therapist"}
                 </p>
 
-                <p>
+                <p className="text-gray-900">
                   <strong>Date:</strong> {booking.sessionDate || "Not set"}
                 </p>
 
-                <p>
+                <p className="text-gray-900">
                   <strong>Time:</strong> {booking.sessionTime || "Not set"}
                 </p>
 
-                <p className="font-semibold text-green-600">Completed</p>
+                <p className="font-bold text-green-700">Completed</p>
 
                 <div className="mt-4 border-t pt-4">
-                  <label className="mb-2 block font-medium">Rating</label>
+                  <label className="mb-2 block font-bold text-[#0F4C5C]">
+                    Rating
+                  </label>
 
                   <select
-                    className="mb-3 rounded border p-2"
+                    className="mb-3 rounded border border-gray-300 bg-white p-3 text-gray-900"
                     value={ratings[booking.id] || 5}
                     onChange={(e) =>
                       setRatings({
@@ -233,7 +267,7 @@ export default function MyBookingsPage() {
                   </select>
 
                   <textarea
-                    className="mb-3 w-full rounded border p-3"
+                    className="mb-3 w-full rounded border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-600"
                     placeholder="Share your experience..."
                     value={comments[booking.id] || ""}
                     onChange={(e) =>
@@ -246,7 +280,7 @@ export default function MyBookingsPage() {
 
                   <button
                     onClick={() => submitReview(booking)}
-                    className="rounded bg-blue-600 px-4 py-2 text-white"
+                    className="rounded-full bg-[#0F4C5C] px-5 py-3 font-semibold text-white hover:bg-[#0b3945]"
                   >
                     Submit Review
                   </button>

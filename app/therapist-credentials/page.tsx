@@ -164,7 +164,7 @@ export default function TherapistCredentialsPage() {
                 required
               />
 
-              <p className="mt-2 text-sm text-gray-700">
+              <p className="mt-2 text-sm font-medium text-gray-800">
                 Accepted formats: PDF, JPG, JPEG, PNG.
               </p>
             </div>
@@ -184,28 +184,11 @@ export default function TherapistCredentialsPage() {
                 required
               />
 
-              <p className="mt-2 text-sm text-gray-700">
+              <p className="mt-2 text-sm font-medium text-gray-800">
                 Upload your certificate or qualification document.
               </p>
             </div>
 
-            <div>
-              <label className="mb-3 block font-semibold text-[#0F4C5C]">
-                Profile Photo
-              </label>
-
-              <input
-                type="file"
-                accept=".jpg,.jpeg,.png"
-                className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-[#0F4C5C] file:px-4 file:py-2 file:font-semibold file:text-white"
-                onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)}
-                required
-              />
-
-              <p className="mt-2 text-sm text-gray-700">
-                Upload a clear profile photo for your therapist profile.
-              </p>
-            </div>
 
             <button
               type="submit"
