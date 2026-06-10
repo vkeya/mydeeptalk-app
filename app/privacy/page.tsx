@@ -1,55 +1,64 @@
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-[#F7F3EC] px-8 py-20">
-      <div className="mx-auto max-w-5xl">
+    <main className="min-h-screen bg-[#F7F3EC] p-8">
+      <div className="mx-auto max-w-4xl rounded-3xl bg-white p-10 shadow-lg">
+        <h1 className="text-4xl font-bold text-[#0F4C5C]">
+          Privacy Policy
+        </h1>
 
-        <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-12 text-white shadow-lg">
-          <h1 className="text-5xl font-bold">
-            Privacy Policy
-          </h1>
-
-          <p className="mt-6 text-lg text-white/80">
-            Effective Date: June 2026
+        <div className="mt-8 space-y-6 text-gray-900 leading-8">
+          <p>
+            MyDeepTalk values your privacy and is committed to protecting your
+            information.
           </p>
-        </div>
-
-        <div className="mt-10 rounded-3xl bg-white p-10 shadow-lg">
 
           <h2 className="text-2xl font-bold text-[#0F4C5C]">
-            Your Privacy Matters
+            Information We Collect
           </h2>
 
-          <p className="mt-6 leading-8 text-gray-600">
-            MyDeepTalk is committed to protecting your personal information.
-            We do not sell your personal data or conversations.
+          <p>
+            We may collect your name, email address, journal entries, booking
+            information and information you voluntarily provide.
           </p>
 
-          <p className="mt-4 leading-8 text-gray-600">
-            Information may be used to provide AI-powered reflections,
-            therapist discovery, booking services, account management,
-            security and platform improvement.
+          <h2 className="text-2xl font-bold text-[#0F4C5C]">
+            How We Use Information
+          </h2>
+
+          <p>
+            Information is used to provide and improve the MyDeepTalk platform,
+            facilitate therapist bookings and deliver personalized experiences.
           </p>
 
-          <p className="mt-4 leading-8 text-gray-600">
-            Payments are processed securely by trusted third-party providers,
-            and sensitive card details are not stored by MyDeepTalk.
+          <h2 className="text-2xl font-bold text-[#0F4C5C]">
+            Data Security
+          </h2>
+
+          <p>
+            We use industry-standard security measures to protect your data.
           </p>
 
-          <p className="mt-4 leading-8 text-gray-600">
-            Conversations with AI are intended for self-discovery and
-            informational purposes and do not replace licensed professional therapy.
+          <h2 className="text-2xl font-bold text-[#0F4C5C]">
+            Sharing Information
+          </h2>
+
+          <p>
+            We do not sell your personal information. Information is only shared
+            when necessary to provide services or when required by law.
           </p>
 
-          <p className="mt-4 leading-8 text-gray-600">
-            Questions regarding privacy may be directed to:
+          <h2 className="text-2xl font-bold text-[#0F4C5C]">
+            Your Rights
+          </h2>
+
+          <p>
+            You may request access, correction or deletion of your information,
+            subject to applicable laws.
           </p>
 
-          <div className="mt-6 rounded-2xl bg-[#F7F3EC] p-6">
-            <p className="font-semibold text-[#0F4C5C]">
-              info@mydeeptalk.com
-            </p>
-          </div>
-
+          <p className="font-semibold text-[#0F4C5C]">
+            Last Updated: June 2026
+          </p>
         </div>
       </div>
     </main>
