@@ -9,6 +9,8 @@ import FAQSection from "@/components/FAQSection";
 import CTASection from "@/components/CTASection";
 import SelfAssessmentSection from "@/components/SelfAssessmentSection";
 import HelpsWithSection from "@/components/HelpsWithSection";
+import SelfDiscoverySection from "@/components/SelfDiscoverySection";
+import TherapistSupportSection from "@/components/TherapistSupportSection";
 
 
 export default function HomePage() {
@@ -16,7 +18,8 @@ export default function HomePage() {
     <>
       <HeroSection />
       <StatsSection />
-	  
+	  <SelfDiscoverySection />
+      <TherapistSupportSection />
 	  <SelfAssessmentSection />
 	  <HelpsWithSection />
       <PillarsSection />
