@@ -30,7 +30,7 @@ export default function StatsSection() {
     <section className="bg-white px-8 py-20">
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
-          <p className="font-semibold text-[#E2954E]">
+          <p className="font-bold text-[#0F4C5C]">
             Why MyDeepTalk
           </p>
 

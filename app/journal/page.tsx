@@ -263,7 +263,7 @@ export default function JournalPage() {
               </div>
 
               <div>
-                <label className="mb-2 block font-semibold text-gray-700">
+                <label className="mb-2 block font-semibold text-gray-900">
                   Your Reflection
                 </label>
 
@@ -316,7 +316,7 @@ export default function JournalPage() {
 					   {entry.mood}
 					 </p>
 
-                     <p className="text-sm text-gray-500">
+                     <p className="text-sm text-gray-900">
                        {entry.createdAt?.toDate
                           ? entry.createdAt.toDate().toLocaleString()
                           : ""}
@@ -329,11 +329,11 @@ export default function JournalPage() {
                      </p>
                  )}
 
-      <p className="mt-3 text-sm font-semibold text-gray-600">
+      <p className="mt-3 text-sm font-semibold text-gray-900">
         {entry.prompt}
       </p>
 
-      <p className="mt-3 line-clamp-4 whitespace-pre-line text-gray-700">
+      <p className="mt-3 line-clamp-4 whitespace-pre-line text-gray-900">
         {entry.content}
       </p>
 

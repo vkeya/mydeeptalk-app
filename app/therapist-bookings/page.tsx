@@ -131,7 +131,7 @@ export default function TherapistBookingsPage() {
 
         <div className="my-10 grid gap-4 md:grid-cols-3">
           <div className="rounded-2xl bg-white p-6 shadow">
-            <p className="font-bold text-[#0F4C5C]">Upcoming Sessions</p>
+            <p className="font-semibold text-[#0F4C5C]">Upcoming Sessions</p>
 
             <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
               {upcomingSessions.length}
@@ -139,7 +139,7 @@ export default function TherapistBookingsPage() {
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow">
-            <p className="font-bold text-[#0F4C5C]">Completed Sessions</p>
+            <p className="font-semibold text-[#0F4C5C]">Completed Sessions</p>
 
             <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
               {completedSessions.length}
@@ -147,7 +147,7 @@ export default function TherapistBookingsPage() {
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow">
-            <p className="font-bold text-[#0F4C5C]">Total Earnings</p>
+            <p className="font-semibold text-[#0F4C5C]">Total Earnings</p>
 
             <h2 className="mt-3 text-4xl font-bold text-green-700">
               KES {totalEarnings}
@@ -162,7 +162,7 @@ export default function TherapistBookingsPage() {
         <div className="mb-10 space-y-4">
           {upcomingSessions.length === 0 ? (
             <div className="rounded-2xl bg-white p-6 shadow">
-              <p className="font-medium text-gray-800">
+              <p className="font-semibold text-gray-900">
                 No upcoming sessions yet.
               </p>
             </div>
@@ -241,7 +241,7 @@ export default function TherapistBookingsPage() {
         <div className="space-y-4">
           {completedSessions.length === 0 ? (
             <div className="rounded-2xl bg-white p-6 shadow">
-              <p className="font-medium text-gray-800">
+              <p className="font-semibold text-gray-900">
                 No completed sessions yet.
               </p>
             </div>

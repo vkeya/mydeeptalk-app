@@ -164,7 +164,7 @@ export default function TherapistCredentialsPage() {
                 required
               />
 
-              <p className="mt-2 text-sm font-medium text-gray-800">
+              <p className="mt-2 text-sm font-semibold text-gray-900">
                 Accepted formats: PDF, JPG, JPEG, PNG.
               </p>
             </div>
@@ -184,7 +184,7 @@ export default function TherapistCredentialsPage() {
                 required
               />
 
-              <p className="mt-2 text-sm font-medium text-gray-800">
+              <p className="mt-2 text-sm font-semibold text-gray-900">
                 Upload your certificate or qualification document.
               </p>
             </div>

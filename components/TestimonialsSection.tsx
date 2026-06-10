@@ -22,7 +22,7 @@ export default function TestimonialsSection() {
       <div className="mx-auto max-w-7xl">
 
         <div className="text-center">
-          <p className="font-semibold text-[#E2954E]">
+          <p className="font-bold text-[#0F4C5C]">
             Real Stories
           </p>
 

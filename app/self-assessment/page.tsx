@@ -317,7 +317,7 @@ export default function SelfAssessmentPage() {
       <main className="min-h-screen bg-[#F7F3EC] p-6">
         <section className="mx-auto flex min-h-[80vh] max-w-4xl items-center">
           <div className="rounded-3xl bg-white p-8 shadow-lg md:p-12">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#2C7A7B]">
+            <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#0F4C5C]">
               Private • Free • Takes 2 Minutes
             </p>
 
@@ -325,7 +325,7 @@ export default function SelfAssessmentPage() {
               Begin Your Self-Discovery Check-In
             </h1>
 
-            <p className="mt-6 text-lg text-gray-700">
+            <p className="mt-6 text-lg text-gray-900">
               How are you really doing? This private check-in helps you
               understand your emotional wellbeing and discover the area of your
               life that may need more care, reflection, or support.
@@ -354,7 +354,7 @@ export default function SelfAssessmentPage() {
               </div>
             </div>
 
-            <p className="mt-6 rounded-2xl bg-yellow-50 p-4 text-sm text-yellow-800">
+            <p className="mt-6 rounded-2xl bg-yellow-100 p-5 text-base font-semibold text-[#0F4C5C]">
               This is not a diagnosis. It is a self-reflection tool to help you
               understand where support may be useful.
             </p>

@@ -33,7 +33,7 @@ export default function FAQSection() {
       <div className="mx-auto max-w-5xl">
 
         <div className="text-center">
-          <p className="font-semibold text-[#E2954E]">
+          <p className="font-bold text-[#0F4C5C]">
             Frequently Asked Questions
           </p>
 
