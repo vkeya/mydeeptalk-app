@@ -292,7 +292,7 @@ export default function JournalPage() {
             </h2>
 
             {loading ? (
-              <p className="mt-5 text-gray-600">Loading entries...</p>
+              <p className="mt-2 text-gray-600">Loading entries...</p>
             ) : entries.length === 0 ? (
               <div className="mt-6 rounded-2xl bg-[#F7F3EC] p-6">
                 <p className="font-semibold text-[#0F4C5C]">

@@ -195,7 +195,7 @@ export default function TherapistAvailabilityPage() {
                 <option value="90">90 minutes</option>
               </select>
 
-              <p className="mt-2 text-sm text-gray-700">
+              <p className="mt-2 text-sm font-medium text-gray-800">
                 This controls how client booking slots are generated from your
                 available time range.
               </p>
@@ -234,7 +234,7 @@ export default function TherapistAvailabilityPage() {
                           onChange={(e) =>
                             updateSlot(index, "startTime", e.target.value)
                           }
-                          className="w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900 disabled:bg-gray-100 disabled:text-gray-500"
+                          className="w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900 disabled:bg-gray-200 disabled:text-gray-800"
                         />
                       </div>
 
@@ -258,13 +258,13 @@ export default function TherapistAvailabilityPage() {
                   </div>
 
                   {!slot.enabled && (
-                    <p className="mt-3 text-sm text-gray-700">
+                    <p className="mt-3 text-sm font-medium text-gray-800">
                       Not available on {slot.day}.
                     </p>
                   )}
 
                   {slot.enabled && slot.startTime && slot.endTime && (
-                    <p className="mt-3 text-sm font-semibold text-[#2C7A7B]">
+                    <p className="mt-3 text-sm font-bold text-[#0F4C5C]">
                       Available on {slot.day} from {slot.startTime} to{" "}
                       {slot.endTime}.
                     </p>
