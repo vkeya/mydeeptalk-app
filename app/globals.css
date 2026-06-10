@@ -181,3 +181,25 @@ table {
     line-height: 1.8rem;
   }
 }
+
+/* Fix white buttons on light/white backgrounds */
+.bg-white:not(.text-white),
+.bg-\[\#ffffff\]:not(.text-white),
+.bg-\[\#fff\]:not(.text-white) {
+  color: #0f4c5c !important;
+}
+
+/* Fix text inside white buttons */
+.bg-white:not(.text-white) *,
+.bg-\[\#ffffff\]:not(.text-white) *,
+.bg-\[\#fff\]:not(.text-white) * {
+  color: #0f4c5c !important;
+}
+
+/* Keep dark buttons readable */
+.bg-\[\#0f4c5c\],
+.bg-\[\#0F4C5C\],
+.bg-\[\#115E67\],
+.bg-\[\#0F5B6E\] {
+  color: #ffffff !important;
+}
