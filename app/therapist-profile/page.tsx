@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
+import TherapistAgreementModal from "@/components/TherapistAgreementModal";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
 export default function TherapistProfilePage() {
@@ -20,6 +21,9 @@ export default function TherapistProfilePage() {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState("");
 
+  const [currentUserId, setCurrentUserId] = useState("");
+  const [agreementAccepted, setAgreementAccepted] = useState(false);
+
   const [existingProfile, setExistingProfile] = useState<any>(null);
   const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -34,6 +38,16 @@ export default function TherapistProfilePage() {
       }
 
       try {
+        setCurrentUserId(user.uid);
+
+        const userSnap = await getDoc(doc(db, "users", user.uid));
+
+        if (userSnap.exists()) {
+          setAgreementAccepted(
+            userSnap.data().therapistAgreementAccepted === true
+          );
+        }
+
         const profileRef = doc(db, "therapists", user.uid);
         const profileSnap = await getDoc(profileRef);
 
@@ -115,6 +129,11 @@ export default function TherapistProfilePage() {
       return;
     }
 
+    if (!agreementAccepted) {
+      alert("Please accept the Professional Services Agreement before continuing.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -191,6 +210,13 @@ export default function TherapistProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#F7F3EC] p-8">
+      {currentUserId && !agreementAccepted && (
+        <TherapistAgreementModal
+          userId={currentUserId}
+          onAccepted={() => setAgreementAccepted(true)}
+        />
+      )}
+
       <div className="mx-auto max-w-4xl">
         <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white shadow-lg">
           <h1 className="text-4xl font-bold">Therapist Profile</h1>
