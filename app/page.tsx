@@ -11,6 +11,7 @@ import SelfAssessmentSection from "@/components/SelfAssessmentSection";
 import HelpsWithSection from "@/components/HelpsWithSection";
 import SelfDiscoverySection from "@/components/SelfDiscoverySection";
 import TherapistSupportSection from "@/components/TherapistSupportSection";
+import WhyMyDeepTalk from "@/components/WhyMyDeepTalk";
 
 
 export default function HomePage() {
@@ -18,6 +19,7 @@ export default function HomePage() {
     <>
       <HeroSection />
       <StatsSection />
+	  <WhyMyDeepTalk />
 	  <SelfDiscoverySection />
       <TherapistSupportSection />
 	  <SelfAssessmentSection />
