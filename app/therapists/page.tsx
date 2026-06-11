@@ -225,7 +225,7 @@ export default function TherapistsPage() {
               return (
                 <article
                   key={therapist.id}
-                  className="rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+                  className="flex h-full flex-col rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
                 >
                   <div className="mb-5 flex items-center gap-4">
                     {therapist.profilePhoto ? (
@@ -316,17 +316,17 @@ export default function TherapistsPage() {
                     </p>
                   </div>
 
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                  <div className="mt-auto flex gap-3 pt-6">
                     <Link
                       href={`/therapist/${therapist.id}`}
-                      className="rounded-full border-2 border-[#0F4C5C] bg-white px-4 py-3 text-center text-sm font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+                      className="flex-1 rounded-full border-2 border-[#0F4C5C] bg-white px-4 py-3 text-center text-sm font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
                     >
                       View Profile
                     </Link>
 
                     <Link
                       href={`/book-session/${therapist.id}`}
-                      className="rounded-full bg-[#0F4C5C] px-4 py-3 text-center text-sm font-bold text-white hover:bg-[#0b3945]"
+                      className="flex-1 rounded-full bg-[#0F4C5C] px-4 py-3 text-center text-sm font-bold text-white hover:bg-[#0b3945]"
                     >
                       Book Session
                     </Link>
