@@ -6,16 +6,41 @@ import { auth, db } from "@/lib/firebase";
 import TherapistAgreementModal from "@/components/TherapistAgreementModal";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
+const specialtyOptions = [
+  "Relationships",
+  "Marriage & Couples Therapy",
+  "Parenting",
+  "Parent-Child Relationships",
+  "Trauma & Healing",
+  "Anxiety",
+  "Depression",
+  "Stress & Burnout",
+  "Grief & Loss",
+  "Addiction & Recovery",
+  "Self-Esteem",
+  "Emotional Regulation",
+  "Life Transitions",
+  "Youth & Teen Counseling",
+  "Faith-Based Counseling",
+];
+
 export default function TherapistProfilePage() {
   const router = useRouter();
 
   const [fullName, setFullName] = useState("");
   const [gender, setGender] = useState("");
   const [bio, setBio] = useState("");
-  const [specialties, setSpecialties] = useState("");
+  const [specialties, setSpecialties] = useState<string[]>([]);
   const [languages, setLanguages] = useState("");
   const [yearsExperience, setYearsExperience] = useState("");
-  const [sessionFee, setSessionFee] = useState("");
+
+  const [sessionFees, setSessionFees] = useState({
+    individual: "",
+    couple: "",
+    parentChild: "",
+    family: "",
+  });
+
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -48,8 +73,7 @@ export default function TherapistProfilePage() {
           );
         }
 
-        const profileRef = doc(db, "therapists", user.uid);
-        const profileSnap = await getDoc(profileRef);
+        const profileSnap = await getDoc(doc(db, "therapists", user.uid));
 
         if (profileSnap.exists()) {
           const data = profileSnap.data();
@@ -58,14 +82,34 @@ export default function TherapistProfilePage() {
           setFullName(data.fullName || "");
           setGender(data.gender || "");
           setBio(data.bio || "");
+
           setSpecialties(
-            Array.isArray(data.specialties) ? data.specialties.join(", ") : ""
+            Array.isArray(data.specialties)
+              ? data.specialties
+              : typeof data.specialties === "string"
+              ? data.specialties
+                  .split(",")
+                  .map((item: string) => item.trim())
+                  .filter(Boolean)
+              : []
           );
+
           setLanguages(
             Array.isArray(data.languages) ? data.languages.join(", ") : ""
           );
+
           setYearsExperience(data.yearsExperience?.toString() || "");
-          setSessionFee(data.sessionFee?.toString() || "");
+
+          setSessionFees({
+            individual:
+              data.sessionFees?.individual?.toString() ||
+              data.sessionFee?.toString() ||
+              "",
+            couple: data.sessionFees?.couple?.toString() || "",
+            parentChild: data.sessionFees?.parentChild?.toString() || "",
+            family: data.sessionFees?.family?.toString() || "",
+          });
+
           setCountry(data.country || "");
           setCity(data.city || "");
           setPhotoPreview(data.profilePhoto || data.photoUrl || "");
@@ -80,9 +124,16 @@ export default function TherapistProfilePage() {
     loadProfile();
   }, []);
 
+  function toggleSpecialty(item: string) {
+    if (specialties.includes(item)) {
+      setSpecialties(specialties.filter((specialty) => specialty !== item));
+    } else {
+      setSpecialties([...specialties, item]);
+    }
+  }
+
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-
     if (!file) return;
 
     setPhotoFile(file);
@@ -136,6 +187,11 @@ export default function TherapistProfilePage() {
       return;
     }
 
+    if (specialties.length === 0) {
+      alert("Please select at least one specialty.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -162,23 +218,30 @@ export default function TherapistProfilePage() {
           fullName,
           gender,
           bio,
-          specialties: specialties
-            .split(",")
-            .map((item) => item.trim())
-            .filter(Boolean),
+          specialties,
           languages: languages
             .split(",")
             .map((item) => item.trim())
             .filter(Boolean),
           yearsExperience: Number(yearsExperience),
-          sessionFee: Number(sessionFee),
+
+          sessionFees: {
+            individual: Number(sessionFees.individual || 0),
+            couple: Number(sessionFees.couple || 0),
+            parentChild: Number(sessionFees.parentChild || 0),
+            family: Number(sessionFees.family || 0),
+          },
+
+          sessionFee: Number(sessionFees.individual || 0),
+
           country,
           city,
           profilePhoto: finalPhotoUrl,
           photoUrl: finalPhotoUrl,
           storageProvider: finalPhotoUrl ? "cloudinary" : "",
           status: existingProfile?.status || "pending",
-          credentialsStatus: existingProfile?.credentialsStatus || "not_uploaded",
+          credentialsStatus:
+            existingProfile?.credentialsStatus || "not_uploaded",
           credentialsUploaded: existingProfile?.credentialsUploaded || false,
           profileComplete: true,
           createdAt: existingProfile?.createdAt || serverTimestamp(),
@@ -235,12 +298,6 @@ export default function TherapistProfilePage() {
             Complete your professional profile so clients can find, understand,
             and trust your work.
           </p>
-
-          {existingProfile?.status && (
-            <p className="mt-5 inline-block rounded-full bg-white/20 px-4 py-2 text-sm font-bold text-white">
-              Current status: {existingProfile.status}
-            </p>
-          )}
         </section>
 
         <section className="mt-8 rounded-3xl bg-white p-6 shadow-lg md:p-10">
@@ -266,17 +323,12 @@ export default function TherapistProfilePage() {
                 type="file"
                 accept="image/*"
                 onChange={handlePhotoChange}
-                className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-[#0F4C5C] file:px-4 file:py-2 file:font-bold file:text-white"
+                className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
               />
-
-              <p className="mt-3 text-sm font-bold text-gray-900">
-                Upload a clear, professional photo. This helps clients feel more
-                comfortable booking with you.
-              </p>
             </div>
 
             <input
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
               placeholder="Full Name"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
@@ -297,52 +349,116 @@ export default function TherapistProfilePage() {
 
             <textarea
               rows={5}
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
               placeholder="Tell clients about yourself..."
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               required
             />
 
-            <input
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
-              placeholder="Specialties (comma separated)"
-              value={specialties}
-              onChange={(e) => setSpecialties(e.target.value)}
-              required
-            />
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <label className="mb-4 block font-bold text-[#0F4C5C]">
+                Select Your Specialties
+              </label>
+
+              <div className="grid gap-3 md:grid-cols-2">
+                {specialtyOptions.map((item) => (
+                  <label
+                    key={item}
+                    className="flex items-center gap-3 rounded-xl border border-gray-300 bg-white p-3 font-semibold text-gray-900"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={specialties.includes(item)}
+                      onChange={() => toggleSpecialty(item)}
+                    />
+                    <span>{item}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
 
             <input
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
-              placeholder="Languages (comma separated)"
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+              placeholder="Languages, e.g. English, Swahili"
               value={languages}
               onChange={(e) => setLanguages(e.target.value)}
               required
             />
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <input
-                type="number"
-                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
-                placeholder="Years of Experience"
-                value={yearsExperience}
-                onChange={(e) => setYearsExperience(e.target.value)}
-                required
-              />
+            <input
+              type="number"
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+              placeholder="Years of Experience"
+              value={yearsExperience}
+              onChange={(e) => setYearsExperience(e.target.value)}
+              required
+            />
 
-              <input
-                type="number"
-                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
-                placeholder="Session Fee (KES)"
-                value={sessionFee}
-                onChange={(e) => setSessionFee(e.target.value)}
-                required
-              />
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <label className="mb-4 block font-bold text-[#0F4C5C]">
+                Session Fees
+              </label>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <input
+                  type="number"
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  placeholder="Individual Session Fee"
+                  value={sessionFees.individual}
+                  onChange={(e) =>
+                    setSessionFees({
+                      ...sessionFees,
+                      individual: e.target.value,
+                    })
+                  }
+                  required
+                />
+
+                <input
+                  type="number"
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  placeholder="Couple Session Fee"
+                  value={sessionFees.couple}
+                  onChange={(e) =>
+                    setSessionFees({
+                      ...sessionFees,
+                      couple: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  type="number"
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  placeholder="Parent + Child Session Fee"
+                  value={sessionFees.parentChild}
+                  onChange={(e) =>
+                    setSessionFees({
+                      ...sessionFees,
+                      parentChild: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  type="number"
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  placeholder="Family Session Fee"
+                  value={sessionFees.family}
+                  onChange={(e) =>
+                    setSessionFees({
+                      ...sessionFees,
+                      family: e.target.value,
+                    })
+                  }
+                />
+              </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
               <input
-                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
+                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
                 placeholder="Country"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
@@ -350,7 +466,7 @@ export default function TherapistProfilePage() {
               />
 
               <input
-                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
+                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
                 placeholder="City"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
@@ -361,7 +477,7 @@ export default function TherapistProfilePage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945] disabled:opacity-70"
+              className="w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945]"
             >
               {loading
                 ? existingProfile
