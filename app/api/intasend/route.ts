@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
 
-export async function GET() {
-  return NextResponse.json({
-    publishable: process.env.INTASEND_PUBLISHABLE_KEY,
-    secret: process.env.INTASEND_SECRET_KEY,
-  });
+function formatMpesaPhoneNumber(phone: string) {
+  const cleaned = phone.replace(/\D/g, "");
+
+  if (cleaned.startsWith("254") && cleaned.length === 12) {
+    return cleaned;
+  }
+
+  if (cleaned.startsWith("07") && cleaned.length === 10) {
+    return `254${cleaned.slice(1)}`;
+  }
+
+  if (cleaned.startsWith("7") && cleaned.length === 9) {
+    return `254${cleaned}`;
+  }
+
+  return cleaned;
 }
 
 export async function POST(request: Request) {
@@ -20,24 +31,43 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!process.env.INTASEND_SECRET_KEY) {
+    const secretKey = process.env.INTASEND_SECRET_KEY;
+    const useSandbox = process.env.INTASEND_TEST === "true";
+
+    if (!secretKey) {
       return NextResponse.json(
-        { success: false, error: "INTASEND_SECRET_KEY is missing in .env.local" },
+        { success: false, error: "INTASEND_SECRET_KEY is missing." },
         { status: 500 }
       );
     }
 
+    const formattedPhoneNumber = formatMpesaPhoneNumber(phoneNumber);
+
+    if (!formattedPhoneNumber.startsWith("254") || formattedPhoneNumber.length !== 12) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid phone number. Use format 2547XXXXXXXX.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const baseUrl = useSandbox
+      ? "https://sandbox.intasend.com"
+      : "https://payment.intasend.com";
+
     const response = await fetch(
-      "https://sandbox.intasend.com/api/v1/payment/mpesa-stk-push/",
+      `${baseUrl}/api/v1/payment/mpesa-stk-push/`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.INTASEND_SECRET_KEY}`,
+          Authorization: `Bearer ${secretKey}`,
         },
         body: JSON.stringify({
-          amount,
-          phone_number: phoneNumber,
+          amount: Number(amount),
+          phone_number: formattedPhoneNumber,
           currency: "KES",
           api_ref: bookingId,
           narrative: "MyDeepTalk Therapy Session",
@@ -48,6 +78,8 @@ export async function POST(request: Request) {
     const data = await response.json();
 
     if (!response.ok) {
+      console.error("IntaSend STK error:", data);
+
       return NextResponse.json(
         { success: false, error: data },
         { status: response.status }
@@ -59,8 +91,10 @@ export async function POST(request: Request) {
       data,
     });
   } catch (error: any) {
+    console.error("IntaSend route error:", error);
+
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: error.message || "Payment request failed." },
       { status: 500 }
     );
   }

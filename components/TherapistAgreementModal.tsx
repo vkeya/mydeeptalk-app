@@ -56,7 +56,11 @@ export default function TherapistAgreementModal({ userId, onAccepted }: Props) {
           uid: userId,
           accepted: true,
           acceptedAt: serverTimestamp(),
-          agreementVersion: AGREEMENT_VERSION,
+          agreementVersion: "professional-services-agreement-v2",
+		   userAgent: navigator.userAgent,
+
+          timezone:
+            Intl.DateTimeFormat().resolvedOptions().timeZone
         },
         { merge: true }
       );
