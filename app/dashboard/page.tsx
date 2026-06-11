@@ -110,6 +110,23 @@ function ClientDashboard() {
       href: "/my-bookings",
       buttonText: "View Sessions",
     },
+	{
+      icon: "🎁",
+      title: "Gift Therapy",
+      description:
+       "Gift a therapy session or healing package to someone you care about.",
+      href: "/gift-session",
+      buttonText: "Gift a Session",
+    },
+	
+    {
+      icon: "❤️",
+      title: "My Healing Credits",
+      description:
+       "View gifted therapy sessions available and track your healing journey.",
+      href: "/my-credits",
+      buttonText: "View Credits",
+    }
   ];
 
   return (

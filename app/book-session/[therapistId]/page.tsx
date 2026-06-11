@@ -11,6 +11,7 @@ import {
   getDocs,
   query,
   serverTimestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 
@@ -50,9 +51,11 @@ export default function BookSessionPage() {
   const [therapist, setTherapist] = useState<any>(null);
   const [availability, setAvailability] = useState<any>(null);
   const [bookedSlots, setBookedSlots] = useState<any[]>([]);
+  const [therapyCredits, setTherapyCredits] = useState<any>(null);
 
   const [sessionDate, setSessionDate] = useState("");
   const [sessionTime, setSessionTime] = useState("");
+  const [useGiftCredit, setUseGiftCredit] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
@@ -92,6 +95,19 @@ export default function BookSessionPage() {
         }));
 
         setBookedSlots(bookings);
+
+        const user = auth.currentUser;
+
+        if (user) {
+          const creditsSnap = await getDoc(doc(db, "therapyCredits", user.uid));
+
+          if (creditsSnap.exists()) {
+            setTherapyCredits({
+              id: creditsSnap.id,
+              ...creditsSnap.data(),
+            });
+          }
+        }
       } catch (error) {
         console.error("Error loading booking page:", error);
       } finally {
@@ -189,6 +205,12 @@ export default function BookSessionPage() {
       return;
     }
 
+    if (useGiftCredit && (!therapyCredits || therapyCredits.remainingSessions <= 0)) {
+      alert("You do not have available gifted therapy sessions.");
+      setUseGiftCredit(false);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -201,19 +223,33 @@ export default function BookSessionPage() {
         therapistName: therapist.fullName,
         therapistEmail: therapist.email || "",
 
-        sessionFee: therapist.sessionFee || 0,
+        sessionFee: useGiftCredit ? 0 : therapist.sessionFee || 0,
         sessionDate,
         sessionTime,
         sessionDuration: availability?.sessionDuration || 60,
 
         status: "pending",
-        paymentStatus: "unpaid",
+        paymentStatus: useGiftCredit ? "gifted" : "unpaid",
+        paymentMethod: useGiftCredit ? "gift_credit" : "normal_payment",
+        giftCreditUsed: useGiftCredit,
+        giftCreditId: useGiftCredit ? therapyCredits.id : "",
+
         meetingLink: "",
         createdAt: serverTimestamp(),
       });
 
-      alert("Booking created successfully.");
+      if (useGiftCredit && therapyCredits?.remainingSessions > 0) {
+        await updateDoc(doc(db, "therapyCredits", user.uid), {
+          remainingSessions: therapyCredits.remainingSessions - 1,
+          updatedAt: serverTimestamp(),
+        });
 
+        alert("Booking created using your gifted therapy session.");
+        router.push("/my-bookings");
+        return;
+      }
+
+      alert("Booking created successfully.");
       router.push(`/payment/${bookingRef.id}`);
     } catch (error) {
       console.error(error);
@@ -259,7 +295,7 @@ export default function BookSessionPage() {
             <p className="mt-4 text-gray-700">Session Fee</p>
 
             <p className="text-3xl font-bold text-[#0F4C5C]">
-              KES {therapist.sessionFee || 0}
+              {useGiftCredit ? "Gifted Session" : `KES ${therapist.sessionFee || 0}`}
             </p>
           </div>
 
@@ -355,12 +391,35 @@ export default function BookSessionPage() {
               </div>
             )}
 
+            {therapyCredits?.remainingSessions > 0 && (
+              <div className="rounded-2xl bg-[#F7F3EC] p-5">
+                <p className="font-bold text-[#0F4C5C]">
+                  You have {therapyCredits.remainingSessions} gifted therapy
+                  session{therapyCredits.remainingSessions > 1 ? "s" : ""}{" "}
+                  available ❤️
+                </p>
+
+                <label className="mt-4 flex items-center gap-3 font-semibold text-gray-900">
+                  <input
+                    type="checkbox"
+                    checked={useGiftCredit}
+                    onChange={(e) => setUseGiftCredit(e.target.checked)}
+                  />
+                  Use gifted session for this booking
+                </label>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading || !availableSlotForSelectedDay || !sessionTime}
               className="w-full rounded-full bg-[#0F4C5C] p-4 font-semibold text-white hover:bg-[#0b3945] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "Creating Booking..." : "Proceed to Payment"}
+              {loading
+                ? "Creating Booking..."
+                : useGiftCredit
+                ? "Book With Gifted Session"
+                : "Proceed to Payment"}
             </button>
           </form>
         </div>
