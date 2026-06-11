@@ -8,6 +8,7 @@ import {
   doc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -19,15 +20,23 @@ type Booking = {
   sessionDate?: string;
   sessionTime?: string;
   sessionFee?: number;
+  feeCurrency?: string;
+  currency?: string;
   paymentStatus?: string;
   status?: string;
-  paidAt?: string;
+  paidAt?: any;
+  completedAt?: any;
+  cancelledAt?: any;
   meetingLink?: string;
+  reminderSent?: boolean;
+  reminderSentAt?: any;
+  reminderHoursBefore?: number;
 };
 
 export default function TherapistBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -44,10 +53,17 @@ export default function TherapistBookingsPage() {
 
         const snapshot = await getDocs(q);
 
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
+        const data = snapshot.docs.map((docItem) => ({
+          id: docItem.id,
+          ...docItem.data(),
         })) as Booking[];
+
+        data.sort((a, b) => {
+          const aDate = new Date(`${a.sessionDate || ""}T${a.sessionTime || "00:00"}`);
+          const bDate = new Date(`${b.sessionDate || ""}T${b.sessionTime || "00:00"}`);
+
+          return aDate.getTime() - bDate.getTime();
+        });
 
         setBookings(data);
       } catch (error) {
@@ -70,7 +86,11 @@ export default function TherapistBookingsPage() {
   );
 
   const upcomingSessions = useMemo(
-    () => bookings.filter((booking) => booking.status === "confirmed"),
+    () =>
+      bookings.filter(
+        (booking) =>
+          booking.status === "confirmed" && booking.paymentStatus === "paid"
+      ),
     [bookings]
   );
 
@@ -84,20 +104,36 @@ export default function TherapistBookingsPage() {
     [bookings]
   );
 
-  const totalEarnings = useMemo(() => {
+  const totalEarningsKes = useMemo(() => {
     return bookings
       .filter(
         (booking) =>
           booking.paymentStatus === "paid" &&
-          booking.status === "completed"
+          booking.status === "completed" &&
+          (booking.feeCurrency || booking.currency || "KES") === "KES"
+      )
+      .reduce((sum, booking) => sum + Number(booking.sessionFee || 0), 0);
+  }, [bookings]);
+
+  const totalEarningsUsd = useMemo(() => {
+    return bookings
+      .filter(
+        (booking) =>
+          booking.paymentStatus === "paid" &&
+          booking.status === "completed" &&
+          (booking.feeCurrency || booking.currency || "KES") === "USD"
       )
       .reduce((sum, booking) => sum + Number(booking.sessionFee || 0), 0);
   }, [bookings]);
 
   async function markCompleted(id: string) {
+    setActionLoading(id);
+
     try {
       await updateDoc(doc(db, "bookings", id), {
         status: "completed",
+        completedAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
       });
 
       setBookings((prev) =>
@@ -108,13 +144,23 @@ export default function TherapistBookingsPage() {
     } catch (error) {
       console.error(error);
       alert("Could not mark session as completed.");
+    } finally {
+      setActionLoading("");
     }
   }
 
   async function cancelSession(id: string) {
+    const confirmed = confirm("Are you sure you want to cancel this session?");
+
+    if (!confirmed) return;
+
+    setActionLoading(id);
+
     try {
       await updateDoc(doc(db, "bookings", id), {
         status: "cancelled",
+        cancelledAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
       });
 
       setBookings((prev) =>
@@ -125,6 +171,8 @@ export default function TherapistBookingsPage() {
     } catch (error) {
       console.error(error);
       alert("Could not cancel session.");
+    } finally {
+      setActionLoading("");
     }
   }
 
@@ -150,16 +198,17 @@ export default function TherapistBookingsPage() {
 
           <p className="mt-3 max-w-3xl text-base font-semibold leading-8 text-white">
             Manage pending bookings, upcoming sessions, completed appointments,
-            cancellations, and earnings.
+            cancellations, meeting links, reminders, and earnings.
           </p>
         </section>
 
-        <section className="my-10 grid gap-4 md:grid-cols-5">
+        <section className="my-10 grid gap-4 md:grid-cols-6">
           <SummaryCard title="Pending" value={pendingSessions.length} />
           <SummaryCard title="Upcoming" value={upcomingSessions.length} />
           <SummaryCard title="Completed" value={completedSessions.length} />
           <SummaryCard title="Cancelled" value={cancelledSessions.length} />
-          <SummaryCard title="Earnings" value={`KES ${totalEarnings}`} />
+          <SummaryCard title="KES Earnings" value={`KES ${totalEarningsKes}`} />
+          <SummaryCard title="USD Earnings" value={`USD ${totalEarningsUsd}`} />
         </section>
 
         <SessionSection title="Pending Bookings">
@@ -183,27 +232,37 @@ export default function TherapistBookingsPage() {
             upcomingSessions.map((booking) => (
               <SessionCard key={booking.id} booking={booking}>
                 <div className="mt-5 flex flex-wrap gap-3">
-                  {booking.meetingLink && (
+                  {booking.meetingLink ? (
                     <a
                       href={booking.meetingLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-full bg-green-700 px-5 py-3 font-bold text-white"
+                      className="rounded-full bg-green-700 px-5 py-3 font-bold text-white hover:bg-green-800"
                     >
                       Join Session
                     </a>
+                  ) : (
+                    <span className="rounded-full bg-yellow-100 px-5 py-3 font-bold text-gray-900">
+                      Meeting link pending
+                    </span>
                   )}
 
                   <button
+                    type="button"
+                    disabled={actionLoading === booking.id}
                     onClick={() => markCompleted(booking.id)}
-                    className="rounded-full bg-[#0F4C5C] px-5 py-3 font-bold text-white hover:bg-[#0b3945]"
+                    className="rounded-full bg-[#0F4C5C] px-5 py-3 font-bold text-white hover:bg-[#0b3945] disabled:opacity-70"
                   >
-                    Mark Completed
+                    {actionLoading === booking.id
+                      ? "Saving..."
+                      : "Mark Completed"}
                   </button>
 
                   <button
+                    type="button"
+                    disabled={actionLoading === booking.id}
                     onClick={() => cancelSession(booking.id)}
-                    className="rounded-full bg-red-700 px-5 py-3 font-bold text-white"
+                    className="rounded-full bg-red-700 px-5 py-3 font-bold text-white hover:bg-red-800 disabled:opacity-70"
                   >
                     Cancel
                   </button>
@@ -219,7 +278,9 @@ export default function TherapistBookingsPage() {
           ) : (
             completedSessions.map((booking) => (
               <SessionCard key={booking.id} booking={booking}>
-                <p className="mt-4 font-bold text-green-700">Completed</p>
+                <p className="mt-4 rounded-2xl bg-green-100 p-4 font-bold text-green-800">
+                  Completed
+                </p>
               </SessionCard>
             ))
           )}
@@ -231,7 +292,9 @@ export default function TherapistBookingsPage() {
           ) : (
             cancelledSessions.map((booking) => (
               <SessionCard key={booking.id} booking={booking}>
-                <p className="mt-4 font-bold text-red-700">Cancelled</p>
+                <p className="mt-4 rounded-2xl bg-red-100 p-4 font-bold text-red-800">
+                  Cancelled
+                </p>
               </SessionCard>
             ))
           )}
@@ -288,36 +351,57 @@ function SessionCard({
   booking: Booking;
   children?: React.ReactNode;
 }) {
+  const currency = booking.feeCurrency || booking.currency || "KES";
+
   return (
     <div className="rounded-2xl bg-white p-6 shadow">
-      <div className="space-y-2 text-base font-semibold text-gray-900">
-        <p>
-          <strong>Client:</strong> {booking.clientName || "Client"}
-        </p>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2 text-base font-semibold text-gray-900">
+          <p>
+            <strong>Client:</strong> {booking.clientName || "Client"}
+          </p>
 
-        <p>
-          <strong>Email:</strong> {booking.clientEmail || "Not provided"}
-        </p>
+          <p>
+            <strong>Email:</strong> {booking.clientEmail || "Not provided"}
+          </p>
 
-        <p>
-          <strong>Date:</strong> {booking.sessionDate || "Not set"}
-        </p>
+          <p>
+            <strong>Date:</strong> {booking.sessionDate || "Not set"}
+          </p>
 
-        <p>
-          <strong>Time:</strong> {booking.sessionTime || "Not set"}
-        </p>
+          <p>
+            <strong>Time:</strong> {booking.sessionTime || "Not set"}
+          </p>
 
-        <p>
-          <strong>Fee:</strong> KES {booking.sessionFee || 0}
-        </p>
+          <p>
+            <strong>Fee:</strong> {currency} {booking.sessionFee || 0}
+          </p>
+        </div>
 
-        <p>
-          <strong>Payment:</strong> {booking.paymentStatus || "unpaid"}
-        </p>
+        <div className="space-y-2 text-base font-semibold text-gray-900">
+          <p>
+            <strong>Payment:</strong> {booking.paymentStatus || "unpaid"}
+          </p>
 
-        <p>
-          <strong>Status:</strong> {booking.status || "pending"}
-        </p>
+          <p>
+            <strong>Status:</strong> {booking.status || "pending"}
+          </p>
+
+          <p>
+            <strong>Reminder:</strong>{" "}
+            {booking.reminderSent ? "Sent" : "Not sent yet"}
+          </p>
+
+          <p>
+            <strong>Reminder Time:</strong>{" "}
+            {booking.reminderHoursBefore || 3} hours before session
+          </p>
+
+          <p>
+            <strong>Meeting:</strong>{" "}
+            {booking.meetingLink ? "Available" : "Pending"}
+          </p>
+        </div>
       </div>
 
       {children}

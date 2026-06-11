@@ -7,6 +7,7 @@ import {
   updateDoc,
   doc,
   getDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { createGoogleMeetEvent } from "@/lib/googleCalendar";
@@ -24,15 +25,13 @@ export async function POST(request: Request) {
     const bookingId =
       payload?.api_ref ||
       payload?.invoice?.api_ref ||
-      payload?.ref;
+      payload?.ref ||
+      payload?.tracking_id;
 
     const paymentState =
       payload?.state ||
       payload?.invoice?.state ||
       payload?.status;
-
-    console.log("Booking ID:", bookingId);
-    console.log("Payment State:", paymentState);
 
     if (!bookingId) {
       return NextResponse.json(
@@ -50,11 +49,27 @@ export async function POST(request: Request) {
     }
 
     const bookingRef = doc(db, "bookings", bookingId);
+    const bookingSnap = await getDoc(bookingRef);
+
+    if (!bookingSnap.exists()) {
+      return NextResponse.json(
+        { success: false, error: "Booking not found" },
+        { status: 404 }
+      );
+    }
+
+    const booking = bookingSnap.data();
 
     await updateDoc(bookingRef, {
       paymentStatus: "paid",
       status: "confirmed",
-      paidAt: new Date().toISOString(),
+      paidAt: serverTimestamp(),
+
+      reminderSent: false,
+      reminderSentAt: null,
+      reminderHoursBefore: booking.reminderHoursBefore || 3,
+
+      updatedAt: serverTimestamp(),
     });
 
     const paymentQuery = query(
@@ -67,49 +82,46 @@ export async function POST(request: Request) {
     for (const paymentDoc of paymentSnapshot.docs) {
       await updateDoc(doc(db, "payments", paymentDoc.id), {
         status: "completed",
-        paidAt: new Date().toISOString(),
+        paidAt: serverTimestamp(),
         mpesaReceiptNumber:
           payload?.invoice?.mpesa_reference ||
           payload?.invoice?.provider_ref ||
           payload?.trans_id ||
+          payload?.tracking_id ||
           "",
+        webhookPayload: payload,
+        updatedAt: serverTimestamp(),
       });
     }
 
-    console.log("Starting Google Meet generation...");
-
     try {
-      const bookingSnap = await getDoc(bookingRef);
+      if (booking.clientEmail && booking.therapistEmail) {
+        const meetEvent = await createGoogleMeetEvent({
+          clientName: booking.clientName || "Client",
+          clientEmail: booking.clientEmail,
+          therapistName: booking.therapistName || "Therapist",
+          therapistEmail: booking.therapistEmail,
+          sessionDate: booking.sessionDate,
+          sessionTime: booking.sessionTime,
+          
+        });
 
-      if (!bookingSnap.exists()) {
-        console.log("Booking not found for Meet generation:", bookingId);
+        await updateDoc(bookingRef, {
+          meetingLink: meetEvent.meetingLink || "",
+          googleEventId: meetEvent.eventId || "",
+          calendarCreatedAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
       } else {
-        const booking = bookingSnap.data();
-
-        console.log("Booking data for Meet:", booking);
-
-        if (booking.clientEmail && booking.therapistEmail) {
-          const meetEvent = await createGoogleMeetEvent({
-            clientName: booking.clientName || "Client",
-            clientEmail: booking.clientEmail,
-            therapistName: booking.therapistName || "Therapist",
-            therapistEmail: booking.therapistEmail,
-            sessionDate: booking.sessionDate,
-            sessionTime: booking.sessionTime,
-          });
-
-          console.log("Google Meet Event Result:", meetEvent);
-
-          await updateDoc(bookingRef, {
-            meetingLink: meetEvent.meetingLink || "",
-            googleEventId: meetEvent.eventId || "",
-          });
-        } else {
-          console.log("Missing clientEmail or therapistEmail for Meet generation");
-        }
+        console.log("Missing clientEmail or therapistEmail for Meet generation");
       }
     } catch (meetError) {
       console.error("Google Meet generation failed:", meetError);
+
+      await updateDoc(bookingRef, {
+        calendarError: "Google Meet generation failed",
+        updatedAt: serverTimestamp(),
+      });
     }
 
     return NextResponse.json({
@@ -123,7 +135,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message,
+        error: error.message || "Webhook failed",
       },
       { status: 500 }
     );
