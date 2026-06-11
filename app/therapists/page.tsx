@@ -316,19 +316,26 @@ export default function TherapistsPage() {
                     </p>
                   </div>
 
-                  <div className="mt-auto flex gap-3 pt-6">
-                    <Link
-                      href={`/therapist/${therapist.id}`}
-                      className="flex-1 rounded-full border-2 border-[#0F4C5C] bg-white px-4 py-3 text-center text-sm font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
-                    >
-                      View Profile
-                    </Link>
+                  <div className="mt-auto grid gap-3 pt-6 sm:grid-cols-3">
+                  <Link
+                     href={`/therapist/${therapist.id}`}
+                     className="rounded-full border-2 border-[#0F4C5C] bg-white px-4 py-3 text-center text-sm font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+                  >
+                     View
+                  </Link>
 
-                    <Link
-                      href={`/book-session/${therapist.id}`}
-                      className="flex-1 rounded-full bg-[#0F4C5C] px-4 py-3 text-center text-sm font-bold text-white hover:bg-[#0b3945]"
-                    >
-                      Book Session
+                  <Link
+                     href={`/book-session/${therapist.id}`}
+                     className="rounded-full bg-[#0F4C5C] px-4 py-3 text-center text-sm font-bold text-white hover:bg-[#0b3945]"
+                  >
+                     Book
+                  </Link>
+
+                  <Link
+                     href={`/gift-session?therapistId=${therapist.id}`}
+                     className="rounded-full bg-[#F7F3EC] px-4 py-3 text-center text-sm font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+                  >
+                     Gift
                     </Link>
                   </div>
                 </article>

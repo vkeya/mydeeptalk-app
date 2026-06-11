@@ -53,6 +53,16 @@ export default function RedeemGiftDetailsPage() {
       router.push("/login");
       return;
     }
+	
+	if (gift.status === "redeemed") {
+      alert("This gift has already been redeemed.");
+      return;
+    }
+
+    if (gift.paymentStatus !== "paid") {
+      alert("This gift has not been paid for yet.");
+      return;
+    }
 
     setRedeeming(true);
 
