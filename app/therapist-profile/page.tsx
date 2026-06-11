@@ -34,6 +34,7 @@ export default function TherapistProfilePage() {
   const [specialties, setSpecialties] = useState<string[]>([]);
   const [languages, setLanguages] = useState("");
   const [yearsExperience, setYearsExperience] = useState("");
+  const [cpbLicenseNumber, setCpbLicenseNumber] = useState("");
 
   const [feeCurrency, setFeeCurrency] = useState("KES");
 
@@ -88,6 +89,7 @@ export default function TherapistProfilePage() {
           setGender(data.gender || "");
           setBio(data.bio || "");
           setFeeCurrency(data.feeCurrency || data.currency || "KES");
+          setCpbLicenseNumber(data.cpbLicenseNumber || "");
 
           setSpecialties(
             Array.isArray(data.specialties)
@@ -204,6 +206,11 @@ export default function TherapistProfilePage() {
       return;
     }
 
+    if (!cpbLicenseNumber.trim()) {
+      alert("Please enter your CPB license number.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -236,6 +243,7 @@ export default function TherapistProfilePage() {
             .map((item) => item.trim())
             .filter(Boolean),
           yearsExperience: Number(yearsExperience),
+          cpbLicenseNumber: cpbLicenseNumber.trim(),
 
           feeCurrency,
           currency: feeCurrency,
@@ -457,6 +465,14 @@ export default function TherapistProfilePage() {
               placeholder="Years of Experience"
               value={yearsExperience}
               onChange={(e) => setYearsExperience(e.target.value)}
+              required
+            />
+
+            <input
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+              placeholder="CPB License Number"
+              value={cpbLicenseNumber}
+              onChange={(e) => setCpbLicenseNumber(e.target.value)}
               required
             />
 
