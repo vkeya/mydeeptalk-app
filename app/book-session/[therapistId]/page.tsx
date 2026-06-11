@@ -21,6 +21,26 @@ type WeeklySlot = {
   endTime: string;
 };
 
+function getTodayDateString() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function isPastDate(dateString: string) {
+  if (!dateString) return false;
+
+  const selectedDate = new Date(`${dateString}T00:00:00`);
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+
+  return selectedDate < today;
+}
+
 export default function BookSessionPage() {
   const params = useParams();
   const router = useRouter();
@@ -36,6 +56,8 @@ export default function BookSessionPage() {
 
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+
+  const todayDate = getTodayDateString();
 
   useEffect(() => {
     async function fetchData() {
@@ -89,7 +111,11 @@ export default function BookSessionPage() {
     return date.toLocaleDateString("en-US", { weekday: "long" });
   }
 
-  function generateTimeSlots(startTime: string, endTime: string, duration: number) {
+  function generateTimeSlots(
+    startTime: string,
+    endTime: string,
+    duration: number
+  ) {
     const slots: string[] = [];
 
     const [startHour, startMinute] = startTime.split(":").map(Number);
@@ -148,6 +174,13 @@ export default function BookSessionPage() {
 
     if (!sessionDate || !sessionTime) {
       alert("Please select date and time.");
+      return;
+    }
+
+    if (isPastDate(sessionDate)) {
+      alert("Please select today or a future date.");
+      setSessionDate("");
+      setSessionTime("");
       return;
     }
 
@@ -264,10 +297,20 @@ export default function BookSessionPage() {
 
               <input
                 type="date"
+                min={todayDate}
                 className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-gray-900"
                 value={sessionDate}
                 onChange={(e) => {
-                  setSessionDate(e.target.value);
+                  const selectedDate = e.target.value;
+
+                  if (isPastDate(selectedDate)) {
+                    alert("You cannot select a date that has already passed.");
+                    setSessionDate("");
+                    setSessionTime("");
+                    return;
+                  }
+
+                  setSessionDate(selectedDate);
                   setSessionTime("");
                 }}
                 required
