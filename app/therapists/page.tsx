@@ -2,8 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import { auth, db } from "@/lib/firebase";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 type Therapist = {
   id: string;
@@ -13,10 +22,14 @@ type Therapist = {
   languages?: string[];
   yearsExperience?: number;
   sessionFee?: number;
+  feeCurrency?: string;
+  currency?: string;
   country?: string;
   city?: string;
   status?: string;
   profilePhoto?: string;
+  photoPositionX?: number;
+  photoPositionY?: number;
   averageRating?: number;
   reviewCount?: number;
 };
@@ -27,12 +40,28 @@ type Review = {
 };
 
 export default function TherapistsPage() {
+  const router = useRouter();
+
   const [therapists, setTherapists] = useState<Therapist[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchTherapists() {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
       try {
+        const intakeSnap = await getDoc(
+          doc(db, "preBookingIntakes", user.uid)
+        );
+
+        if (!intakeSnap.exists()) {
+          router.push("/pre-booking-intake");
+          return;
+        }
+
         const therapistsQuery = query(
           collection(db, "therapists"),
           where("status", "==", "approved")
@@ -41,7 +70,9 @@ export default function TherapistsPage() {
         const therapistsSnap = await getDocs(therapistsQuery);
         const reviewsSnap = await getDocs(collection(db, "reviews"));
 
-        const reviews = reviewsSnap.docs.map((doc) => doc.data()) as Review[];
+        const reviews = reviewsSnap.docs.map((docItem) =>
+          docItem.data()
+        ) as Review[];
 
         const therapistList = therapistsSnap.docs.map((docItem) => {
           const therapist = {
@@ -80,10 +111,10 @@ export default function TherapistsPage() {
       } finally {
         setLoading(false);
       }
-    }
+    });
 
-    fetchTherapists();
-  }, []);
+    return () => unsubscribe();
+  }, [router]);
 
   return (
     <main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
@@ -148,107 +179,117 @@ export default function TherapistsPage() {
           </section>
         ) : (
           <section className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {therapists.map((therapist) => (
-              <article
-                key={therapist.id}
-                className="rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
-              >
-                <div className="mb-5 flex items-center gap-4">
-                  {therapist.profilePhoto ? (
-                    <img
-                      src={therapist.profilePhoto}
-                      alt={therapist.fullName || "Therapist"}
-                      className="h-20 w-20 rounded-full object-cover shadow"
-                    />
-                  ) : (
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#F7F3EC] text-2xl font-bold text-[#0F4C5C] shadow">
-                      {therapist.fullName?.charAt(0)?.toUpperCase() || "T"}
+            {therapists.map((therapist) => {
+              const currency =
+                therapist.feeCurrency || therapist.currency || "KES";
+
+              return (
+                <article
+                  key={therapist.id}
+                  className="rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+                >
+                  <div className="mb-5 flex items-center gap-4">
+                    {therapist.profilePhoto ? (
+                      <img
+                        src={therapist.profilePhoto}
+                        alt={therapist.fullName || "Therapist"}
+                        className="h-20 w-20 rounded-full object-cover shadow"
+                        style={{
+                          objectPosition: `${
+                            therapist.photoPositionX ?? 50
+                          }% ${therapist.photoPositionY ?? 50}%`,
+                        }}
+                      />
+                    ) : (
+                      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#F7F3EC] text-2xl font-bold text-[#0F4C5C] shadow">
+                        {therapist.fullName?.charAt(0)?.toUpperCase() || "T"}
+                      </div>
+                    )}
+
+                    <div>
+                      <h2 className="text-2xl font-bold text-[#0F4C5C]">
+                        {therapist.fullName || "Verified Therapist"}
+                      </h2>
+
+                      <span className="mt-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-gray-900">
+                        ✓ Verified Therapist
+                      </span>
                     </div>
+                  </div>
+
+                  {therapist.reviewCount && therapist.reviewCount > 0 ? (
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-[#0F4C5C]">
+                        ⭐ {therapist.averageRating?.toFixed(1)}
+                      </p>
+
+                      <p className="text-sm font-bold text-gray-900">
+                        ({therapist.reviewCount} reviews)
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm font-bold text-gray-900">
+                      No reviews yet
+                    </p>
                   )}
 
-                  <div>
-                    <h2 className="text-2xl font-bold text-[#0F4C5C]">
-                      {therapist.fullName || "Verified Therapist"}
-                    </h2>
+                  <p className="mt-4 line-clamp-3 text-base font-semibold leading-7 text-gray-900">
+                    {therapist.bio ||
+                      "A verified therapist ready to support your emotional wellness journey."}
+                  </p>
 
-                    <span className="mt-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-gray-900">
-                      ✓ Verified Therapist
-                    </span>
-                  </div>
-                </div>
-
-                {therapist.reviewCount && therapist.reviewCount > 0 ? (
-                  <div className="flex items-center gap-2">
-                    <p className="font-bold text-[#0F4C5C]">
-                      ⭐ {therapist.averageRating?.toFixed(1)}
+                  <div className="mt-5 space-y-2 text-sm font-semibold text-gray-900">
+                    <p>
+                      <strong>Experience:</strong>{" "}
+                      {therapist.yearsExperience || 0} years
                     </p>
 
-                    <p className="text-sm font-bold text-gray-900">
-                      ({therapist.reviewCount} reviews)
+                    <p>
+                      <strong>Languages:</strong>{" "}
+                      {therapist.languages?.length
+                        ? therapist.languages.join(", ")
+                        : "Not specified"}
+                    </p>
+
+                    <p>
+                      <strong>Specialties:</strong>{" "}
+                      {therapist.specialties?.length
+                        ? therapist.specialties.join(", ")
+                        : "Not specified"}
+                    </p>
+
+                    <p>
+                      <strong>Location:</strong>{" "}
+                      {[therapist.city, therapist.country]
+                        .filter(Boolean)
+                        .join(", ") || "Online"}
+                    </p>
+
+                    <p className="pt-2 text-lg font-bold text-[#0F4C5C]">
+                      {therapist.sessionFee
+                        ? `${currency} ${therapist.sessionFee}`
+                        : "Fee not specified"}
                     </p>
                   </div>
-                ) : (
-                  <p className="text-sm font-bold text-gray-900">
-                    No reviews yet
-                  </p>
-                )}
 
-                <p className="mt-4 line-clamp-3 text-base font-semibold leading-7 text-gray-900">
-                  {therapist.bio ||
-                    "A verified therapist ready to support your emotional wellness journey."}
-                </p>
+                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                    <Link
+                      href={`/therapist/${therapist.id}`}
+                      className="rounded-full border-2 border-[#0F4C5C] bg-white px-4 py-3 text-center text-sm font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+                    >
+                      View Profile
+                    </Link>
 
-                <div className="mt-5 space-y-2 text-sm font-semibold text-gray-900">
-                  <p>
-                    <strong>Experience:</strong>{" "}
-                    {therapist.yearsExperience || 0} years
-                  </p>
-
-                  <p>
-                    <strong>Languages:</strong>{" "}
-                    {therapist.languages?.length
-                      ? therapist.languages.join(", ")
-                      : "Not specified"}
-                  </p>
-
-                  <p>
-                    <strong>Specialties:</strong>{" "}
-                    {therapist.specialties?.length
-                      ? therapist.specialties.join(", ")
-                      : "Not specified"}
-                  </p>
-
-                  <p>
-                    <strong>Location:</strong>{" "}
-                    {[therapist.city, therapist.country]
-                      .filter(Boolean)
-                      .join(", ") || "Online"}
-                  </p>
-
-                  <p className="pt-2 text-lg font-bold text-[#0F4C5C]">
-                    {therapist.sessionFee
-                      ? `KES ${therapist.sessionFee}`
-                      : "Fee not specified"}
-                  </p>
-                </div>
-
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  <Link
-                    href={`/therapist/${therapist.id}`}
-                    className="rounded-full border-2 border-[#0F4C5C] bg-white px-4 py-3 text-center text-sm font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
-                  >
-                    View Profile
-                  </Link>
-
-                  <Link
-                    href={`/book-session/${therapist.id}`}
-                    className="rounded-full bg-[#0F4C5C] px-4 py-3 text-center text-sm font-bold text-white hover:bg-[#0b3945]"
-                  >
-                    Book Session
-                  </Link>
-                </div>
-              </article>
-            ))}
+                    <Link
+                      href={`/book-session/${therapist.id}`}
+                      className="rounded-full bg-[#0F4C5C] px-4 py-3 text-center text-sm font-bold text-white hover:bg-[#0b3945]"
+                    >
+                      Book Session
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
           </section>
         )}
       </div>

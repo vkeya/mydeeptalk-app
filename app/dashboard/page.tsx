@@ -97,9 +97,9 @@ function ClientDashboard() {
       icon: "🧑‍⚕️",
       title: "Find a Therapist",
       description:
-        "Browse verified therapists by specialty, language, gender, experience, and availability.",
-      href: "/therapists",
-      buttonText: "Find Therapist",
+        "Answer a few preparation questions, then browse verified therapists by specialty, language, gender, experience, and availability.",
+      href: "/pre-booking-intake",
+      buttonText: "Start Booking",
       primary: true,
     },
     {
