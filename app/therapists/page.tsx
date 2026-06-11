@@ -40,6 +40,28 @@ type Review = {
   rating: number;
 };
 
+function normalizeGender(value: any) {
+  const text = String(value || "").trim().toLowerCase();
+
+  if (
+    text.includes("no preference") ||
+    text.includes("any") ||
+    text.includes("either")
+  ) {
+    return "";
+  }
+
+  if (text.includes("female") || text.includes("woman")) {
+    return "female";
+  }
+
+  if (text.includes("male") || text.includes("man")) {
+    return "male";
+  }
+
+  return text;
+}
+
 export default function TherapistsPage() {
   const router = useRouter();
 
@@ -63,11 +85,15 @@ export default function TherapistsPage() {
 
         const intakeData = intakeSnap.data();
 
-        const preferredGender =
+        const preferredGender = normalizeGender(
           intakeData?.preferredGender ||
-          intakeData?.therapistGender ||
-          intakeData?.gender ||
-          "";
+            intakeData?.therapistGender ||
+            intakeData?.genderPreference ||
+            intakeData?.preferredTherapistGender ||
+            intakeData?.preferredTherapist ||
+            intakeData?.gender ||
+            ""
+        );
 
         const therapistsQuery = query(
           collection(db, "therapists"),
@@ -109,15 +135,13 @@ export default function TherapistsPage() {
         });
 
         const filteredTherapists = therapistList.filter((therapist) => {
-          if (
-            preferredGender &&
-            preferredGender.toLowerCase() !== "any" &&
-            therapist.gender?.toLowerCase() !== preferredGender.toLowerCase()
-          ) {
-            return false;
+          const therapistGender = normalizeGender(therapist.gender);
+
+          if (!preferredGender) {
+            return true;
           }
 
-          return true;
+          return therapistGender === preferredGender;
         });
 
         filteredTherapists.sort(
