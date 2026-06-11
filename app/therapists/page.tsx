@@ -17,6 +17,7 @@ import { onAuthStateChanged } from "firebase/auth";
 type Therapist = {
   id: string;
   fullName?: string;
+  gender?: string;
   bio?: string;
   specialties?: string[];
   languages?: string[];
@@ -53,14 +54,20 @@ export default function TherapistsPage() {
       }
 
       try {
-        const intakeSnap = await getDoc(
-          doc(db, "preBookingIntakes", user.uid)
-        );
+        const intakeSnap = await getDoc(doc(db, "preBookingIntakes", user.uid));
 
         if (!intakeSnap.exists()) {
           router.push("/pre-booking-intake");
           return;
         }
+
+        const intakeData = intakeSnap.data();
+
+        const preferredGender =
+          intakeData?.preferredGender ||
+          intakeData?.therapistGender ||
+          intakeData?.gender ||
+          "";
 
         const therapistsQuery = query(
           collection(db, "therapists"),
@@ -101,11 +108,23 @@ export default function TherapistsPage() {
           };
         });
 
-        therapistList.sort(
+        const filteredTherapists = therapistList.filter((therapist) => {
+          if (
+            preferredGender &&
+            preferredGender.toLowerCase() !== "any" &&
+            therapist.gender?.toLowerCase() !== preferredGender.toLowerCase()
+          ) {
+            return false;
+          }
+
+          return true;
+        });
+
+        filteredTherapists.sort(
           (a, b) => (b.averageRating || 0) - (a.averageRating || 0)
         );
 
-        setTherapists(therapistList);
+        setTherapists(filteredTherapists);
       } catch (error) {
         console.error("Error loading therapists:", error);
       } finally {
@@ -143,37 +162,32 @@ export default function TherapistsPage() {
         ) : therapists.length === 0 ? (
           <section className="mt-10 rounded-3xl bg-white p-8 text-center shadow-lg md:p-10">
             <p className="font-bold uppercase tracking-wide text-[#0F4C5C]">
-              Therapist onboarding in progress
+              No matching therapists found
             </p>
 
             <h2 className="mt-3 text-3xl font-bold text-[#0F4C5C]">
-              We Are Building a Trusted Therapist Network
+              We Could Not Find a Therapist Matching Your Preference Yet
             </h2>
 
             <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-8 text-gray-900">
               MyDeepTalk is carefully onboarding and verifying qualified
-              professionals before making them available for bookings. This
-              helps us protect trust, safety, and quality.
-            </p>
-
-            <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-8 text-gray-900">
-              While therapist profiles are being reviewed, you can begin with a
-              free self-discovery check-in and guided reflection.
+              professionals. You can update your preferences or begin with a
+              free self-discovery check-in.
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Link
-                href="/self-assessment"
+                href="/pre-booking-intake"
                 className="rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white hover:bg-[#0b3945]"
               >
-                Begin Free Check-In
+                Update Preferences
               </Link>
 
               <Link
-                href="/for-therapists"
+                href="/self-assessment"
                 className="rounded-full border-2 border-[#0F4C5C] bg-white px-6 py-3 font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
               >
-                Join as a Therapist
+                Begin Free Check-In
               </Link>
             </div>
           </section>
@@ -239,6 +253,11 @@ export default function TherapistsPage() {
                   </p>
 
                   <div className="mt-5 space-y-2 text-sm font-semibold text-gray-900">
+                    <p>
+                      <strong>Gender:</strong>{" "}
+                      {therapist.gender || "Not specified"}
+                    </p>
+
                     <p>
                       <strong>Experience:</strong>{" "}
                       {therapist.yearsExperience || 0} years
