@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Navbar() {
   return (
@@ -6,49 +7,51 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
 
         {/* Logo */}
-
-        <Link
-          href="/"
-          className="text-2xl font-bold text-[#0F4C5C]"
-        >
-          MyDeepTalk
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/images/logo.png"
+            alt="MyDeepTalk"
+            width={220}
+            height={70}
+            priority
+            className="h-12 w-auto object-contain"
+          />
         </Link>
 
         {/* Navigation */}
-
         <div className="hidden items-center gap-8 lg:flex">
 
           <Link
             href="/about"
-            className="text-gray-600 hover:text-[#0F4C5C]"
+            className="text-gray-600 transition hover:text-[#0F4C5C]"
           >
             About
           </Link>
 
           <Link
             href="/how-it-works"
-            className="text-gray-600 hover:text-[#0F4C5C]"
+            className="text-gray-600 transition hover:text-[#0F4C5C]"
           >
             How It Works
           </Link>
 
           <Link
             href="/therapists"
-            className="text-gray-600 hover:text-[#0F4C5C]"
+            className="text-gray-600 transition hover:text-[#0F4C5C]"
           >
             Find a Therapist
           </Link>
 
           <Link
             href="/for-therapists"
-            className="text-gray-600 hover:text-[#0F4C5C]"
+            className="text-gray-600 transition hover:text-[#0F4C5C]"
           >
             For Therapists
           </Link>
 
           <Link
             href="/contact"
-            className="text-gray-600 hover:text-[#0F4C5C]"
+            className="text-gray-600 transition hover:text-[#0F4C5C]"
           >
             Contact
           </Link>
@@ -56,7 +59,6 @@ export default function Navbar() {
         </div>
 
         {/* Buttons */}
-
         <div className="flex items-center gap-4">
 
           <Link
