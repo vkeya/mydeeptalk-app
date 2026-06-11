@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import TherapistAgreementModal from "@/components/TherapistAgreementModal";
@@ -26,6 +26,7 @@ const specialtyOptions = [
 
 export default function TherapistProfilePage() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [fullName, setFullName] = useState("");
   const [gender, setGender] = useState("");
@@ -33,6 +34,8 @@ export default function TherapistProfilePage() {
   const [specialties, setSpecialties] = useState<string[]>([]);
   const [languages, setLanguages] = useState("");
   const [yearsExperience, setYearsExperience] = useState("");
+
+  const [feeCurrency, setFeeCurrency] = useState("KES");
 
   const [sessionFees, setSessionFees] = useState({
     individual: "",
@@ -45,6 +48,8 @@ export default function TherapistProfilePage() {
   const [city, setCity] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState("");
+  const [photoPositionX, setPhotoPositionX] = useState(50);
+  const [photoPositionY, setPhotoPositionY] = useState(50);
 
   const [currentUserId, setCurrentUserId] = useState("");
   const [agreementAccepted, setAgreementAccepted] = useState(false);
@@ -82,6 +87,7 @@ export default function TherapistProfilePage() {
           setFullName(data.fullName || "");
           setGender(data.gender || "");
           setBio(data.bio || "");
+          setFeeCurrency(data.feeCurrency || data.currency || "KES");
 
           setSpecialties(
             Array.isArray(data.specialties)
@@ -113,6 +119,8 @@ export default function TherapistProfilePage() {
           setCountry(data.country || "");
           setCity(data.city || "");
           setPhotoPreview(data.profilePhoto || data.photoUrl || "");
+          setPhotoPositionX(data.photoPositionX ?? 50);
+          setPhotoPositionY(data.photoPositionY ?? 50);
         }
       } catch (error) {
         console.error("Error loading therapist profile:", error);
@@ -138,6 +146,10 @@ export default function TherapistProfilePage() {
 
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
+    setPhotoPositionX(50);
+    setPhotoPositionY(50);
+
+    e.target.value = "";
   }
 
   async function uploadToCloudinary(file: File, folder: string) {
@@ -225,6 +237,9 @@ export default function TherapistProfilePage() {
             .filter(Boolean),
           yearsExperience: Number(yearsExperience),
 
+          feeCurrency,
+          currency: feeCurrency,
+
           sessionFees: {
             individual: Number(sessionFees.individual || 0),
             couple: Number(sessionFees.couple || 0),
@@ -238,6 +253,8 @@ export default function TherapistProfilePage() {
           city,
           profilePhoto: finalPhotoUrl,
           photoUrl: finalPhotoUrl,
+          photoPositionX,
+          photoPositionY,
           storageProvider: finalPhotoUrl ? "cloudinary" : "",
           status: existingProfile?.status || "pending",
           credentialsStatus:
@@ -311,20 +328,68 @@ export default function TherapistProfilePage() {
                 <img
                   src={photoPreview}
                   alt="Profile preview"
-                  className="mb-4 h-32 w-32 rounded-full object-cover shadow"
+                  className="mb-4 h-36 w-36 rounded-full object-cover shadow"
+                  style={{
+                    objectPosition: `${photoPositionX}% ${photoPositionY}%`,
+                  }}
                 />
               ) : (
-                <div className="mb-4 flex h-32 w-32 items-center justify-center rounded-full bg-white text-sm font-bold text-gray-900 shadow">
+                <div className="mb-4 flex h-36 w-36 items-center justify-center rounded-full bg-white text-sm font-bold text-gray-900 shadow">
                   No photo
                 </div>
               )}
 
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 onChange={handlePhotoChange}
-                className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                className="hidden"
               />
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white hover:bg-[#0b3945]"
+              >
+                Choose Profile Photo
+              </button>
+
+              {photoPreview && (
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-bold text-[#0F4C5C]">
+                      Move photo left / right
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={photoPositionX}
+                      onChange={(e) =>
+                        setPhotoPositionX(Number(e.target.value))
+                      }
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-bold text-[#0F4C5C]">
+                      Move photo up / down
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={photoPositionY}
+                      onChange={(e) =>
+                        setPhotoPositionY(Number(e.target.value))
+                      }
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <input
@@ -400,11 +465,21 @@ export default function TherapistProfilePage() {
                 Session Fees
               </label>
 
+              <select
+                className="mb-6 w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                value={feeCurrency}
+                onChange={(e) => setFeeCurrency(e.target.value)}
+                required
+              >
+                <option value="KES">KES - Kenyan Shilling</option>
+                <option value="USD">USD - US Dollar</option>
+              </select>
+
               <div className="grid gap-6 md:grid-cols-2">
                 <input
                   type="number"
                   className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-                  placeholder="Individual Session Fee"
+                  placeholder={`Individual Session Fee (${feeCurrency})`}
                   value={sessionFees.individual}
                   onChange={(e) =>
                     setSessionFees({
@@ -418,7 +493,7 @@ export default function TherapistProfilePage() {
                 <input
                   type="number"
                   className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-                  placeholder="Couple Session Fee"
+                  placeholder={`Couple Session Fee (${feeCurrency})`}
                   value={sessionFees.couple}
                   onChange={(e) =>
                     setSessionFees({
@@ -431,7 +506,7 @@ export default function TherapistProfilePage() {
                 <input
                   type="number"
                   className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-                  placeholder="Parent + Child Session Fee"
+                  placeholder={`Parent + Child Session Fee (${feeCurrency})`}
                   value={sessionFees.parentChild}
                   onChange={(e) =>
                     setSessionFees({
@@ -444,7 +519,7 @@ export default function TherapistProfilePage() {
                 <input
                   type="number"
                   className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-                  placeholder="Family Session Fee"
+                  placeholder={`Family Session Fee (${feeCurrency})`}
                   value={sessionFees.family}
                   onChange={(e) =>
                     setSessionFees({
@@ -477,7 +552,7 @@ export default function TherapistProfilePage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945]"
+              className="w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {loading
                 ? existingProfile
