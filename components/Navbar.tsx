@@ -13,7 +13,7 @@ export default function Navbar() {
             width={350}
             height={200}
             priority
-            className="h-14 w-auto object-contain md:h-12"
+            className="h-9 w-auto object-contain md:h-12"
           />
         </Link>
 
@@ -44,7 +44,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3 md:gap-4">
           <Link
             href="/login"
-            className="hidden font-medium text-[#0F4C5C] sm:block"
+            className="text-sm font-medium text-[#0F4C5C] md:text-base"
           >
             Login
           </Link>
