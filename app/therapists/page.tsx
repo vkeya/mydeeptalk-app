@@ -86,7 +86,8 @@ export default function TherapistsPage() {
         const intakeData = intakeSnap.data();
 
         const preferredGender = normalizeGender(
-          intakeData?.preferredGender ||
+          intakeData?.therapistPreferences?.gender ||
+            intakeData?.preferredGender ||
             intakeData?.therapistGender ||
             intakeData?.genderPreference ||
             intakeData?.preferredTherapistGender ||
