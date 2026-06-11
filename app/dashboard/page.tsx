@@ -237,7 +237,7 @@ function DashboardCardGrid({ cards }: { cards: DashboardCard[] }) {
         <Link
           key={card.title}
           href={card.href}
-          className="group rounded-3xl bg-white p-7 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+          className="group flex h-full flex-col rounded-3xl bg-white p-7 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
         >
           <div className="text-4xl">{card.icon}</div>
 
@@ -250,7 +250,7 @@ function DashboardCardGrid({ cards }: { cards: DashboardCard[] }) {
           </p>
 
           <div
-            className={`mt-6 inline-block rounded-full px-5 py-3 text-sm font-bold transition ${
+            className={`mt-auto inline-block w-fit rounded-full px-5 py-3 text-sm font-bold transition ${
               card.primary
                 ? "bg-[#0F4C5C] text-white group-hover:bg-[#0b3945]"
                 : "border-2 border-[#0F4C5C] text-[#0F4C5C] group-hover:bg-[#0F4C5C] group-hover:text-white"
@@ -275,7 +275,7 @@ function WellnessTools({ title = "Wellness Tools" }: { title?: string }) {
       <div className="grid gap-6 md:grid-cols-2">
         <Link
           href="/journal"
-          className="group rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+          className="group flex h-full flex-col rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
         >
           <div className="text-5xl">📖</div>
 
@@ -288,7 +288,7 @@ function WellnessTools({ title = "Wellness Tools" }: { title?: string }) {
             space.
           </p>
 
-          <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white group-hover:bg-[#0b3945]">
+          <div className="mt-auto inline-block w-fit rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white group-hover:bg-[#0b3945]">
             Open Journal →
           </div>
         </Link>
