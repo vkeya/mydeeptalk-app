@@ -11,10 +11,10 @@ export default function Navbar() {
           <Image
             src="/images/logo.png"
             alt="MyDeepTalk"
-            width={320}
-            height={150}
+            width={350}
+            height={200}
             priority
-            className="h-20 w-auto object-contain"
+            className="h-18 w-auto object-contain"
           />
         </Link>
 
