@@ -6,6 +6,13 @@ import Link from "next/link";
 import { db } from "@/lib/firebase";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
+type SessionFees = {
+  individual?: number;
+  couple?: number;
+  parentChild?: number;
+  family?: number;
+};
+
 type Therapist = {
   fullName?: string;
   bio?: string;
@@ -13,6 +20,8 @@ type Therapist = {
   languages?: string[];
   yearsExperience?: number;
   sessionFee?: number;
+  sessionFees?: SessionFees;
+  sessionFeeCurrency?: "KES" | "USD";
   country?: string;
   city?: string;
   status?: string;
@@ -28,11 +37,8 @@ type Review = {
 
 export default function TherapistProfilePage() {
   const params = useParams();
-  console.log("params =", params);
-  const therapistId = Array.isArray(params.id)
-  ? params.id[0]
-  : params.id;
-  console.log("therapistId =", therapistId);
+
+  const therapistId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [therapist, setTherapist] = useState<Therapist | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -42,35 +48,19 @@ export default function TherapistProfilePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-		  
-		if (!therapistId) {
+        if (!therapistId) {
           console.error("No therapistId found in route params:", params);
           setLoading(false);
           return;
         }
-		
-        console.log("Looking for therapist:", therapistId);
 
         const therapistRef = doc(db, "therapists", therapistId);
-
         const therapistSnap = await getDoc(therapistRef);
 
-        console.log("Document exists?", therapistSnap.exists());
-
-        if (therapistSnap.exists()) {
-          console.log("Data =", therapistSnap.data());
-          setTherapist(therapistSnap.data() as Therapist);
-        }
-		
-	
-
         if (therapistSnap.exists()) {
           setTherapist(therapistSnap.data() as Therapist);
         }
 
-        console.log("Firestore doc exists:", therapistSnap.exists());
-        console.log("Document ID:", therapistId);
-		
         const reviewsSnap = await getDocs(collection(db, "reviews"));
 
         const therapistReviews = reviewsSnap.docs
@@ -94,7 +84,7 @@ export default function TherapistProfilePage() {
     }
 
     fetchData();
-  }, [therapistId]);
+  }, [therapistId, params]);
 
   if (loading) {
     return (
@@ -111,6 +101,8 @@ export default function TherapistProfilePage() {
       </main>
     );
   }
+
+  const currency = therapist.sessionFeeCurrency || "KES";
 
   return (
     <main className="min-h-screen bg-[#F7F3EC] p-6">
@@ -215,10 +207,7 @@ export default function TherapistProfilePage() {
               value={`${therapist.yearsExperience || 0} years`}
             />
 
-            <InfoCard
-              title="Session Fee"
-              value={`KES ${therapist.sessionFee || 0}`}
-            />
+            <SessionFeesCard therapist={therapist} currency={currency} />
           </div>
         </div>
 
@@ -249,6 +238,75 @@ export default function TherapistProfilePage() {
         </div>
       </div>
     </main>
+  );
+}
+
+function SessionFeesCard({
+  therapist,
+  currency,
+}: {
+  therapist: Therapist;
+  currency: string;
+}) {
+  const fees = therapist.sessionFees;
+
+  const hasNewFees =
+    fees &&
+    (fees.individual || fees.couple || fees.parentChild || fees.family);
+
+  return (
+    <div className="rounded-2xl bg-[#F7F3EC] p-6">
+      <h3 className="mb-4 text-lg font-semibold text-[#0F4C5C]">
+        Session Fees
+      </h3>
+
+      <div className="space-y-3">
+        {hasNewFees ? (
+          <>
+            {fees?.individual ? (
+              <FeeRow label="Individual Session" amount={fees.individual} currency={currency} />
+            ) : null}
+
+            {fees?.couple ? (
+              <FeeRow label="Couple Session" amount={fees.couple} currency={currency} />
+            ) : null}
+
+            {fees?.parentChild ? (
+              <FeeRow label="Parent + Child Session" amount={fees.parentChild} currency={currency} />
+            ) : null}
+
+            {fees?.family ? (
+              <FeeRow label="Family Session" amount={fees.family} currency={currency} />
+            ) : null}
+          </>
+        ) : (
+          <FeeRow
+            label="Session Fee"
+            amount={therapist.sessionFee || 0}
+            currency={currency}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FeeRow({
+  label,
+  amount,
+  currency,
+}: {
+  label: string;
+  amount: number;
+  currency: string;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-xl bg-white p-4">
+      <span className="font-semibold text-gray-700">{label}</span>
+      <span className="font-bold text-[#0F4C5C]">
+        {currency} {amount.toLocaleString()}
+      </span>
+    </div>
   );
 }
 
