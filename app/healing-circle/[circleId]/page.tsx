@@ -114,6 +114,15 @@ export default function HealingCircleDetailsPage() {
           <p className="mt-4 font-semibold text-[#0F4C5C]">
             {progress.toFixed(0)}% funded
           </p>
+		  
+		  <div className="mt-8">
+           <a
+            href={`/contribute/${circle.id}`}
+            className="inline-block rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white hover:bg-[#0b3945]"
+           >
+             ❤️ Contribute to this Circle
+           </a>
+         </div>
 
         </section>
 
