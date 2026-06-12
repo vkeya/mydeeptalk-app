@@ -20,12 +20,17 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("client");
-
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
+	
+	if (!acceptedLegal) {
+      setError("Please accept the Terms and Conditions and Privacy Policy to continue.");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -44,7 +49,12 @@ export default function SignupPage() {
         fullName,
         email,
         role,
+		legalAccepted: true,
+        legalAcceptedAt: serverTimestamp(),
+        termsVersion: "2026-06",
+        privacyVersion: "2026-06",
         createdAt: serverTimestamp(),
+      
       });
 
       router.push("/dashboard");
@@ -126,6 +136,35 @@ export default function SignupPage() {
               <option value="therapist">Therapist</option>
             </select>
           </div>
+		  
+		  <label className="flex items-start gap-3 rounded-2xl bg-[#F7F3EC] p-4 text-sm font-semibold leading-6 text-gray-900">
+  <input
+    type="checkbox"
+    checked={acceptedLegal}
+    onChange={(e) => setAcceptedLegal(e.target.checked)}
+    className="mt-1"
+  />
+
+  <span>
+    I have read and agree to the{" "}
+    <Link
+      href="/legal/terms-and-conditions.pdf"
+      target="_blank"
+      className="font-bold text-[#0F4C5C] underline"
+    >
+      Terms and Conditions
+    </Link>{" "}
+    and{" "}
+    <Link
+      href="/legal/privacy-policy.pdf"
+      target="_blank"
+      className="font-bold text-[#0F4C5C] underline"
+    >
+      Privacy Policy
+    </Link>
+    .
+  </span>
+</label>
 
           {error && (
             <p className="text-red-600">
@@ -134,8 +173,8 @@ export default function SignupPage() {
           )}
 
           <button
-            disabled={loading}
-            className="w-full rounded-full bg-[#0F4C5C] py-4 font-semibold text-white hover:bg-[#0b3945]"
+            disabled={loading || !acceptedLegal}
+            className="w-full rounded-full bg-[#0F4C5C] py-4 font-semibold text-white hover:bg-[#0b3945] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Creating Account..." : "Create Account"}
           </button>
