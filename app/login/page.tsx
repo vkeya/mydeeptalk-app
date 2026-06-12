@@ -84,7 +84,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl md:p-10">
         <div className="mb-6 flex justify-center">
       <Image
-        src="/logo.png"
+        src="/images/logo.png"
         alt="MyDeepTalk"
         width={180}
         height={60}
