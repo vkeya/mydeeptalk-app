@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { db } from "@/lib/firebase";
@@ -114,15 +115,31 @@ export default function HealingCircleDetailsPage() {
           <p className="mt-4 font-semibold text-[#0F4C5C]">
             {progress.toFixed(0)}% funded
           </p>
-		  
-		  <div className="mt-8">
-           <a
-            href={`/contribute/${circle.id}`}
-            className="inline-block rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white hover:bg-[#0b3945]"
-           >
-             ❤️ Contribute to this Circle
-           </a>
+
+          <div className="mt-8">
+            <a
+              href={`/contribute/${circle.id}`}
+              className="inline-block rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white hover:bg-[#0b3945]"
+            >
+              ❤️ Contribute to this Circle
+            </a>
          </div>
+		   
+		   <div className="mt-4">
+             <button
+               onClick={() => {
+                 navigator.clipboard.writeText(
+                  `${window.location.origin}/healing-circle/${circle.id}`
+                 );
+
+                 alert("Healing Circle link copied.");
+               }}
+                className="rounded-full border-2 border-[#0F4C5C] bg-white px-6 py-3 font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+           >
+               🔗 Share Healing Circle
+           </button>
+
+          </div>
 
         </section>
 

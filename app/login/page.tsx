@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -81,9 +82,16 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F7F3EC] px-6 py-10">
       <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl md:p-10">
-        <p className="mb-3 font-bold uppercase tracking-wide text-[#0F4C5C]">
-          MyDeepTalk
-        </p>
+        <div className="mb-6 flex justify-center">
+      <Image
+        src="/logo.png"
+        alt="MyDeepTalk"
+        width={180}
+        height={60}
+        priority
+        className="h-auto w-36 object-contain sm:w-40 md:w-44"
+      />
+	   </div>
 
         <h1 className="text-4xl font-bold leading-tight text-[#0F4C5C]">
           Welcome Back
