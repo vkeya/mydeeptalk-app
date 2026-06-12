@@ -93,13 +93,15 @@ export default function LoginPage() {
       />
 	   </div>
 
-        <h1 className="text-4xl font-bold leading-tight text-[#0F4C5C]">
-          Welcome Back
-        </h1>
+        <div className="mb-8 text-center">
+         <h1 className="text-4xl font-bold text-[#0F4C5C]">
+           Welcome Back
+         </h1>
 
-        <p className="mt-3 text-base font-semibold leading-7 text-gray-900">
-          Login to continue your MyDeepTalk journey.
-        </p>
+         <p className="mt-4 text-base font-semibold leading-7 text-gray-900">
+           Login to continue your MyDeepTalk journey.
+         </p>
+       </div>
 
         {message && (
           <div className="mt-6 rounded-2xl bg-red-100 p-4 text-sm font-bold leading-6 text-gray-900">
