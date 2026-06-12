@@ -120,13 +120,22 @@ function ClientDashboard() {
     },
 	
     {
-      icon: "❤️",
-      title: "My Healing Credits",
+      icon: "🎁",
+      title: "My Gifts & Credits",
       description:
        "View gifted therapy sessions available and track your healing journey.",
       href: "/my-credits",
       buttonText: "View Credits",
-    }
+    },
+	
+	{
+      icon: "❤️",
+      title: "My Healing Circle",
+      description:
+        "Bring together family, friends, churches, or workplaces to support someone's healing journey through community-funded therapy.",
+      href: "/healing-circle",
+      buttonText: "Start a Circle",
+    },
   ];
 
   return (
