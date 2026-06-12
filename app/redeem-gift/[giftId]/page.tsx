@@ -68,6 +68,8 @@ export default function RedeemGiftDetailsPage() {
 
     try {
       await setDoc(doc(db, "therapyCredits", user.uid), {
+		giftType: gift.giftType || "general_credit",
+        therapistId: gift.therapistId || "",
         userId: user.uid,
         giftId,
         totalSessions: gift.numberOfSessions,
@@ -139,22 +141,39 @@ export default function RedeemGiftDetailsPage() {
             <p>
               <strong>Remaining Sessions:</strong> {gift.remainingSessions}
             </p>
+			
+			<p>
+              <strong>Gift Type:</strong>{" "}
+              {gift.giftType === "specific_therapist"
+                ? "Specific therapist gift"
+                : "General healing credit"}
+            </p>
 
           </div>
 
-          {gift.message && (
-            <div className="mt-8 rounded-2xl bg-[#F7F3EC] p-6">
+          <div className="mt-8 rounded-2xl bg-[#F7F3EC] p-6">
+            <h3 className="font-bold text-[#0F4C5C]">
+               Gifted By
+            </h3>
 
-              <h3 className="font-bold text-[#0F4C5C]">
-                Personal Message
-              </h3>
+            <p className="mt-3 font-semibold text-gray-800">
+               {gift.anonymous
+                 ? "Someone who cares about you ❤️"
+                 : gift.senderName || gift.senderEmail || "Someone who cares about you ❤️"}
+            </p>
 
-              <p className="mt-4 italic text-gray-700">
-                "{gift.message}"
-              </p>
+            {gift.message && (
+             <>
+               <h3 className="mt-6 font-bold text-[#0F4C5C]">
+                  Personal Message
+               </h3>
 
-            </div>
+               <p className="mt-4 italic text-gray-700">
+                 "{gift.message}"
+               </p>
+             </>
           )}
+      </div>
 
           <button
             onClick={handleRedeem}

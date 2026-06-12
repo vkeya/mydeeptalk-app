@@ -7,6 +7,7 @@ import {
   updateDoc,
   doc,
   getDoc,
+  setDoc,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -47,6 +48,83 @@ export async function POST(request: Request) {
         paymentState,
       });
     }
+	
+	// Healing Circle contribution payment check
+    const contributionRef = doc(db, "healingCircleContributions", bookingId);
+    const contributionSnap = await getDoc(contributionRef);
+
+    if (contributionSnap.exists()) {
+     const contribution = contributionSnap.data();
+
+     if (contribution.paymentStatus !== "paid") {
+       await updateDoc(contributionRef, {
+         paymentStatus: "paid",
+         paidAt: serverTimestamp(),
+         webhookPayload: payload,
+         updatedAt: serverTimestamp(),
+       });
+
+       const circleRef = doc(db, "healingCircles", contribution.circleId);
+       const circleSnap = await getDoc(circleRef);
+
+       if (circleSnap.exists()) {
+        const circle = circleSnap.data();
+
+        const newAmount =
+         Number(circle.currentAmount || 0) + Number(contribution.amount || 0);
+
+        await updateDoc(circleRef, {
+         currentAmount: newAmount,
+         updatedAt: serverTimestamp(),
+       });
+	   
+	   if (
+        newAmount >= Number(circle.targetAmount || 0) &&
+        !circle.giftCreated
+      ) {
+        const giftRef = doc(collection(db, "giftSessions"));
+
+        await updateDoc(circleRef, {
+          giftCreated: true,
+          giftSessionId: giftRef.id,
+          status: "completed",
+          updatedAt: serverTimestamp(),
+      });
+
+        await setDoc(giftRef, {
+          recipientEmail: circle.recipientEmail,
+          recipientName: circle.recipientName,
+
+          packageName: circle.packageName,
+
+          numberOfSessions: circle.totalSessions,
+          remainingSessions: circle.totalSessions,
+
+          senderName: "Healing Circle ❤️",
+          senderEmail: "",
+
+          giftType: "general_credit",
+
+          paymentStatus: "paid",
+          status: "pending",
+
+          message:
+           circle.circleMessage ||
+           "Your community came together to support your healing journey.",
+
+          createdAt: serverTimestamp(),
+        });
+      }
+     }
+   }
+
+  return NextResponse.json({
+    success: true,
+    contributionId: bookingId,
+    paymentState,
+    message: "Healing Circle contribution confirmed",
+  });
+}
 
     const bookingRef = doc(db, "bookings", bookingId);
     const bookingSnap = await getDoc(bookingRef);

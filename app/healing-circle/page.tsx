@@ -1,46 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import { Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
-import { useSearchParams } from "next/navigation";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
-const giftPackages = [
+const circlePackages = [
   {
-    name: "Hope Session",
-    description: "Gift one therapy session to someone you care about.",
-    numberOfSessions: 1,
-    amount: 2000,
+    name: "Hope Circle",
+    description: "Community support for one therapy session.",
+    targetAmount: 2000,
+    totalSessions: 1,
   },
   {
-    name: "Healing Package",
-    description: "Gift three therapy sessions for deeper support.",
-    numberOfSessions: 3,
-    amount: 5500,
+    name: "Healing Circle",
+    description: "A shared gift of three therapy sessions.",
+    targetAmount: 5500,
+    totalSessions: 3,
   },
   {
-    name: "Restoration Package",
-    description: "Gift five therapy sessions for a longer healing journey.",
-    numberOfSessions: 5,
-    amount: 9000,
+    name: "Restoration Circle",
+    description: "A deeper community-supported healing journey.",
+    targetAmount: 9000,
+    totalSessions: 5,
   },
 ];
 
-function GiftSessionContent() {
+export default function HealingCirclePage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const therapistId = searchParams.get("therapistId") || "";
 
-  const [selectedPackage, setSelectedPackage] = useState(giftPackages[0]);
+  const [selectedPackage, setSelectedPackage] = useState(circlePackages[0]);
   const [recipientName, setRecipientName] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [anonymous, setAnonymous] = useState(false);
+  const [circleMessage, setCircleMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleGiftSession(e: React.FormEvent) {
+  async function handleCreateCircle(e: React.FormEvent) {
     e.preventDefault();
 
     const user = auth.currentUser;
@@ -59,42 +54,38 @@ function GiftSessionContent() {
     setLoading(true);
 
     try {
-      const giftRef = await addDoc(collection(db, "giftSessions"), {
-		therapistId,
-        giftType: therapistId ? "specific_therapist" : "general_credit",
-        senderId: user.uid,
-        senderEmail: user.email || "",
-        senderName: user.displayName || "",
+      const circleRef = await addDoc(collection(db, "healingCircles"), {
+        creatorId: user.uid,
+        creatorEmail: user.email || "",
+        creatorName: user.displayName || "",
 
         recipientName,
         recipientEmail: recipientEmail.toLowerCase().trim(),
 
-        message,
-        anonymous,
-
         packageName: selectedPackage.name,
         packageDescription: selectedPackage.description,
-        numberOfSessions: selectedPackage.numberOfSessions,
-        remainingSessions: selectedPackage.numberOfSessions,
+        targetAmount: selectedPackage.targetAmount,
+        currentAmount: 0,
+        totalSessions: selectedPackage.totalSessions,
+        remainingSessions: selectedPackage.totalSessions,
 
-        amount: selectedPackage.amount,
         currency: "KES",
+        circleMessage,
 
-        status: "pending_payment",
-        paymentStatus: "unpaid",
-        redeemedBy: "",
-        redeemedAt: null,
+        status: "open",
+        giftCreated: false,
+        giftSessionId: "",
 
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
 
-      alert("Gift session created. Continue to payment.");
+      alert("Healing Circle created successfully.");
 
-      router.push(`/payment/gift/${giftRef.id}`);
+      router.push(`/healing-circle/${circleRef.id}`);
     } catch (error: any) {
-      console.error("Gift session error:", error);
-      alert(error.message || "Could not create gift session.");
+      console.error("Healing Circle error:", error);
+      alert(error.message || "Could not create Healing Circle.");
     } finally {
       setLoading(false);
     }
@@ -105,55 +96,55 @@ function GiftSessionContent() {
       <div className="mx-auto max-w-5xl">
         <section className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
           <p className="mb-3 font-bold uppercase tracking-wide text-white">
-            Gift Therapy
+            Healing Circle
           </p>
 
           <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
-            Gift Someone a Safe Space to Heal
+            Let Community Support Someone&apos;s Healing
           </h1>
 
           <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
-            Send a therapy session or healing package to someone you care about.
-            They will be able to redeem the gift and choose a therapist when
-            they are ready.
+            Create a shared therapy fund where friends, family, churches,
+            workplaces, or communities can contribute toward someone&apos;s
+            therapy journey.
           </p>
         </section>
 
         <form
-          onSubmit={handleGiftSession}
+          onSubmit={handleCreateCircle}
           className="mt-8 rounded-3xl bg-white p-6 shadow-lg md:p-10"
         >
           <h2 className="text-2xl font-bold text-[#0F4C5C]">
-            Choose a Healing Gift
+            Choose a Circle Package
           </h2>
 
           <div className="mt-6 grid gap-5 md:grid-cols-3">
-            {giftPackages.map((giftPackage) => (
+            {circlePackages.map((circlePackage) => (
               <button
-                key={giftPackage.name}
+                key={circlePackage.name}
                 type="button"
-                onClick={() => setSelectedPackage(giftPackage)}
+                onClick={() => setSelectedPackage(circlePackage)}
                 className={`rounded-3xl border-2 p-6 text-left transition ${
-                  selectedPackage.name === giftPackage.name
+                  selectedPackage.name === circlePackage.name
                     ? "border-[#0F4C5C] bg-[#F7F3EC]"
                     : "border-gray-200 bg-white hover:border-[#0F4C5C]"
                 }`}
               >
                 <h3 className="text-xl font-bold text-[#0F4C5C]">
-                  {giftPackage.name}
+                  {circlePackage.name}
                 </h3>
 
                 <p className="mt-3 text-sm font-semibold leading-6 text-gray-900">
-                  {giftPackage.description}
+                  {circlePackage.description}
                 </p>
 
                 <p className="mt-5 text-2xl font-bold text-[#0F4C5C]">
-                  KES {giftPackage.amount}
+                  KES {circlePackage.targetAmount}
                 </p>
 
                 <p className="mt-1 text-sm font-bold text-gray-700">
-                  {giftPackage.numberOfSessions} session
-                  {giftPackage.numberOfSessions > 1 ? "s" : ""}
+                  {circlePackage.totalSessions} session
+                  {circlePackage.totalSessions > 1 ? "s" : ""}
                 </p>
               </button>
             ))}
@@ -181,37 +172,21 @@ function GiftSessionContent() {
 
           <textarea
             rows={5}
-            placeholder="Optional personal message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Optional message for the Healing Circle"
+            value={circleMessage}
+            onChange={(e) => setCircleMessage(e.target.value)}
             className="mt-5 w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
           />
-
-          <label className="mt-5 flex items-center gap-3 rounded-2xl bg-[#F7F3EC] p-4 font-semibold text-gray-900">
-            <input
-              type="checkbox"
-              checked={anonymous}
-              onChange={(e) => setAnonymous(e.target.checked)}
-            />
-            Send this gift anonymously
-          </label>
 
           <button
             type="submit"
             disabled={loading}
             className="mt-8 w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {loading ? "Creating Gift..." : "Continue to Payment"}
+            {loading ? "Creating Circle..." : "Create Healing Circle"}
           </button>
         </form>
       </div>
     </main>
-  );
-}
-export default function GiftSessionPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F7F3EC] p-10">Loading gift page...</div>}>
-      <GiftSessionContent />
-    </Suspense>
   );
 }
