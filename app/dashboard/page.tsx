@@ -7,6 +7,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import DashboardLayout from "@/components/DashboardLayout";
+import DashboardAnnouncement from "@/components/DashboardAnnouncement";
 
 type DashboardCard = {
   title: string;
@@ -83,6 +84,8 @@ export default function DashboardPage() {
           connection.
         </p>
       </section>
+	  
+	  <DashboardAnnouncement />
 
       {role === "client" && <ClientDashboard />}
       {role === "therapist" && <TherapistDashboard />}
