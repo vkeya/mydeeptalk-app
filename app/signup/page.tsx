@@ -23,6 +23,7 @@ export default function SignupPage() {
   const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [alias, setAlias] = useState("");
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
@@ -30,6 +31,11 @@ export default function SignupPage() {
 	if (!acceptedLegal) {
       setError("Please accept the Terms and Conditions and Privacy Policy to continue.");
       return;
+    }
+	
+	if (!alias.trim()) {
+    setError("Please choose a privacy name / alias.");
+    return;
     }
 
     try {
@@ -47,6 +53,7 @@ export default function SignupPage() {
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         fullName,
+		alias: alias.trim(),
         email,
         role,
 		legalAccepted: true,
@@ -93,6 +100,19 @@ export default function SignupPage() {
               className="w-full rounded-2xl border p-4"
             />
           </div>
+
+          <input
+            type="text"
+            placeholder="Privacy name / alias shown to therapists"
+            value={alias}
+            onChange={(e) => setAlias(e.target.value)}
+            className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+            required
+          />
+
+          <p className="text-sm font-semibold text-gray-700">
+             This is the name therapists will see instead of your real name.
+          </p>
 
           <div>
             <label className="mb-2 block font-semibold">

@@ -30,6 +30,7 @@ type Therapist = {
 
 type Review = {
   therapistId?: string;
+  clientAlias?: string;
   rating: number;
   comment: string;
   therapistName?: string;
@@ -224,7 +225,11 @@ export default function TherapistProfilePage() {
             ) : (
               reviews.map((review, index) => (
                 <div key={index} className="rounded-2xl bg-white p-6 shadow">
-                  <p className="font-bold text-yellow-500">
+                  <p className="font-bold text-[#0F4C5C]">
+                    {review.clientAlias || "Anonymous Client"}
+                  </p>
+
+                  <p className="mt-2 font-bold text-yellow-500">
                     {"⭐".repeat(review.rating)}
                   </p>
 

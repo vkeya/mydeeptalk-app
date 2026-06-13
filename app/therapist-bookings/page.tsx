@@ -16,6 +16,7 @@ import {
 type Booking = {
   id: string;
   clientName?: string;
+  clientAlias?: string;
   clientEmail?: string;
   sessionDate?: string;
   sessionTime?: string;
@@ -358,7 +359,7 @@ function SessionCard({
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2 text-base font-semibold text-gray-900">
           <p>
-            <strong>Client:</strong> {booking.clientName || "Client"}
+            <strong>Client:</strong> {booking.clientAlias || booking.clientName}
           </p>
 
           <p>

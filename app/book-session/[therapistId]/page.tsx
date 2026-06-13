@@ -206,17 +206,31 @@ export default function BookSessionPage() {
     }
 
     if (useGiftCredit && (!therapyCredits || therapyCredits.remainingSessions <= 0)) {
-      alert("You do not have available gifted therapy sessions.");
-      setUseGiftCredit(false);
-      return;
+       alert("You do not have available gifted therapy sessions.");
+       setUseGiftCredit(false);
+       return;
+    }
+
+    if (
+       useGiftCredit &&
+       therapyCredits?.giftType === "specific_therapist" &&
+       therapyCredits?.therapistId &&
+       therapyCredits.therapistId !== therapistId
+    ) {
+       alert("This gifted session can only be used with the therapist it was gifted for.");
+       setUseGiftCredit(false);
+       return;
     }
 
     setLoading(true);
 
     try {
+	  const userSnap = await getDoc(doc(db, "users", user.uid));
+      const userData = userSnap.exists() ? userSnap.data() : null;	
       const bookingRef = await addDoc(collection(db, "bookings"), {
         clientId: user.uid,
         clientName: user.displayName || "",
+		clientAlias: userData?.alias || "Client",
         clientEmail: user.email || "",
 
         therapistId: therapist.id,

@@ -6,6 +6,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import {
   addDoc,
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -15,6 +17,7 @@ import {
 type Booking = {
   id: string;
   clientId?: string;
+  clientAlias?: string;
   therapistId?: string;
   therapistName?: string;
   therapistEmail?: string;
@@ -94,10 +97,14 @@ export default function MyBookingsPage() {
         alert("Missing booking details. Review cannot be submitted.");
         return;
       }
+	  
+	  const userSnap = await getDoc(doc(db, "users", booking.clientId));
+      const userData = userSnap.exists() ? userSnap.data() : null;
 
       await addDoc(collection(db, "reviews"), {
         bookingId: booking.id,
         clientId: booking.clientId,
+		clientAlias: userData?.alias || "Anonymous Client",
         therapistId: booking.therapistId,
         therapistName: booking.therapistName || "",
         rating: ratings[booking.id] || 5,
