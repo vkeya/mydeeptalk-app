@@ -9,6 +9,7 @@ const concernOptions = [
   "Relationships",
   "Marriage & Couples",
   "Parenting",
+  "Parent-Child Relationships",
   "Trauma & Healing",
   "Anxiety",
   "Depression",
@@ -33,6 +34,8 @@ const goalOptions = [
   "Parenting support",
   "Personal growth",
   "Addiction recovery support",
+  "Understand myself better",
+  "Manage stress better",
 ];
 
 export default function PreBookingIntakePage() {
@@ -61,11 +64,18 @@ export default function PreBookingIntakePage() {
   const [therapistGenderPreference, setTherapistGenderPreference] =
     useState("");
   const [therapistAgePreference, setTherapistAgePreference] = useState("");
+  const [therapistStyle, setTherapistStyle] = useState("");
   const [faithBasedCounseling, setFaithBasedCounseling] = useState("");
   const [preferredLanguage, setPreferredLanguage] = useState("");
   const [sessionMode, setSessionMode] = useState("");
+
   const [currencyPreference, setCurrencyPreference] = useState("KES");
   const [budgetRange, setBudgetRange] = useState("");
+
+  const [urgency, setUrgency] = useState("");
+  const [preferredTime, setPreferredTime] = useState("");
+  const [comfortLevel, setComfortLevel] = useState("");
+  const [supportExpectation, setSupportExpectation] = useState("");
   const [notes, setNotes] = useState("");
 
   function toggleItem(
@@ -120,6 +130,16 @@ export default function PreBookingIntakePage() {
       return;
     }
 
+    if (!urgency) {
+      alert("Please select how soon you need support.");
+      return;
+    }
+
+    if (!preferredTime) {
+      alert("Please select your preferred session time.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -131,10 +151,8 @@ export default function PreBookingIntakePage() {
 
           therapyExperience,
           previousTherapyExperience,
-
           mainConcerns,
           goals,
-
           relationshipStatus,
           sessionType,
 
@@ -149,6 +167,7 @@ export default function PreBookingIntakePage() {
           therapistPreferences: {
             gender: therapistGenderPreference,
             age: therapistAgePreference,
+            style: therapistStyle,
             faithBasedCounseling,
             language: preferredLanguage,
             sessionMode,
@@ -156,6 +175,10 @@ export default function PreBookingIntakePage() {
 
           currencyPreference,
           budgetRange,
+          urgency,
+          preferredTime,
+          comfortLevel,
+          supportExpectation,
           notes,
 
           status: "completed",
@@ -177,29 +200,23 @@ export default function PreBookingIntakePage() {
   return (
     <main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
       <div className="mx-auto max-w-5xl">
-
-        {/* Hero */}
         <section className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
-          <p className="mb-3 font-bold uppercase tracking-wide">
+          <p className="mb-3 font-bold uppercase tracking-wide text-white">
             Prepare For Your Session
           </p>
 
-          <h1 className="text-4xl font-bold md:text-5xl">
+          <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
             Help Us Understand What You Need
           </h1>
 
-          <p className="mt-4 max-w-3xl text-base font-semibold leading-8 md:text-lg">
-            Before you choose a therapist, answer a few questions to help us
-            understand your needs, preferences, and the kind of support you are
-            looking for.
+          <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
+            Answer a few questions so we can help you find a therapist who fits
+            your needs, budget, language, goals, and preferred style of support.
           </p>
         </section>
 
-        {/* Form */}
         <section className="mt-8 rounded-3xl bg-white p-6 shadow-lg md:p-10">
           <form onSubmit={handleSubmit} className="space-y-8">
-
-            {/* Therapy Experience */}
             <div className="rounded-2xl bg-[#F7F3EC] p-6">
               <h2 className="mb-5 text-2xl font-bold text-[#0F4C5C]">
                 Therapy Experience
@@ -209,6 +226,7 @@ export default function PreBookingIntakePage() {
                 className="mb-5 w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
                 value={therapyExperience}
                 onChange={(e) => setTherapyExperience(e.target.value)}
+                required
               >
                 <option value="">Have you attended therapy before?</option>
                 <option value="First time">No, this is my first time</option>
@@ -235,7 +253,310 @@ export default function PreBookingIntakePage() {
               </select>
             </div>
 
-            {/* Notes */}
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <h2 className="mb-5 text-2xl font-bold text-[#0F4C5C]">
+                What Brings You To Therapy?
+              </h2>
+
+              <div className="grid gap-3 md:grid-cols-2">
+                {concernOptions.map((item) => (
+                  <label
+                    key={item}
+                    className="flex items-center gap-3 rounded-xl border border-gray-300 bg-white p-3 font-semibold text-gray-900"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={mainConcerns.includes(item)}
+                      onChange={() =>
+                        toggleItem(item, mainConcerns, setMainConcerns)
+                      }
+                    />
+                    <span>{item}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <h2 className="mb-2 text-2xl font-bold text-[#0F4C5C]">
+                Emotional Wellbeing
+              </h2>
+
+              <p className="mb-5 font-semibold text-gray-900">
+                On a scale of 1 to 5, how often have you recently felt the
+                following?
+              </p>
+
+              <div className="space-y-5">
+                {Object.entries(emotionalScores).map(([key, value]) => (
+                  <div key={key}>
+                    <label className="mb-2 block font-bold capitalize text-[#0F4C5C]">
+                      {key}: {value}
+                    </label>
+
+                    <input
+                      type="range"
+                      min="1"
+                      max="5"
+                      value={value}
+                      onChange={(e) =>
+                        setEmotionalScores({
+                          ...emotionalScores,
+                          [key]: e.target.value,
+                        })
+                      }
+                      className="w-full"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <h2 className="mb-5 text-2xl font-bold text-[#0F4C5C]">
+                Session Details
+              </h2>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={relationshipStatus}
+                  onChange={(e) => setRelationshipStatus(e.target.value)}
+                >
+                  <option value="">Relationship status</option>
+                  <option value="Single">Single</option>
+                  <option value="Dating">Dating</option>
+                  <option value="Engaged">Engaged</option>
+                  <option value="Married">Married</option>
+                  <option value="Separated">Separated</option>
+                  <option value="Divorced">Divorced</option>
+                  <option value="Widowed">Widowed</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={sessionType}
+                  onChange={(e) => setSessionType(e.target.value)}
+                  required
+                >
+                  <option value="">Type of session needed</option>
+                  <option value="Individual">Individual Therapy</option>
+                  <option value="Couple">Couples Therapy</option>
+                  <option value="Parent + Child">Parent + Child Therapy</option>
+                  <option value="Family">Family Therapy</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <h2 className="mb-5 text-2xl font-bold text-[#0F4C5C]">
+                Therapist Preferences
+              </h2>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={therapistGenderPreference}
+                  onChange={(e) =>
+                    setTherapistGenderPreference(e.target.value)
+                  }
+                >
+                  <option value="">Therapist gender preference</option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="No preference">No preference</option>
+                </select>
+
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={therapistAgePreference}
+                  onChange={(e) => setTherapistAgePreference(e.target.value)}
+                >
+                  <option value="">Therapist age preference</option>
+                  <option value="Under 35">Under 35</option>
+                  <option value="35-50">35 - 50</option>
+                  <option value="50+">50+</option>
+                  <option value="No preference">No preference</option>
+                </select>
+
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={therapistStyle}
+                  onChange={(e) => setTherapistStyle(e.target.value)}
+                >
+                  <option value="">Preferred therapist style</option>
+                  <option value="Warm and gentle">Warm and gentle</option>
+                  <option value="Direct and practical">Direct and practical</option>
+                  <option value="Reflective and deep">Reflective and deep</option>
+                  <option value="Structured with exercises">
+                    Structured with exercises
+                  </option>
+                  <option value="No preference">No preference</option>
+                </select>
+
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={faithBasedCounseling}
+                  onChange={(e) => setFaithBasedCounseling(e.target.value)}
+                >
+                  <option value="">Faith-based counseling?</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                  <option value="Open to either">Open to either</option>
+                </select>
+
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={preferredLanguage}
+                  onChange={(e) => setPreferredLanguage(e.target.value)}
+                  required
+                >
+                  <option value="">Preferred language</option>
+                  <option value="English">English</option>
+                  <option value="Swahili">Swahili</option>
+                  <option value="French">French</option>
+                  <option value="Arabic">Arabic</option>
+                  <option value="Other">Other</option>
+                </select>
+
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={sessionMode}
+                  onChange={(e) => setSessionMode(e.target.value)}
+                  required
+                >
+                  <option value="">Preferred session mode</option>
+                  <option value="Online">Online</option>
+                  <option value="In-person">In-person</option>
+                  <option value="Either">Either</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <h2 className="mb-5 text-2xl font-bold text-[#0F4C5C]">
+                Budget & Availability
+              </h2>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={currencyPreference}
+                  onChange={(e) => setCurrencyPreference(e.target.value)}
+                  required
+                >
+                  <option value="KES">KES</option>
+                  <option value="USD">USD</option>
+                </select>
+
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={budgetRange}
+                  onChange={(e) => setBudgetRange(e.target.value)}
+                  required
+                >
+                  <option value="">Budget range per session</option>
+                  <option value="Under 2,000">Under 2,000</option>
+                  <option value="2,000 - 5,000">2,000 - 5,000</option>
+                  <option value="5,000 - 10,000">5,000 - 10,000</option>
+                  <option value="10,000+">10,000+</option>
+                </select>
+
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={urgency}
+                  onChange={(e) => setUrgency(e.target.value)}
+                  required
+                >
+                  <option value="">How soon do you need support?</option>
+                  <option value="As soon as possible">As soon as possible</option>
+                  <option value="This week">This week</option>
+                  <option value="Within 2 weeks">Within 2 weeks</option>
+                  <option value="I am flexible">I am flexible</option>
+                </select>
+
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={preferredTime}
+                  onChange={(e) => setPreferredTime(e.target.value)}
+                  required
+                >
+                  <option value="">Preferred session time</option>
+                  <option value="Morning">Morning</option>
+                  <option value="Afternoon">Afternoon</option>
+                  <option value="Evening">Evening</option>
+                  <option value="Weekend">Weekend</option>
+                  <option value="Flexible">Flexible</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <h2 className="mb-5 text-2xl font-bold text-[#0F4C5C]">
+                Therapy Goals
+              </h2>
+
+              <div className="grid gap-3 md:grid-cols-2">
+                {goalOptions.map((item) => (
+                  <label
+                    key={item}
+                    className="flex items-center gap-3 rounded-xl border border-gray-300 bg-white p-3 font-semibold text-gray-900"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={goals.includes(item)}
+                      onChange={() => toggleItem(item, goals, setGoals)}
+                    />
+                    <span>{item}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-[#F7F3EC] p-6">
+              <h2 className="mb-5 text-2xl font-bold text-[#0F4C5C]">
+                Comfort & Expectations
+              </h2>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={comfortLevel}
+                  onChange={(e) => setComfortLevel(e.target.value)}
+                >
+                  <option value="">How comfortable are you opening up?</option>
+                  <option value="Very comfortable">Very comfortable</option>
+                  <option value="Somewhat comfortable">Somewhat comfortable</option>
+                  <option value="I may need time to open up">
+                    I may need time to open up
+                  </option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+
+                <select
+                  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+                  value={supportExpectation}
+                  onChange={(e) => setSupportExpectation(e.target.value)}
+                >
+                  <option value="">What support are you hoping for?</option>
+                  <option value="Someone to listen and understand">
+                    Someone to listen and understand
+                  </option>
+                  <option value="Practical tools and guidance">
+                    Practical tools and guidance
+                  </option>
+                  <option value="Deep emotional healing">
+                    Deep emotional healing
+                  </option>
+                  <option value="Relationship or family guidance">
+                    Relationship or family guidance
+                  </option>
+                  <option value="I am not sure yet">I am not sure yet</option>
+                </select>
+              </div>
+            </div>
+
             <div className="rounded-2xl bg-[#F7F3EC] p-6">
               <h2 className="mb-5 text-2xl font-bold text-[#0F4C5C]">
                 Notes For Your Therapist
@@ -253,11 +574,10 @@ export default function PreBookingIntakePage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945]"
+              className="w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {loading ? "Saving..." : "Continue To Therapists"}
             </button>
-
           </form>
         </section>
       </div>
