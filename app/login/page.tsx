@@ -21,6 +21,7 @@ export default function LoginPage() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -39,6 +40,11 @@ export default function LoginPage() {
   }
 
   async function handleGoogleLogin() {
+	if (!acceptedTerms) {
+      setMessage("Please accept the Terms and Conditions and Privacy Policy first.");
+      return;
+    }
+	
     setLoading(true);
     setMessage("");
 
@@ -67,11 +73,29 @@ export default function LoginPage() {
           ageConfirmed18: true,
           termsAccepted: true,
           privacyAccepted: true,
+		  termsAcceptedAt: serverTimestamp(),
+          privacyAcceptedAt: serverTimestamp(),
+          termsVersion: "1.0",
+          privacyVersion: "1.0",
           createdAt: serverTimestamp(),
         });
-      }
-
-      router.push("/dashboard");
+      } else {
+      await setDoc(
+        userRef,
+        {
+          termsAccepted: true,
+          privacyAccepted: true,
+          termsAcceptedAt: serverTimestamp(),
+          privacyAcceptedAt: serverTimestamp(),
+          termsVersion: "1.0",
+          privacyVersion: "1.0",
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+	}
+     
+	 router.push("/dashboard");
     } catch (error: any) {
       setMessage(error.message || "Could not continue with Google.");
     } finally {
@@ -156,7 +180,20 @@ export default function LoginPage() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+          
+		  <label className="flex items-start gap-3 rounded-2xl bg-[#F7F3EC] p-4 text-sm font-semibold text-gray-900">
+            <input
+               type="checkbox"
+               checked={acceptedTerms}
+               onChange={(e) => setAcceptedTerms(e.target.checked)}
+               className="mt-1"
+            />
 
+            <span>
+              I have read and agree to the Terms and Conditions and Privacy Policy.
+            </span>
+           </label>
+		  
           <button
             type="button"
             onClick={handleGoogleLogin}
