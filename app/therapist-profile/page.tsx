@@ -52,7 +52,7 @@ export default function TherapistProfilePage() {
   const [photoPreview, setPhotoPreview] = useState("");
   const [photoPositionX, setPhotoPositionX] = useState(50);
   const [photoPositionY, setPhotoPositionY] = useState(50);
-
+  const [removePhoto, setRemovePhoto] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
   const [agreementAccepted, setAgreementAccepted] = useState(false);
 
@@ -152,9 +152,18 @@ export default function TherapistProfilePage() {
     setPhotoPreview(URL.createObjectURL(file));
     setPhotoPositionX(50);
     setPhotoPositionY(50);
+	setRemovePhoto(false);
 
     e.target.value = "";
   }
+  
+  function handleRemovePhoto() {
+    setPhotoFile(null);
+    setPhotoPreview("");
+    setPhotoPositionX(50);
+    setPhotoPositionY(50);
+    setRemovePhoto(true);
+}
 
   async function uploadToCloudinary(file: File, folder: string) {
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -230,10 +239,11 @@ export default function TherapistProfilePage() {
         );
       }
 
-      const finalPhotoUrl =
-        uploadedPhotoUrl ||
-        existingProfile?.profilePhoto ||
-        existingProfile?.photoUrl ||
+      const finalPhotoUrl = removePhoto
+	   ? ""
+       : uploadedPhotoUrl ||
+         existingProfile?.profilePhoto ||
+         existingProfile?.photoUrl ||
         "";
 
       await setDoc(
@@ -363,13 +373,25 @@ export default function TherapistProfilePage() {
                 className="hidden"
               />
 
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white hover:bg-[#0b3945]"
-              >
-                Choose Profile Photo
-              </button>
+              <div className="flex flex-wrap gap-3">
+  <button
+    type="button"
+    onClick={() => fileInputRef.current?.click()}
+    className="rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white hover:bg-[#0b3945]"
+  >
+    Choose Profile Photo
+  </button>
+
+  {photoPreview && (
+    <button
+      type="button"
+      onClick={handleRemovePhoto}
+      className="rounded-full border-2 border-red-600 bg-white px-6 py-3 font-bold text-red-600 hover:bg-red-600 hover:text-white"
+    >
+      Remove Photo
+    </button>
+  )}
+</div>
 
               {photoPreview && (
                 <div className="mt-6 grid gap-4 md:grid-cols-2">

@@ -12,7 +12,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import { welcomeEmailTemplate } from "@/lib/emailTemplates";
+
 
 export default function LoginPage() {
   const router = useRouter();
