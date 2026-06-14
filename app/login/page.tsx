@@ -12,6 +12,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import { welcomeEmailTemplate } from "@/lib/emailTemplates";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -66,6 +67,9 @@ async function handleGoogleLogin() {
       await setDoc(userRef, {
         uid: user.uid,
         fullName: user.displayName || "Google User",
+        alias: user.displayName
+          ? user.displayName.split(" ")[0]
+          : `Client-${Math.floor(1000 + Math.random() * 9000)}`,
         email: user.email,
         role: "client",
         provider: "google",
@@ -95,20 +99,13 @@ async function handleGoogleLogin() {
       );
     }
 
-    const latestSnap = await getDoc(userRef);
-
-    if (!latestSnap.exists() || !latestSnap.data()?.alias) {
-      router.push("/complete-profile");
-    } else {
-      router.push("/dashboard");
-    }
+    router.push("/dashboard");
   } catch (error: any) {
     setMessage(error.message || "Could not continue with Google.");
   } finally {
     setLoading(false);
   }
 }
-
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F7F3EC] px-6 py-10">
       <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl md:p-10">
