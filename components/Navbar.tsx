@@ -1,7 +1,24 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import Link from "next/link";
 import Image from "next/image";
 
+
 export default function Navbar() {
+	
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+     setIsLoggedIn(!!user);
+    });
+
+    return () => unsubscribe();
+}, []);	
+
   return (
     <nav className="sticky top-0 z-50 border-b bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8 md:py-5">
@@ -41,21 +58,33 @@ export default function Navbar() {
         </div>
 
         {/* Buttons */}
-        <div className="flex items-center gap-3 md:gap-4">
-          <Link
-            href="/login"
-            className="text-sm font-medium text-[#0F4C5C] md:text-base"
-          >
-            Login
-          </Link>
+       {/* Buttons */}
+<div className="flex items-center gap-3 md:gap-4">
+  {isLoggedIn ? (
+    <Link
+      href="/dashboard"
+      className="rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0b3945] md:px-6 md:text-base"
+    >
+      Dashboard
+    </Link>
+  ) : (
+    <>
+      <Link
+        href="/login"
+        className="text-sm font-medium text-[#0F4C5C] md:text-base"
+      >
+        Login
+      </Link>
 
-          <Link
-            href="/signup"
-            className="rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0b3945] md:px-6 md:text-base"
-          >
-            Get Started
-          </Link>
-        </div>
+      <Link
+        href="/signup"
+        className="rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0b3945] md:px-6 md:text-base"
+      >
+        Get Started
+      </Link>
+    </>
+  )}
+</div>
       </div>
     </nav>
   );
