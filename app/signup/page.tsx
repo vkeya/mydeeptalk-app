@@ -13,6 +13,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import { welcomeEmailTemplate } from "@/lib/emailTemplates";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -52,6 +53,18 @@ export default function SignupPage() {
       const user = userCredential.user;
 	  
 	  await sendEmailVerification(user);
+	  
+	  await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: email,
+          subject: "Welcome to MyDeepTalk 💙",
+          html: welcomeEmailTemplate(fullName),
+        }),
+      });
 
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
