@@ -30,6 +30,7 @@ export default function TherapistProfilePage() {
 
   const [fullName, setFullName] = useState("");
   const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
   const [bio, setBio] = useState("");
   const [specialties, setSpecialties] = useState<string[]>([]);
   const [languages, setLanguages] = useState("");
@@ -86,6 +87,7 @@ export default function TherapistProfilePage() {
 
           setExistingProfile(data);
           setFullName(data.fullName || "");
+		  setAge(data.age ? String(data.age) : "");
           setGender(data.gender || "");
           setBio(data.bio || "");
           setFeeCurrency(data.feeCurrency || data.currency || "KES");
@@ -210,6 +212,11 @@ export default function TherapistProfilePage() {
       alert("Please enter your CPB license number.");
       return;
     }
+	
+	if (!age || Number(age) < 18) {
+      alert("Please enter a valid age.");
+      return;
+    }
 
     setLoading(true);
 
@@ -236,6 +243,7 @@ export default function TherapistProfilePage() {
           email: user.email,
           fullName,
           gender,
+		  age: Number(age),
           bio,
           specialties,
           languages: languages
@@ -419,6 +427,17 @@ export default function TherapistProfilePage() {
               <option value="Male">Male</option>
               <option value="Prefer not to say">Prefer not to say</option>
             </select>
+			
+			<input
+              type="number"
+              min="18"
+              max="100"
+              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+              placeholder="Age"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              required
+            />
 
             <textarea
               rows={5}

@@ -23,63 +23,63 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
+async function handleLogin(e: React.FormEvent) {
+  e.preventDefault();
 
-    setLoading(true);
-    setMessage("");
+  setLoading(true);
+  setMessage("");
 
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/dashboard");
-    } catch (error: any) {
-      setMessage(error.message || "Could not log in.");
-    } finally {
-      setLoading(false);
-    }
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    router.push("/dashboard");
+  } catch (error: any) {
+    setMessage(error.message || "Could not log in.");
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function handleGoogleLogin() {
+  if (!acceptedTerms) {
+    setMessage("Please accept the Terms and Conditions and Privacy Policy first.");
+    return;
   }
 
-  async function handleGoogleLogin() {
-	if (!acceptedTerms) {
-      setMessage("Please accept the Terms and Conditions and Privacy Policy first.");
-      return;
-    }
-	
-    setLoading(true);
-    setMessage("");
+  setLoading(true);
+  setMessage("");
 
-    try {
-      const provider = new GoogleAuthProvider();
+  try {
+    const provider = new GoogleAuthProvider();
 
-      const result = await signInWithPopup(
-        auth,
-        provider,
-        browserPopupRedirectResolver
-      );
+    const result = await signInWithPopup(
+      auth,
+      provider,
+      browserPopupRedirectResolver
+    );
 
-      const user = result.user;
+    const user = result.user;
 
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
 
-      if (!userSnap.exists()) {
-        await setDoc(userRef, {
-          uid: user.uid,
-          fullName: user.displayName || "Google User",
-          email: user.email,
-          role: "client",
-          provider: "google",
-          emailVerified: user.emailVerified || true,
-          ageConfirmed18: true,
-          termsAccepted: true,
-          privacyAccepted: true,
-		  termsAcceptedAt: serverTimestamp(),
-          privacyAcceptedAt: serverTimestamp(),
-          termsVersion: "1.0",
-          privacyVersion: "1.0",
-          createdAt: serverTimestamp(),
-        });
-      } else {
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        uid: user.uid,
+        fullName: user.displayName || "Google User",
+        email: user.email,
+        role: "client",
+        provider: "google",
+        emailVerified: true,
+        ageConfirmed18: true,
+        termsAccepted: true,
+        privacyAccepted: true,
+        termsAcceptedAt: serverTimestamp(),
+        privacyAcceptedAt: serverTimestamp(),
+        termsVersion: "1.0",
+        privacyVersion: "1.0",
+        createdAt: serverTimestamp(),
+      });
+    } else {
       await setDoc(
         userRef,
         {
@@ -93,15 +93,21 @@ export default function LoginPage() {
         },
         { merge: true }
       );
-	}
-     
-	 router.push("/dashboard");
-    } catch (error: any) {
-      setMessage(error.message || "Could not continue with Google.");
-    } finally {
-      setLoading(false);
     }
+
+    const latestSnap = await getDoc(userRef);
+
+    if (!latestSnap.exists() || !latestSnap.data()?.alias) {
+      router.push("/complete-profile");
+    } else {
+      router.push("/dashboard");
+    }
+  } catch (error: any) {
+    setMessage(error.message || "Could not continue with Google.");
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F7F3EC] px-6 py-10">
