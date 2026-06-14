@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { bookingConfirmationEmail } from "@/emails/bookingConfirmationEmail";
+import { therapistBookingNotification } from "@/emails/therapistBookingNotification";
 import { auth, db } from "@/lib/firebase";
 import {
   addDoc,
@@ -226,11 +228,12 @@ export default function BookSessionPage() {
 
     try {
 	  const userSnap = await getDoc(doc(db, "users", user.uid));
-      const userData = userSnap.exists() ? userSnap.data() : null;	
+      const userData = userSnap.exists() ? userSnap.data() : null;
+      const clientAlias = userData?.alias || "Client";	  
       const bookingRef = await addDoc(collection(db, "bookings"), {
         clientId: user.uid,
         clientName: user.displayName || "",
-		clientAlias: userData?.alias || "Client",
+		clientAlias,
         clientEmail: user.email || "",
 
         therapistId: therapist.id,
@@ -251,6 +254,45 @@ export default function BookSessionPage() {
         meetingLink: "",
         createdAt: serverTimestamp(),
       });
+	  
+
+if (user.email) {
+  await fetch("/api/send-email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      to: user.email,
+      subject: "Session Request Received 💙",
+      html: bookingConfirmationEmail(
+        clientAlias,
+        therapist.fullName || "Your therapist",
+        sessionDate,
+        sessionTime
+      ),
+    }),
+  });
+}
+
+if (therapist.email) {
+  await fetch("/api/send-email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      to: therapist.email,
+      subject: "New Session Request",
+      html: therapistBookingNotification(
+        therapist.fullName || "Therapist",
+        clientAlias,
+        sessionDate,
+        sessionTime
+      ),
+    }),
+  });
+}
 
       if (useGiftCredit && therapyCredits?.remainingSessions > 0) {
         await updateDoc(doc(db, "therapyCredits", user.uid), {
