@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   createUserWithEmailAndPassword,
+  sendEmailVerification,
 } from "firebase/auth";
 import {
   doc,
@@ -49,6 +50,8 @@ export default function SignupPage() {
       );
 
       const user = userCredential.user;
+	  
+	  await sendEmailVerification(user);
 
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
@@ -56,6 +59,11 @@ export default function SignupPage() {
 		alias: alias.trim(),
         email,
         role,
+		provider: "email",
+		emailVerified: false,
+        ageConfirmed18: true,
+        termsAccepted: true,
+		privacyAccepted: true,
 		legalAccepted: true,
         legalAcceptedAt: serverTimestamp(),
         termsVersion: "2026-06",
@@ -64,7 +72,7 @@ export default function SignupPage() {
       
       });
 
-      router.push("/dashboard");
+      router.push("/verify-email");
     } catch (err: any) {
       setError(err.message);
     } finally {
