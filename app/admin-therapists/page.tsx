@@ -33,6 +33,7 @@ type Therapist = {
   status?: string;
   credentialsUploaded?: boolean;
   credentialsStatus?: string;
+  rejectionReason?: string;
 };
 
 type EducationQualification = {
@@ -185,12 +186,14 @@ export default function AdminTherapistsPage() {
     }
   }
 
-  async function rejectTherapist(therapistId: string) {
-    const reason = prompt("Enter reason for rejection or requested changes:");
+ async function rejectTherapist(therapist: Therapist) {
+  const therapistId = therapist.uid || therapist.id;
 
-    if (!reason) return;
+  const reason = prompt("Enter reason for rejection or requested changes:");
 
-    setActionLoading(therapistId);
+  if (!reason) return;
+
+  setActionLoading(therapistId);
 
     try {
       await updateDoc(doc(db, "therapists", therapistId), {
@@ -211,6 +214,33 @@ export default function AdminTherapistsPage() {
         },
         { merge: true }
       );
+	  
+	  if (therapist.email) {
+  await fetch("/api/send-email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      to: therapist.email,
+      subject: "MyDeepTalk Therapist Profile Requires Updates",
+      html: `
+        <p>Hello ${therapist.fullName || "there"},</p>
+
+        <p>Thank you for submitting your therapist profile to MyDeepTalk.</p>
+
+        <p>We reviewed your submission and need you to make the following correction(s):</p>
+
+        <p><strong>${reason}</strong></p>
+
+        <p>Please log in to your MyDeepTalk account, make the required changes, and resubmit for review.</p>
+
+        <p>Warm regards,<br/>
+        MyDeepTalk Team</p>
+      `,
+    }),
+  });
+}
 
       await loadTherapists();
     } catch (error) {
@@ -474,27 +504,42 @@ export default function AdminTherapistsPage() {
                         </div>
                       </InfoSection>
 
-                      <div className="flex flex-wrap gap-4">
-                        <button
-                          type="button"
-                          disabled={actionLoading === therapistId}
-                          onClick={() => approveTherapist(therapistId)}
-                          className="rounded-full bg-green-700 px-6 py-3 font-bold text-white hover:bg-green-800 disabled:opacity-70"
-                        >
-                          {actionLoading === therapistId
-                            ? "Saving..."
-                            : "Approve Therapist"}
-                        </button>
+                     {therapist.status === "pending" ? (
+  <div className="flex flex-wrap gap-4">
+    <button
+      type="button"
+      disabled={actionLoading === therapistId}
+      onClick={() => approveTherapist(therapistId)}
+      className="rounded-full bg-green-700 px-6 py-3 font-bold text-white hover:bg-green-800 disabled:opacity-70"
+    >
+      {actionLoading === therapistId ? "Saving..." : "Approve Therapist"}
+    </button>
 
-                        <button
-                          type="button"
-                          disabled={actionLoading === therapistId}
-                          onClick={() => rejectTherapist(therapistId)}
-                          className="rounded-full bg-red-700 px-6 py-3 font-bold text-white hover:bg-red-800 disabled:opacity-70"
-                        >
-                          Reject / Request Changes
-                        </button>
-                      </div>
+    <button
+      type="button"
+      disabled={actionLoading === therapistId}
+      onClick={() => rejectTherapist(therapist)}
+      className="rounded-full bg-red-700 px-6 py-3 font-bold text-white hover:bg-red-800 disabled:opacity-70"
+    >
+      Reject / Request Changes
+    </button>
+  </div>
+) : (
+  <div className="rounded-2xl bg-[#F7F3EC] p-5">
+    <p className="font-bold text-[#0F4C5C]">
+      Review completed
+    </p>
+    <p className="mt-2 font-semibold text-gray-900">
+      Status: {therapist.status?.toUpperCase()}
+    </p>
+
+    {therapist.status === "rejected" && therapist.rejectionReason && (
+      <p className="mt-2 font-semibold text-red-700">
+        Reason: {therapist.rejectionReason}
+      </p>
+    )}
+  </div>
+)}
                     </div>
                   </div>
                 </article>
