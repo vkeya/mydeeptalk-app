@@ -31,7 +31,7 @@ export default function DashboardPage() {
       }
 
       if (!user.emailVerified) {
-        await signOut(auth);
+        
         router.push("/verify-email");
         return;
       }
