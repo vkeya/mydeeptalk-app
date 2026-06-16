@@ -75,6 +75,13 @@ export default function AdminTherapistsPage() {
       }
 
       const userSnap = await getDoc(doc(db, "users", user.uid));
+	  
+	  console.log("ADMIN USER CHECK:", {
+  authUid: user.uid,
+  authEmail: user.email,
+  firestoreExists: userSnap.exists(),
+  firestoreData: userSnap.exists() ? userSnap.data() : null,
+});
 
       if (!userSnap.exists() || userSnap.data().role !== "admin") {
         router.push("/dashboard");

@@ -35,9 +35,9 @@ export default function SignupPage() {
       return;
     }
 	
-	if (!alias.trim()) {
-    setError("Please choose a privacy name / alias.");
-    return;
+	if (role === "client" && !alias.trim()) {
+       setError("Please choose a privacy name / alias.");
+       return;
     }
 
     try {
@@ -69,7 +69,9 @@ export default function SignupPage() {
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         fullName,
-		alias: alias.trim(),
+		...(role === "client" && {
+          alias: alias.trim(),
+      }),
         email,
         role,
 		provider: "email",
@@ -122,18 +124,22 @@ export default function SignupPage() {
             />
           </div>
 
-          <input
-            type="text"
-            placeholder="Privacy name / alias shown to therapists"
-            value={alias}
-            onChange={(e) => setAlias(e.target.value)}
-            className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-            required
-          />
+          {role === "client" && (
+  <>
+    <input
+      type="text"
+      placeholder="Privacy name / alias shown to therapists"
+      value={alias}
+      onChange={(e) => setAlias(e.target.value)}
+      className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+      required
+    />
 
-          <p className="text-sm font-semibold text-gray-700">
-             This is the name therapists will see instead of your real name.
-          </p>
+    <p className="text-sm font-semibold text-gray-700">
+      This is the name therapists will see instead of your real name.
+    </p>
+  </>
+)}
 
           <div>
             <label className="mb-2 block font-semibold">

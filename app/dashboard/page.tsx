@@ -38,6 +38,13 @@ export default function DashboardPage() {
 
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
+	  
+	  console.log("DASHBOARD USER CHECK:", {
+       authUid: user.uid,
+       authEmail: user.email,
+       firestoreExists: userSnap.exists(),
+       firestoreData: userSnap.exists() ? userSnap.data() : null,
+});
 
       if (userSnap.exists()) {
         setUserData(userSnap.data());
@@ -63,10 +70,15 @@ export default function DashboardPage() {
   }
 
   const role = userData?.role;
+  
+  const displayName =
+  role === "client"
+    ? userData?.alias || userData?.fullName || "Friend"
+    : userData?.fullName || "Friend";
 
   return (
     <DashboardLayout
-      userName={userData?.alias || userData?.fullName}
+      userName={displayName}
       role={role}
       onLogout={handleLogout}
     >
@@ -76,7 +88,7 @@ export default function DashboardPage() {
         </p>
 
         <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
-          Welcome, {userData?.alias || userData?.fullName || "Friend"}
+          Welcome, {displayName}
         </h1>
 
         <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
