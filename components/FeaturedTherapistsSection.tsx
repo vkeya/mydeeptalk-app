@@ -69,7 +69,7 @@ export default function FeaturedTherapistsSection() {
           </div>
         ) : therapists.length === 0 ? (
           <div className="rounded-3xl bg-white p-10 text-center shadow-lg">
-            <p className="text-sm font-semibold uppercase tracking-widest text-[#E2954E]">
+            <p className="font-script text-2xl capitalize text-[#E2954E]">
               Therapist onboarding in progress
             </p>
 

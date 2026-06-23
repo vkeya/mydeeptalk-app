@@ -13,6 +13,7 @@ import {
   where,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import PageHeader from "@/components/PageHeader";
 
 type Therapist = {
   id: string;
@@ -161,23 +162,14 @@ export default function TherapistsPage() {
   }, [router]);
 
   return (
-    <main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
-      <div className="mx-auto max-w-7xl">
-        <section className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
-          <p className="mb-3 font-bold uppercase tracking-wide text-white">
-            MyDeepTalk Therapist Network
-          </p>
+    <main className="min-h-screen bg-white">
+      <PageHeader
+        title="Our Therapists"
+        subtitle="Browse verified therapists, explore their specialties, and book a private online session when you are ready for deeper support."
+        crumbs={[{ label: "Find a Therapist" }]}
+      />
 
-          <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
-            Find Support That Fits Your Journey
-          </h1>
-
-          <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
-            Browse verified therapists, explore their specialties, and book a
-            private online session when you are ready for deeper support.
-          </p>
-        </section>
-
+      <div className="mx-auto max-w-7xl px-6 py-10">
         {loading ? (
           <div className="mt-10 rounded-3xl bg-white p-10 text-center shadow-lg">
             <p className="font-bold text-[#0F4C5C]">

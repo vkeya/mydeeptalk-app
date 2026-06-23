@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PageHeader from "@/components/PageHeader";
 
 export default function ForTherapistsPage() {
   const benefits = [
@@ -44,44 +45,14 @@ export default function ForTherapistsPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#F7F3EC]">
+    <main className="min-h-screen bg-white">
+      <PageHeader
+        title="For Therapists"
+        subtitle="Join MyDeepTalk and become part of a trusted emotional wellness platform built around self-discovery, early support, professional care, and meaningful healing conversations."
+        crumbs={[{ label: "For Therapists" }]}
+      />
+
       <section className="px-8 py-20">
-        <div className="mx-auto max-w-6xl">
-          <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-12 text-white shadow-xl">
-            <p className="font-semibold uppercase tracking-widest text-[#E2954E]">
-              For Therapists
-            </p>
-
-            <h1 className="mt-4 max-w-4xl text-5xl font-bold leading-tight">
-              Help people begin healing before life becomes too heavy.
-            </h1>
-
-            <p className="mt-6 max-w-3xl text-lg leading-8 text-white/85">
-              Join MyDeepTalk and become part of a trusted emotional wellness
-              platform built around self-discovery, early support, professional
-              care, and meaningful healing conversations.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                href="/signup"
-                className="rounded-full bg-[#E2954E] px-8 py-4 font-semibold text-white hover:bg-[#d07f34]"
-              >
-                Join as a Therapist
-              </Link>
-
-              <Link
-                href="/therapist-profile"
-                className="rounded-full border border-white px-8 py-4 font-semibold text-white hover:bg-white hover:text-[#0F4C5C]"
-              >
-                Create Therapist Profile
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-8 pb-20">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="font-semibold uppercase tracking-widest text-[#E2954E]">

@@ -26,6 +26,11 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-fraunces), var(--font-nunito), sans-serif;
 }
 
+/* Script font for golden eyebrow subtitles */
+.font-script {
+  font-family: var(--font-dancing-script), cursive;
+}
+
 /* Default readable text */
 body,
 p,
@@ -180,6 +185,11 @@ a.bg-\[\#155E63\] {
 
 .text-\[\#E2954E\] {
   color: #e2954e !important;
+}
+
+.text-\[\#0F4C5C\],
+.text-\[\#0f4c5c\] {
+  color: #0f4c5c !important;
 }
 
 /* Explicit white text */

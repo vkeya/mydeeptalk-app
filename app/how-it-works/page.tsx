@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PageHeader from "@/components/PageHeader";
 
 export default function HowItWorksPage() {
   const steps = [
@@ -41,31 +42,18 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#F7F3EC]">
+    <main className="min-h-screen bg-white">
       {/* Hero */}
 
-      <section className="px-8 py-20">
-        <div className="mx-auto max-w-6xl">
-          <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-12 text-white shadow-lg">
-            <p className="font-semibold uppercase tracking-widest text-[#E2954E]">
-              How MyDeepTalk Works
-            </p>
-
-            <h1 className="mt-4 text-5xl font-bold leading-tight">
-              Self-discovery before crisis.
-            </h1>
-
-            <p className="mt-6 max-w-3xl text-lg leading-8 text-white/85">
-              MyDeepTalk is more than therapy. It is a journey of reflection,
-              understanding, support, and long-term emotional growth.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHeader
+        title="Our Process"
+        subtitle="MyDeepTalk is more than therapy. It is a journey of reflection, understanding, support, and long-term emotional growth."
+        crumbs={[{ label: "How It Works" }]}
+      />
 
       {/* Philosophy */}
 
-      <section className="px-8">
+      <section className="px-8 pt-20">
         <div className="mx-auto max-w-5xl rounded-3xl bg-white p-10 shadow-lg">
           <h2 className="text-3xl font-bold text-[#0F4C5C]">
             Healing Should Not Begin Only After Collapse

@@ -62,7 +62,7 @@ export default function DashboardAnnouncement() {
     <section className="mb-10 rounded-3xl border border-[#2C7A7B]/20 bg-white p-6 shadow-lg md:p-8">
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="mb-2 text-sm font-bold uppercase tracking-wide text-[#E2954E]">
+          <p className="mb-2 font-script text-2xl capitalize text-[#E2954E]">
             {announcement.title}
           </p>
 

@@ -7,7 +7,7 @@ export default function TherapistSupportSection() {
       <div className="mx-auto max-w-7xl grid items-center gap-16 md:grid-cols-2">
 
         <div>
-          <p className="font-semibold uppercase tracking-widest text-[#E2954E]">
+          <p className="font-script text-2xl capitalize text-[#E2954E]">
             Trusted Support
           </p>
 

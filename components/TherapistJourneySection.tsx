@@ -36,7 +36,7 @@ export default function TherapistJourneySection() {
     <section className="bg-[#F7F3EC] px-8 py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="font-semibold uppercase tracking-widest text-[#E2954E]">
+          <p className="font-script text-2xl capitalize text-[#E2954E]">
             For Therapists
           </p>
 

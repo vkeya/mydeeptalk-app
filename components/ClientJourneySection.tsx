@@ -36,7 +36,7 @@ export default function ClientJourneySection() {
     <section className="bg-white px-8 py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="font-semibold uppercase tracking-widest text-[#E2954E]">
+          <p className="font-script text-2xl capitalize text-[#E2954E]">
             Your Journey
           </p>
 

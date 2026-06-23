@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Fraunces, Nunito } from "next/font/google";
+import { Fraunces, Nunito, Dancing_Script } from "next/font/google";
 import "./globals.css";
 
+import TopBar from "@/components/TopBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -17,6 +18,12 @@ const nunito = Nunito({
   display: "swap",
 });
 
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  variable: "--font-dancing-script",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "MyDeepTalk",
   description:
@@ -29,8 +36,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${nunito.variable}`}>
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${nunito.variable} ${dancingScript.variable}`}
+    >
       <body className="bg-[#F7F3EC] text-gray-800">
+
+        {/* Top contact bar */}
+
+        <TopBar />
 
         {/* Navbar */}
 

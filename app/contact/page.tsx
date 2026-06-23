@@ -1,17 +1,17 @@
 import Link from "next/link";
+import PageHeader from "@/components/PageHeader";
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-[#F7F3EC] px-8 py-20">
-      <div className="mx-auto max-w-5xl">
-        <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-12 text-white shadow-lg">
-          <h1 className="text-5xl font-bold">Contact MyDeepTalk</h1>
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-white/80">
-            Have a question, partnership inquiry, or need support? We’d love to hear from you.
-          </p>
-        </div>
+    <main className="min-h-screen bg-white">
+      <PageHeader
+        title="Contact Us"
+        subtitle="Have a question, partnership inquiry, or need support? We’d love to hear from you."
+        crumbs={[{ label: "Contact" }]}
+      />
 
-        <div className="mt-10 grid gap-8 md:grid-cols-2">
+      <div className="mx-auto max-w-5xl px-8 py-20">
+        <div className="grid gap-8 md:grid-cols-2">
           <div className="rounded-3xl bg-white p-10 shadow-lg">
             <h2 className="text-2xl font-bold text-[#0F4C5C]">Get in Touch</h2>
 

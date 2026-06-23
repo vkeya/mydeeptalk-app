@@ -1,44 +1,18 @@
 import Link from "next/link";
+import PageHeader from "@/components/PageHeader";
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-[#F7F3EC]">
+    <main className="min-h-screen bg-white">
+      <PageHeader
+        title="About Us"
+        subtitle="MyDeepTalk is a preventive emotional wellness platform built in Africa to help people understand themselves, reflect honestly, access support safely, and build healthier relationships with themselves and others."
+        crumbs={[{ label: "About" }]}
+      />
+
       <section className="px-8 py-20">
         <div className="mx-auto max-w-6xl">
-          <div className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-12 text-white shadow-lg">
-            <p className="font-semibold uppercase tracking-widest text-[#E2954E]">
-              About MyDeepTalk
-            </p>
-
-            <h1 className="mt-4 max-w-4xl text-5xl font-bold leading-tight">
-              Emotional wellness should begin before crisis.
-            </h1>
-
-            <p className="mt-6 max-w-3xl text-lg leading-8 text-white/85">
-              MyDeepTalk is a preventive emotional wellness platform built in
-              Africa to help people understand themselves, reflect honestly,
-              access support safely, and build healthier relationships with
-              themselves and others.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                href="/self-assessment"
-                className="rounded-full bg-white px-6 py-3 font-semibold text-[#0F4C5C]"
-              >
-                Begin Self-Discovery
-              </Link>
-
-              <Link
-                href="/therapists"
-                className="rounded-full border border-white px-6 py-3 font-semibold text-white hover:bg-white hover:text-[#0F4C5C]"
-              >
-                Find a Therapist
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <div className="rounded-3xl bg-white p-8 shadow-lg">
               <h2 className="text-2xl font-bold text-[#0F4C5C]">
                 Our Mission

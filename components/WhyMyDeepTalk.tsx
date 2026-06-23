@@ -3,7 +3,7 @@ export default function WhyMyDeepTalk() {
     <section className="px-8 py-20">
       <div className="mx-auto max-w-5xl">
 
-        <p className="mb-4 text-center font-semibold uppercase tracking-widest text-[#E2954E]">
+        <p className="mb-4 text-center font-script text-2xl capitalize text-[#E2954E]">
           Self-Discovery Before Crisis
         </p>
 

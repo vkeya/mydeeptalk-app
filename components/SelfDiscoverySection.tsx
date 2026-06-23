@@ -15,7 +15,7 @@ export default function SelfDiscoverySection() {
         />
 
         <div>
-          <p className="font-semibold uppercase tracking-widest text-[#E2954E]">
+          <p className="font-script text-2xl capitalize text-[#E2954E]">
             Begin With Awareness
           </p>
 
