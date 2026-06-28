@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Nunito, Dancing_Script } from "next/font/google";
 import "./globals.css";
 
-import TopBar from "@/components/TopBar";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import NavigationWrapper from "@/components/NavigationWrapper";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -42,23 +40,11 @@ export default function RootLayout({
     >
       <body className="bg-[#F7F3EC] text-gray-800">
 
-        {/* Top contact bar */}
-
-        <TopBar />
-
-        {/* Navbar */}
-
-        <Navbar />
-
-        {/* Main Content */}
-
-        <main className="min-h-screen">
-          {children}
-        </main>
-
-        {/* Footer */}
-
-        <Footer />
+        <NavigationWrapper>
+          <main className="min-h-screen">
+            {children}
+          </main>
+        </NavigationWrapper>
 
       </body>
     </html>

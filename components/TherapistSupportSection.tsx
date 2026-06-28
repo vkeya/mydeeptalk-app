@@ -34,7 +34,7 @@ export default function TherapistSupportSection() {
           alt="Therapist Support"
           width={700}
           height={500}
-          className="rounded-[2rem] shadow-xl"
+          className="rounded-xl shadow-sm"
         />
 
       </div>

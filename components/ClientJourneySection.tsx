@@ -55,7 +55,7 @@ export default function ClientJourneySection() {
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="rounded-3xl bg-[#F7F3EC] p-8 shadow transition hover:-translate-y-1 hover:shadow-lg"
+              className="rounded-xl border border-[#0F4C5C]/10 bg-[#F7F3EC] p-8 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E2954E] text-xl font-bold text-white">
                 {index + 1}

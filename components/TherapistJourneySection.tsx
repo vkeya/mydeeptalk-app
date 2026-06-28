@@ -33,7 +33,7 @@ export default function TherapistJourneySection() {
   ];
 
   return (
-    <section className="bg-[#F7F3EC] px-8 py-20">
+    <section className="bg-white px-8 py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
           <p className="font-script text-2xl capitalize text-[#E2954E]">
@@ -56,7 +56,7 @@ export default function TherapistJourneySection() {
           {steps.map((step, index) => (
             <div
               key={step.title}
-              className="rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+              className="rounded-xl border border-[#0F4C5C]/10 bg-white p-8 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E2954E] text-xl font-bold text-white">
                 {index + 1}

@@ -1,69 +1,85 @@
+import Image from "next/image";
+import Reveal from "@/components/Reveal";
+import { IMAGES } from "@/lib/images";
+
+const stats = [
+  {
+    number: "10+",
+    title: "Areas of Emotional Wellness",
+    description:
+      "From relationships and parenting to trauma, addiction, and self-discovery.",
+    image: IMAGES.peace,
+  },
+  {
+    number: "Preventive",
+    title: "Approach to Healing",
+    description:
+      "Helping people understand themselves before life becomes overwhelming.",
+    image: IMAGES.hands,
+  },
+  {
+    number: "Africa",
+    title: "Built With Global Vision",
+    description:
+      "Created in Africa to make emotional wellness more accessible and personal.",
+    image: IMAGES.connection,
+  },
+  {
+    number: "24/7",
+    title: "Self-Discovery Access",
+    description: "Reflect, journal, and begin your healing journey anytime.",
+    image: IMAGES.growth,
+  },
+];
+
 export default function StatsSection() {
-  const stats = [
-    {
-      number: "10+",
-      title: "Areas of Emotional Wellness",
-      description:
-        "From relationships and parenting to trauma, addiction, and self-discovery.",
-    },
-    {
-      number: "Preventive",
-      title: "Approach to Healing",
-      description:
-        "Helping people understand themselves before life becomes overwhelming.",
-    },
-    {
-      number: "Africa",
-      title: "Built With Global Vision",
-      description:
-        "Created in Africa to make emotional wellness more accessible and personal.",
-    },
-    {
-      number: "24/7",
-      title: "Self-Discovery Access",
-      description:
-        "Reflect, journal, and begin your healing journey anytime.",
-    },
-  ];
-
   return (
-    <section className="bg-white px-8 py-20">
+    <section className="bg-white px-6 py-20 md:px-8">
       <div className="mx-auto max-w-7xl">
-        <div className="text-center">
-          <p className="font-bold text-[#0F4C5C]">
-            Why MyDeepTalk
-          </p>
+        <Reveal className="text-center">
+          <span className="eyebrow justify-center">Why MyDeepTalk</span>
 
-          <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
+          <h2 className="mt-4 text-3xl font-bold text-[#0F4C5C] md:text-4xl">
             Self-Discovery Before Crisis
           </h2>
 
-          <p className="mx-auto mt-5 max-w-3xl text-gray-600 leading-8">
-            Most people seek help only when emotional pain becomes
-            overwhelming. MyDeepTalk was created to help people understand
-            themselves earlier through reflection, guided self-discovery,
-            journaling, and access to verified therapists.
+          <p className="mx-auto mt-5 max-w-3xl leading-8 text-gray-600">
+            Most people seek help only when emotional pain becomes overwhelming.
+            MyDeepTalk was created to help people understand themselves earlier
+            through reflection, guided self-discovery, journaling, and access to
+            verified therapists.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat) => (
-            <div
-              key={stat.title}
-              className="rounded-3xl bg-[#F7F3EC] p-10 text-center shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
-            >
-              <h3 className="text-4xl font-bold text-[#0F4C5C]">
-                {stat.number}
-              </h3>
+        <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat, i) => (
+            <Reveal key={stat.title} delay={(i % 4) * 90}>
+              <article className="group h-full overflow-hidden rounded-xl border border-[#0F4C5C]/10 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                {/* Image banner with number badge */}
+                <div className="img-zoom photo-wash relative h-40 overflow-hidden md:h-44">
+                  <Image
+                    src={stat.image}
+                    alt={stat.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                  <span className="absolute bottom-3 left-3 z-10 rounded-md bg-white/90 px-3 py-1 text-sm font-bold text-[#0F4C5C]">
+                    {stat.number}
+                  </span>
+                </div>
 
-              <h4 className="mt-5 text-xl font-bold text-[#0F4C5C]">
-                {stat.title}
-              </h4>
-
-              <p className="mt-4 leading-7 text-gray-600">
-                {stat.description}
-              </p>
-            </div>
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="text-lg font-bold leading-snug text-[#0F4C5C]">
+                    {stat.title}
+                  </h3>
+                  <p className="mt-2.5 text-sm leading-7 text-gray-600">
+                    {stat.description}
+                  </p>
+                </div>
+              </article>
+            </Reveal>
           ))}
         </div>
       </div>

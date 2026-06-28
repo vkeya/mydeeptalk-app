@@ -13,6 +13,15 @@ import {
   where,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import {
+  BadgeCheck,
+  Star,
+  Briefcase,
+  Languages,
+  Sparkles,
+  MapPin,
+  ArrowRight,
+} from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
 type Therapist = {
@@ -171,13 +180,30 @@ export default function TherapistsPage() {
 
       <div className="mx-auto max-w-7xl px-6 py-10">
         {loading ? (
-          <div className="mt-10 rounded-3xl bg-white p-10 text-center shadow-lg">
-            <p className="font-bold text-[#0F4C5C]">
-              Loading verified therapists...
-            </p>
+          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className="card-soft animate-pulse p-6"
+                style={{ animationDelay: `${i * 80}ms` }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="h-20 w-20 rounded-full bg-[#0F4C5C]/8" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-3/4 rounded bg-[#0F4C5C]/8" />
+                    <div className="h-3 w-1/2 rounded bg-[#0F4C5C]/8" />
+                  </div>
+                </div>
+                <div className="mt-5 space-y-2">
+                  <div className="h-3 w-full rounded bg-[#0F4C5C]/8" />
+                  <div className="h-3 w-5/6 rounded bg-[#0F4C5C]/8" />
+                  <div className="h-3 w-2/3 rounded bg-[#0F4C5C]/8" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : therapists.length === 0 ? (
-          <section className="mt-10 rounded-3xl bg-white p-8 text-center shadow-lg md:p-10">
+          <section className="card-soft mt-10 p-8 text-center md:p-10">
             <p className="font-bold uppercase tracking-wide text-[#0F4C5C]">
               No matching therapists found
             </p>
@@ -217,14 +243,14 @@ export default function TherapistsPage() {
               return (
                 <article
                   key={therapist.id}
-                  className="flex h-full flex-col rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+                  className="card-soft flex h-full flex-col p-6"
                 >
                   <div className="mb-5 flex items-center gap-4">
                     {therapist.profilePhoto ? (
                       <img
                         src={therapist.profilePhoto}
                         alt={therapist.fullName || "Therapist"}
-                        className="h-20 w-20 rounded-full object-cover shadow"
+                        className="h-20 w-20 rounded-full object-cover shadow ring-2 ring-[#0F4C5C]/10"
                         style={{
                           objectPosition: `${
                             therapist.photoPositionX ?? 50
@@ -232,70 +258,68 @@ export default function TherapistsPage() {
                         }}
                       />
                     ) : (
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#F7F3EC] text-2xl font-bold text-[#0F4C5C] shadow">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#0F4C5C]/8 text-2xl font-bold text-[#0F4C5C] shadow ring-2 ring-[#0F4C5C]/10">
                         {therapist.fullName?.charAt(0)?.toUpperCase() || "T"}
                       </div>
                     )}
 
                     <div>
-                      <h2 className="text-2xl font-bold text-[#0F4C5C]">
+                      <h2 className="text-xl font-bold text-[#0F4C5C]">
                         {therapist.fullName || "Verified Therapist"}
                       </h2>
 
-                      <span className="mt-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-gray-900">
-                        ✓ Verified Therapist
+                      <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#2C7A7B]/12 px-3 py-1 text-xs font-bold text-[#2C7A7B]">
+                        <BadgeCheck className="h-3.5 w-3.5" />
+                        Verified Therapist
                       </span>
                     </div>
                   </div>
 
                   {therapist.reviewCount && therapist.reviewCount > 0 ? (
-                    <div className="flex items-center gap-2">
-                      <p className="font-bold text-[#0F4C5C]">
-                        ⭐ {therapist.averageRating?.toFixed(1)}
-                      </p>
-
-                      <p className="text-sm font-bold text-gray-900">
+                    <div className="flex items-center gap-1.5">
+                      <Star className="h-4 w-4 fill-[#E2954E] text-[#E2954E]" />
+                      <span className="font-bold text-[#0F4C5C]">
+                        {therapist.averageRating?.toFixed(1)}
+                      </span>
+                      <span className="text-sm font-semibold text-gray-500">
                         ({therapist.reviewCount} reviews)
-                      </p>
+                      </span>
                     </div>
                   ) : (
-                    <p className="text-sm font-bold text-gray-900">
+                    <p className="text-sm font-semibold text-gray-500">
                       No reviews yet
                     </p>
                   )}
 
-                  <p className="mt-4 line-clamp-3 text-base font-semibold leading-7 text-gray-900">
+                  <p className="mt-4 line-clamp-3 leading-7 text-gray-600">
                     {therapist.bio ||
                       "A verified therapist ready to support your emotional wellness journey."}
                   </p>
 
-                  <div className="mt-5 space-y-2 text-sm font-semibold text-gray-900">
-                    <p>
-                      <strong>Gender:</strong>{" "}
-                      {therapist.gender || "Not specified"}
+                  <div className="mt-5 space-y-2.5 text-sm text-gray-700">
+                    <p className="flex items-center gap-2.5">
+                      <Briefcase className="h-4 w-4 shrink-0 text-[#0F4C5C]" />
+                      {therapist.yearsExperience || 0} years experience
                     </p>
 
-                    <p>
-                      <strong>Experience:</strong>{" "}
-                      {therapist.yearsExperience || 0} years
-                    </p>
-
-                    <p>
-                      <strong>Languages:</strong>{" "}
+                    <p className="flex items-center gap-2.5">
+                      <Languages className="h-4 w-4 shrink-0 text-[#0F4C5C]" />
                       {therapist.languages?.length
                         ? therapist.languages.join(", ")
-                        : "Not specified"}
+                        : "Languages not specified"}
                     </p>
 
-                    <p>
-                      <strong>Specialties:</strong>{" "}
-                      {therapist.specialties?.length
-                        ? therapist.specialties.join(", ")
-                        : "Not specified"}
+                    <p className="flex items-start gap-2.5">
+                      <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#0F4C5C]" />
+                      <span>
+                        {therapist.specialties?.length
+                          ? therapist.specialties.join(", ")
+                          : "Specialties not specified"}
+                      </span>
                     </p>
 
-                    <p>
-                      <strong>Location:</strong>{" "}
+                    <p className="flex items-center gap-2.5">
+                      <MapPin className="h-4 w-4 shrink-0 text-[#0F4C5C]" />
                       {[therapist.city, therapist.country]
                         .filter(Boolean)
                         .join(", ") || "Online"}
@@ -318,9 +342,10 @@ export default function TherapistsPage() {
 
                   <Link
                      href={`/book-session/${therapist.id}`}
-                     className="rounded-full bg-[#0F4C5C] px-4 py-3 text-center text-sm font-bold text-white hover:bg-[#0b3945]"
+                     className="group inline-flex items-center justify-center gap-1.5 rounded-full bg-[#0F4C5C] px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-[#0b3945]"
                   >
                      Book
+                     <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
                   </Link>
 
                   <Link

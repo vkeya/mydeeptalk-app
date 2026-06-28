@@ -20,15 +20,44 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-nunito), sans-serif;
+  /* Guard against transient horizontal scroll from reveal/blob animations */
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-fraunces), var(--font-nunito), sans-serif;
 }
 
-/* Script font for golden eyebrow subtitles */
+/* Eyebrow subtitles — small, uppercase Nunito (replaces the old script font).
+   Redefined globally so every existing `font-script` subheading updates at once. */
 .font-script {
-  font-family: var(--font-dancing-script), cursive;
+  font-family: var(--font-nunito), sans-serif !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  line-height: 1.5 !important;
+}
+
+/* Reusable eyebrow label for new markup */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-nunito), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #e2954e;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 1.75rem;
+  height: 2px;
+  border-radius: 9999px;
+  background: currentColor;
 }
 
 /* Default readable text */
@@ -231,5 +260,153 @@ a.bg-\[\#155E63\] {
   h3 {
     font-size: 1.3rem;
     line-height: 1.8rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion system                                                       */
+/* ------------------------------------------------------------------ */
+
+/* Scroll reveal — elements start hidden, fade/slide in when in view.
+   The .is-visible class is toggled by the <Reveal> client component. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal-variant="left"] {
+  transform: translateX(-32px);
+}
+
+[data-reveal-variant="right"] {
+  transform: translateX(32px);
+}
+
+[data-reveal-variant="zoom"] {
+  transform: scale(0.94);
+}
+
+/* Ambient motion */
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes blob-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(20px, -24px) scale(1.06);
+  }
+  66% {
+    transform: translate(-16px, 14px) scale(0.96);
+  }
+}
+
+.animate-float-soft {
+  animation: float-soft 7s ease-in-out infinite;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-blob {
+  animation: blob-drift 18s ease-in-out infinite;
+}
+
+/* Card lift on hover — soft, premium, no heavy gradients */
+.card-soft {
+  background: #ffffff;
+  border: 1px solid rgba(15, 76, 92, 0.10);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(15, 76, 92, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card-soft:hover {
+  transform: translateY(-4px);
+  border-color: rgba(226, 149, 78, 0.35);
+  box-shadow: 0 8px 24px -8px rgba(15, 76, 92, 0.18);
+}
+
+/* Image hover zoom helper */
+.img-zoom {
+  overflow: hidden;
+}
+
+.img-zoom img {
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.img-zoom:hover img {
+  transform: scale(1.06);
+}
+
+/* Duotone-ish brand wash for placeholder photos so reused images feel varied */
+.photo-wash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 76, 92, 0) 35%,
+    rgba(15, 76, 92, 0.55) 100%
+  );
+  pointer-events: none;
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .animate-float-soft,
+  .animate-fade-up,
+  .animate-blob {
+    animation: none !important;
   }
 }

@@ -11,7 +11,7 @@ export default function SelfDiscoverySection() {
           alt="Self Discovery"
           width={700}
           height={500}
-          className="rounded-[2rem] shadow-xl"
+          className="rounded-xl shadow-sm"
         />
 
         <div>

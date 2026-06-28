@@ -64,11 +64,11 @@ export default function FeaturedTherapistsSection() {
         </div>
 
         {loading ? (
-          <div className="rounded-3xl bg-white p-10 text-center shadow-lg">
+          <div className="rounded-xl border border-[#0F4C5C]/10 bg-white p-10 text-center shadow-sm">
             <p className="text-gray-600">Loading verified therapists...</p>
           </div>
         ) : therapists.length === 0 ? (
-          <div className="rounded-3xl bg-white p-10 text-center shadow-lg">
+          <div className="rounded-xl border border-[#0F4C5C]/10 bg-white p-10 text-center shadow-sm">
             <p className="font-script text-2xl capitalize text-[#E2954E]">
               Therapist onboarding in progress
             </p>
@@ -109,7 +109,7 @@ export default function FeaturedTherapistsSection() {
             {therapists.map((therapist) => (
               <div
                 key={therapist.id}
-                className="rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+                className="rounded-xl border border-[#0F4C5C]/10 bg-white p-8 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="mb-6 flex items-center gap-4">
                   {therapist.photoUrl ? (

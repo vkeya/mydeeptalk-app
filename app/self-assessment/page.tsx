@@ -2,6 +2,17 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import {
+  Lock,
+  Sparkles,
+  ListChecks,
+  NotebookPen,
+  Brain,
+  Leaf,
+  Check,
+  Info,
+  ArrowRight,
+} from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import {
   addDoc,
@@ -316,54 +327,62 @@ export default function SelfAssessmentPage() {
     return (
       <main className="min-h-screen bg-[#F7F3EC] p-6">
         <section className="mx-auto flex min-h-[80vh] max-w-4xl items-center">
-          <div className="rounded-3xl bg-white p-8 shadow-lg md:p-12">
-            <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#0F4C5C]">
-              Private • Free • Takes 2 Minutes
-            </p>
+          <div className="card-soft animate-fade-up w-full p-8 md:p-12">
+            <span className="eyebrow">Private • Free • 2 Minutes</span>
 
-            <h1 className="text-4xl font-bold text-[#0F4C5C] md:text-5xl">
-              Begin Your Self-Discovery Check-In
+            <h1 className="mt-4 text-4xl font-bold text-[#0F4C5C] md:text-5xl">
+              Begin your self-discovery check-in
             </h1>
 
-            <p className="mt-6 text-lg text-gray-900">
+            <p className="mt-6 text-lg leading-8 text-gray-700">
               How are you really doing? This private check-in helps you
               understand your emotional wellbeing and discover the area of your
               life that may need more care, reflection, or support.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl bg-[#F7F3EC] p-4">
-                <h3 className="font-semibold text-[#0F4C5C]">Private</h3>
-                <p className="text-sm text-gray-600">
-                  You can take this check-in even without an account.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-[#F7F3EC] p-4">
-                <h3 className="font-semibold text-[#0F4C5C]">Reflective</h3>
-                <p className="text-sm text-gray-600">
-                  Designed to help you understand, not judge yourself.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-[#F7F3EC] p-4">
-                <h3 className="font-semibold text-[#0F4C5C]">Actionable</h3>
-                <p className="text-sm text-gray-600">
-                  Get gentle next steps and therapist guidance.
-                </p>
-              </div>
+              {[
+                {
+                  icon: Lock,
+                  title: "Private",
+                  text: "You can take this check-in even without an account.",
+                },
+                {
+                  icon: Sparkles,
+                  title: "Reflective",
+                  text: "Designed to help you understand, not judge yourself.",
+                },
+                {
+                  icon: ListChecks,
+                  title: "Actionable",
+                  text: "Get gentle next steps and therapist guidance.",
+                },
+              ].map((f) => (
+                <div
+                  key={f.title}
+                  className="rounded-2xl border border-[#0F4C5C]/8 bg-[#F7F3EC] p-5"
+                >
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E2954E]/12 text-[#E2954E]">
+                    <f.icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-3 font-bold text-[#0F4C5C]">{f.title}</h3>
+                  <p className="mt-1 text-sm text-gray-600">{f.text}</p>
+                </div>
+              ))}
             </div>
 
-            <p className="mt-6 rounded-2xl bg-yellow-100 p-5 text-base font-semibold text-[#0F4C5C]">
+            <p className="mt-6 flex items-start gap-3 rounded-2xl border border-[#E2954E]/30 bg-[#E2954E]/8 p-5 text-base font-semibold text-[#0F4C5C]">
+              <Info className="mt-0.5 h-5 w-5 shrink-0 text-[#b9701f]" />
               This is not a diagnosis. It is a self-reflection tool to help you
               understand where support may be useful.
             </p>
 
             <button
               onClick={() => setStarted(true)}
-              className="mt-8 rounded-full bg-[#0F4C5C] px-8 py-4 font-semibold text-white hover:bg-[#0b3945]"
+              className="group mt-8 inline-flex items-center gap-2 rounded-full bg-[#0F4C5C] px-8 py-4 font-semibold text-white transition hover:bg-[#0b3945]"
             >
               Begin Check-In
+              <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
             </button>
           </div>
         </section>
@@ -414,7 +433,12 @@ export default function SelfAssessmentPage() {
 
               <ul className="mt-4 space-y-3 text-gray-700">
                 {getRecommendations(primaryArea).map((item) => (
-                  <li key={item}>✓ {item}</li>
+                  <li key={item} className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#2C7A7B]/15 text-[#2C7A7B]">
+                      <Check className="h-3.5 w-3.5" />
+                    </span>
+                    {item}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -434,32 +458,34 @@ export default function SelfAssessmentPage() {
 
               <Link
                 href="/journal"
-                className="rounded-full border border-[#0F4C5C] px-6 py-3 font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-[#0F4C5C] px-6 py-3 font-semibold text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white"
               >
-                📖 Write in Journal
+                <NotebookPen className="h-5 w-5" />
+                Write in Journal
               </Link>
 
               <Link
                 href="/therapists"
-                className="rounded-full bg-[#0F4C5C] px-6 py-3 font-semibold text-white hover:bg-[#0b3945]"
+                className="inline-flex items-center gap-2 rounded-full bg-[#0F4C5C] px-6 py-3 font-semibold text-white transition hover:bg-[#0b3945]"
               >
-                🧠 Find a Therapist
+                <Brain className="h-5 w-5" />
+                Find a Therapist
               </Link>
 
-  
               <Link
                 href={`/areas/${primaryArea
-                .toLowerCase()
-                .replace(/ & /g, "-")
-                .replace(/\s+/g, "-")}`}
-                className="rounded-full border border-[#2C7A7B] px-6 py-3 font-semibold text-[#2C7A7B]"
+                  .toLowerCase()
+                  .replace(/ & /g, "-")
+                  .replace(/\s+/g, "-")}`}
+                className="inline-flex items-center gap-2 rounded-full border border-[#2C7A7B] px-6 py-3 font-semibold text-[#2C7A7B] transition hover:bg-[#2C7A7B] hover:text-white"
               >
-                🌿 Explore Growth Area
+                <Leaf className="h-5 w-5" />
+                Explore Growth Area
               </Link>
 
               <button
                 onClick={restart}
-                className="rounded-full border border-gray-400 px-6 py-3 font-semibold text-gray-600"
+                className="rounded-full border border-gray-400 px-6 py-3 font-semibold text-gray-600 transition hover:bg-gray-100"
               >
                 Retake Check-In
               </button>
@@ -486,7 +512,7 @@ export default function SelfAssessmentPage() {
 
           <div className="h-3 rounded-full bg-white">
             <div
-              className="h-3 rounded-full bg-[#2C7A7B]"
+              className="h-3 rounded-full bg-[#2C7A7B] transition-[width] duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -506,9 +532,10 @@ export default function SelfAssessmentPage() {
               <button
                 key={option.label}
                 onClick={() => answerQuestion(option.score)}
-                className="w-full rounded-2xl border bg-[#F7F3EC] p-5 text-left font-medium text-gray-800 hover:border-[#2C7A7B] hover:bg-white"
+                className="group flex w-full items-center justify-between gap-4 rounded-2xl border border-[#0F4C5C]/8 bg-[#F7F3EC] p-5 text-left font-medium text-gray-800 transition duration-300 hover:-translate-y-0.5 hover:border-[#2C7A7B] hover:bg-white hover:shadow-md"
               >
                 {option.label}
+                <ArrowRight className="h-5 w-5 shrink-0 text-[#2C7A7B] opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100" />
               </button>
             ))}
           </div>

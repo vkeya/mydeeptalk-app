@@ -1,3 +1,6 @@
+import { Star, Quote } from "lucide-react";
+import Reveal from "@/components/Reveal";
+
 export default function TestimonialsSection() {
   const testimonials = [
     {
@@ -18,53 +21,47 @@ export default function TestimonialsSection() {
   ];
 
   return (
-    <section className="bg-[#F7F3EC] px-8 py-20">
+    <section className="bg-[#F7F3EC] px-6 py-20 md:px-8">
       <div className="mx-auto max-w-7xl">
+        <Reveal className="text-center">
+          <span className="eyebrow justify-center">Real Stories</span>
 
-        <div className="text-center">
-          <p className="font-bold text-[#0F4C5C]">
-            Real Stories
-          </p>
-
-          <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
+          <h2 className="mt-4 text-3xl font-bold text-[#0F4C5C] md:text-4xl">
             What People Say About MyDeepTalk
           </h2>
 
           <p className="mx-auto mt-5 max-w-3xl text-gray-600">
-            Building healthier emotional lives begins with awareness,
-            support, and meaningful conversations.
+            Building healthier emotional lives begins with awareness, support,
+            and meaningful conversations.
           </p>
-        </div>
+        </Reveal>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
+          {testimonials.map((testimonial, i) => (
+            <Reveal key={testimonial.name} delay={i * 120}>
+              <figure className="card-soft relative h-full p-10">
+                <Quote className="absolute right-8 top-8 h-10 w-10 text-[#0F4C5C]/8" />
 
-          {testimonials.map((testimonial) => (
-            <div
-              key={testimonial.name}
-              className="rounded-3xl bg-white p-10 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
-            >
-              <div className="mb-6 text-2xl text-[#E2954E]">
-                ★★★★★
-              </div>
+                <div className="flex gap-1 text-[#E2954E]">
+                  {Array.from({ length: 5 }).map((_, s) => (
+                    <Star key={s} className="h-5 w-5 fill-[#E2954E]" />
+                  ))}
+                </div>
 
-              <p className="leading-8 text-gray-600">
-                "{testimonial.quote}"
-              </p>
+                <blockquote className="mt-6 leading-8 text-gray-600">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </blockquote>
 
-              <div className="mt-8">
-                <h3 className="font-bold text-[#0F4C5C]">
-                  {testimonial.name}
-                </h3>
-
-                <p className="text-sm text-gray-500">
-                  MyDeepTalk Community Member
-                </p>
-              </div>
-            </div>
+                <figcaption className="mt-8">
+                  <p className="font-bold text-[#0F4C5C]">{testimonial.name}</p>
+                  <p className="text-sm text-gray-500">
+                    MyDeepTalk Community Member
+                  </p>
+                </figcaption>
+              </figure>
+            </Reveal>
           ))}
-
         </div>
-
       </div>
     </section>
   );
