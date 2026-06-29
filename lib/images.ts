@@ -11,48 +11,41 @@
  * journaling, quiet conversation) to match the brand.
  */
 
-const PLACEHOLDERS = {
-  calm: "/images/mental-hero.jpg",
-  reflection: "/images/self-discovery.png",
-  support: "/images/therapist-support.png",
-  hero: "/images/mental-hero.jpg",
-} as const;
-
 export const IMAGES = {
   // About
-  aboutStory: PLACEHOLDERS.reflection,
-  aboutMission: PLACEHOLDERS.calm,
-  aboutAfrica: PLACEHOLDERS.support,
-  aboutValues: PLACEHOLDERS.hero,
+  aboutStory: "/images/mental4.jpg",
+  aboutMission: "/images/mental2.jpg",
+  aboutAfrica: "/images/mental5.jpg",
+  aboutValues: "/images/mental1.jpg",
 
   // How it works / journey
-  journeyCheckIn: PLACEHOLDERS.reflection,
-  journeyReflect: PLACEHOLDERS.calm,
-  journeyConnect: PLACEHOLDERS.support,
-  journeyGrow: PLACEHOLDERS.hero,
+  journeyCheckIn: "/images/mental7.jpg",
+  journeyReflect: "/images/mental2.jpg",
+  journeyConnect: "/images/mental5.jpg",
+  journeyGrow: "/images/mental6.jpg",
 
   // Contact / support
-  contact: PLACEHOLDERS.support,
+  contact: "/images/mental8.jpg",
 
   // Therapists
-  therapists: PLACEHOLDERS.support,
-  forTherapists: PLACEHOLDERS.calm,
+  therapists: "/images/mental5.jpg",
+  forTherapists: "/images/mental2.jpg",
 
   // Wellness features
-  selfAssessment: PLACEHOLDERS.reflection,
-  journal: PLACEHOLDERS.calm,
-  healingCircle: PLACEHOLDERS.hero,
-  aiReflections: PLACEHOLDERS.reflection,
+  selfAssessment: "/images/mental9.jpg",
+  journal: "/images/mental3.jpg",
+  healingCircle: "/images/mental6.jpg",
+  aiReflections: "/images/mental7.jpg",
 
   // Safety / crisis (kept calm + reassuring, not alarming)
-  crisis: PLACEHOLDERS.support,
-  safety: PLACEHOLDERS.calm,
+  crisis: "/images/mental10.jpg",
+  safety: "/images/mental1.jpg",
 
   // Generic section accents
-  peace: PLACEHOLDERS.calm,
-  growth: PLACEHOLDERS.hero,
-  connection: PLACEHOLDERS.support,
-  hands: PLACEHOLDERS.reflection,
+  peace: "/images/mental3.jpg",
+  growth: "/images/mental6.jpg",
+  connection: "/images/mental3.jpg",
+  hands: "/images/mental1.jpg",
 } as const;
 
 export type ImageKey = keyof typeof IMAGES;

@@ -30,7 +30,7 @@ export default function TherapistSupportSection() {
         </div>
 
         <Image
-          src="/images/therapist-support.png"
+          src="/images/mental10.jpg"
           alt="Therapist Support"
           width={700}
           height={500}

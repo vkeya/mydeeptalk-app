@@ -1,37 +1,36 @@
 import Image from "next/image";
 import Reveal from "@/components/Reveal";
-import { IMAGES } from "@/lib/images";
 
 const pillars = [
   {
     title: "Self-Awareness",
     description: "Understanding yourself is the beginning of healing.",
-    image: IMAGES.hands,
+    image: "/images/mental1.jpg",
   },
   {
     title: "Reflection",
     description: "Growth happens when we slow down and pay attention to our inner world.",
-    image: IMAGES.journeyReflect,
+    image: "/images/mental2.jpg",
   },
   {
     title: "Connection",
     description: "Healthy relationships begin with understanding ourselves and others.",
-    image: IMAGES.connection,
+    image: "/images/mental3.jpg",
   },
   {
     title: "Healing",
     description: "Pain does not have to define your future.",
-    image: IMAGES.aboutStory,
+    image: "/images/mental4.jpg",
   },
   {
     title: "Support",
     description: "You do not have to navigate life alone.",
-    image: IMAGES.therapists,
+    image: "/images/mental5.jpg",
   },
   {
     title: "Growth",
     description: "Healing is not perfection. It is becoming more whole over time.",
-    image: IMAGES.growth,
+    image: "/images/mental6.jpg",
   },
 ];
 
