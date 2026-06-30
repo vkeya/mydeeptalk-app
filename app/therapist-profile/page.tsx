@@ -59,6 +59,7 @@ export default function TherapistProfilePage() {
   const [existingProfile, setExistingProfile] = useState<any>(null);
   const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
     async function loadProfile() {
@@ -163,7 +164,19 @@ export default function TherapistProfilePage() {
     setPhotoPositionX(50);
     setPhotoPositionY(50);
     setRemovePhoto(true);
+}	
+ function handleDrag(e: React.MouseEvent<HTMLDivElement>) {
+  if (!dragging) return;
+
+  setPhotoPositionX((prev) =>
+    Math.max(0, Math.min(100, prev - e.movementX * 0.3))
+  );
+
+  setPhotoPositionY((prev) =>
+    Math.max(0, Math.min(100, prev - e.movementY * 0.3))
+  );
 }
+
 
   async function uploadToCloudinary(file: File, folder: string) {
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -351,15 +364,31 @@ export default function TherapistProfilePage() {
               </label>
 
               {photoPreview ? (
-                <img
-                  src={photoPreview}
-                  alt="Profile preview"
-                  className="mb-4 h-36 w-36 rounded-full object-cover shadow"
-                  style={{
-                    objectPosition: `${photoPositionX}% ${photoPositionY}%`,
-                  }}
-                />
-              ) : (
+  <div className="mb-4">
+    <div
+      className="relative h-36 w-36 overflow-hidden rounded-full shadow cursor-move"
+      onMouseDown={() => setDragging(true)}
+      onMouseUp={() => setDragging(false)}
+      onMouseLeave={() => setDragging(false)}
+      onMouseMove={handleDrag}
+    >
+      <img
+        src={photoPreview}
+        alt="Profile preview"
+        className="h-full w-full object-cover select-none pointer-events-none"
+        draggable={false}
+        style={{
+          objectPosition: `${photoPositionX}% ${photoPositionY}%`,
+        }}
+      />
+    </div>
+
+    <p className="mt-2 text-xs text-gray-500">
+      Drag photo to reposition
+    </p>
+  </div>
+) : (
+           
                 <div className="mb-4 flex h-36 w-36 items-center justify-center rounded-full bg-white text-sm font-bold text-gray-900 shadow">
                   No photo
                 </div>
@@ -393,41 +422,7 @@ export default function TherapistProfilePage() {
   )}
 </div>
 
-              {photoPreview && (
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-bold text-[#0F4C5C]">
-                      Move photo left / right
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={photoPositionX}
-                      onChange={(e) =>
-                        setPhotoPositionX(Number(e.target.value))
-                      }
-                      className="w-full"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="mb-2 block text-sm font-bold text-[#0F4C5C]">
-                      Move photo up / down
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={photoPositionY}
-                      onChange={(e) =>
-                        setPhotoPositionY(Number(e.target.value))
-                      }
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-              )}
+           
             </div>
 
             <input
