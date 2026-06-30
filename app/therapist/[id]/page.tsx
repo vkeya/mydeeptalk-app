@@ -26,6 +26,8 @@ type Therapist = {
   city?: string;
   status?: string;
   profilePhoto?: string;
+  photoPositionX?: number;
+  photoPositionY?: number;
 };
 
 type Review = {
@@ -59,8 +61,14 @@ export default function TherapistProfilePage() {
         const therapistSnap = await getDoc(therapistRef);
 
         if (therapistSnap.exists()) {
-          setTherapist(therapistSnap.data() as Therapist);
-        }
+  const data = therapistSnap.data();
+
+  console.log("THERAPIST PROFILE DATA:", data);
+
+  setTherapist(data as Therapist);
+}
+		
+		console.log("Therapist data:", therapist);
 
         const reviewsSnap = await getDocs(collection(db, "reviews"));
 
@@ -104,6 +112,8 @@ export default function TherapistProfilePage() {
   }
 
   const currency = therapist.sessionFeeCurrency || "KES";
+  
+  
 
   return (
     <main className="min-h-screen bg-[#F7F3EC] p-6">
@@ -115,7 +125,12 @@ export default function TherapistProfilePage() {
                 src={therapist.profilePhoto}
                 alt={therapist.fullName || "Therapist"}
                 className="h-40 w-40 rounded-full object-cover shadow-lg"
-              />
+                style={{
+                  objectPosition: `${therapist.photoPositionX || 50}% ${
+                    therapist.photoPositionY || 50
+					}%`,
+                }}
+			  />
             ) : (
               <div className="flex h-40 w-40 items-center justify-center rounded-full bg-[#F7F3EC] text-5xl font-bold text-[#0F4C5C] shadow-lg">
                 {therapist.fullName?.charAt(0)?.toUpperCase() || "T"}
