@@ -1,10 +1,30 @@
+"use client";
+
+import { useRef } from "react";
 import Link from "next/link";
+import {
+  Heart,
+  Users,
+  Sprout,
+  Brain,
+  RefreshCw,
+  Sparkles,
+  User,
+  UserRound,
+  Church,
+  Compass,
+  Check,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import Reveal from "@/components/Reveal";
 
 const pillars = [
   {
     title: "Relationships",
     slug: "relationships",
-    icon: "❤️",
+    icon: Heart,
     description:
       "Strengthen communication, rebuild trust, and create healthier emotional connection.",
     items: [
@@ -22,7 +42,7 @@ const pillars = [
   {
     title: "Parenting",
     slug: "parenting",
-    icon: "👨‍👩‍👧‍👦",
+    icon: Users,
     description:
       "Support for parents raising emotionally healthy children while also caring for themselves.",
     items: [
@@ -39,7 +59,7 @@ const pillars = [
   {
     title: "Trauma & Healing",
     slug: "trauma-healing",
-    icon: "🌿",
+    icon: Sprout,
     description:
       "Gently process painful experiences and begin rebuilding safety, hope, and strength.",
     items: [
@@ -56,7 +76,7 @@ const pillars = [
   {
     title: "Mental & Emotional Wellness",
     slug: "mental-emotional-wellness",
-    icon: "🧠",
+    icon: Brain,
     description:
       "Build emotional awareness, resilience, and healthier ways of coping with life.",
     items: [
@@ -73,7 +93,7 @@ const pillars = [
   {
     title: "Addiction & Recovery",
     slug: "addiction-recovery",
-    icon: "🔄",
+    icon: RefreshCw,
     description:
       "Find support, accountability, and practical steps for rebuilding life one day at a time.",
     items: [
@@ -90,7 +110,7 @@ const pillars = [
   {
     title: "Self-Discovery & Purpose",
     slug: "self-discovery-purpose",
-    icon: "✨",
+    icon: Sparkles,
     description:
       "Understand your identity, values, patterns, and the life you are becoming.",
     items: [
@@ -107,7 +127,7 @@ const pillars = [
   {
     title: "Men's Wellness",
     slug: "mens-wellness",
-    icon: "👨",
+    icon: User,
     description:
       "A safe space for men to speak honestly about pressure, identity, emotions, and relationships.",
     items: [
@@ -124,7 +144,7 @@ const pillars = [
   {
     title: "Women's Wellness",
     slug: "womens-wellness",
-    icon: "👩",
+    icon: UserRound,
     description:
       "Support for women navigating identity, motherhood, relationships, purpose, and emotional wellbeing.",
     items: [
@@ -141,7 +161,7 @@ const pillars = [
   {
     title: "Faith & Spiritual Wellness",
     slug: "faith-spiritual-wellness",
-    icon: "🙏",
+    icon: Church,
     description:
       "Explore healing, hope, meaning, forgiveness, and emotional wellness while honoring your values.",
     items: [
@@ -157,7 +177,7 @@ const pillars = [
   {
     title: "Life Challenges & Transitions",
     slug: "life-challenges-transitions",
-    icon: "🌍",
+    icon: Compass,
     description:
       "Find clarity and emotional support when life changes feel uncertain or overwhelming.",
     items: [
@@ -173,94 +193,141 @@ const pillars = [
 ];
 
 export default function HelpsWithSection() {
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  function slide(dir: "prev" | "next") {
+    if (!trackRef.current) return;
+    // Scroll by the visible container width (= 3 cards + 2 gaps), snap corrects alignment
+    const amount = trackRef.current.clientWidth;
+    trackRef.current.scrollBy({
+      left: dir === "prev" ? -amount : amount,
+      behavior: "smooth",
+    });
+  }
+
   return (
     <section className="bg-white px-6 py-20">
       <div className="mx-auto max-w-7xl">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-[#2C7A7B]">
-            What MyDeepTalk Helps With
-          </p>
+        <Reveal className="mx-auto max-w-3xl text-center">
+          <span className="eyebrow justify-center">What MyDeepTalk Helps With</span>
 
-          <h2 className="mt-3 text-4xl font-bold text-[#0F4C5C]">
+          <h2 className="mt-4 text-3xl font-bold text-[#0F4C5C] md:text-4xl">
             Support for the real things people carry quietly
           </h2>
 
-          <p className="mt-5 text-lg text-gray-600">
+          <p className="mt-5 text-lg leading-8 text-gray-600">
             MyDeepTalk helps you understand yourself before life becomes too
             heavy. Begin with self-discovery, reflect through guided journaling,
             and connect with verified therapists when deeper support is needed.
           </p>
+        </Reveal>
+
+        {/* Carousel */}
+        <div className="relative mt-14">
+          {/* Prev */}
+          <button
+            onClick={() => slide("prev")}
+            aria-label="Previous"
+            className="absolute -left-5 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#0F4C5C]/15 bg-white shadow-sm text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+
+          {/* Track */}
+          <div
+            ref={trackRef}
+            className="flex gap-6 overflow-x-scroll scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {pillars.map((pillar) => (
+              <div
+                key={pillar.title}
+                className="flex-none snap-start w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+              >
+                <div className="card-soft group flex h-full flex-col p-6">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E2954E]/12 text-[#E2954E] transition group-hover:scale-110">
+                    <pillar.icon className="h-7 w-7" />
+                  </span>
+
+                  <h3 className="mt-5 text-xl font-bold text-[#0F4C5C]">
+                    {pillar.title}
+                  </h3>
+
+                  <p className="mt-3 leading-7 text-gray-600">
+                    {pillar.description}
+                  </p>
+
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {pillar.items.map((item) => (
+                      <span
+                        key={item}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-[#F7F3EC] px-3 py-1 text-sm text-gray-700"
+                      >
+                        <Check className="h-3.5 w-3.5 text-[#2C7A7B]" />
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+
+                  <Link
+                    href={`/areas/${pillar.slug}`}
+                    className="group/link mt-auto pt-6 inline-flex items-center gap-1.5 font-semibold text-[#0F4C5C]"
+                  >
+                    Explore this area
+                    <ArrowRight className="h-4 w-4 transition group-hover/link:translate-x-1" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Next */}
+          <button
+            onClick={() => slide("next")}
+            aria-label="Next"
+            className="absolute -right-5 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#0F4C5C]/15 bg-white shadow-sm text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
         </div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {pillars.map((pillar) => (
-            <div
-              key={pillar.title}
-              className="rounded-3xl bg-[#F7F3EC] p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="mb-4 text-4xl">{pillar.icon}</div>
+        {/* CTA */}
+        <Reveal className="mt-16">
+          <div className="relative overflow-hidden rounded-xl bg-[#0F4C5C] p-8 text-center md:p-12">
+            <div className="animate-blob pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[#2C7A7B]/40 blur-3xl" />
+            <div className="animate-blob pointer-events-none absolute -bottom-20 left-10 h-56 w-56 rounded-full bg-[#E2954E]/20 blur-3xl" />
+            <div className="relative">
+              <span className="text-sm font-bold uppercase tracking-widest text-white/80">
+                Self-discovery before crisis
+              </span>
 
-              <h3 className="text-2xl font-bold text-[#0F4C5C]">
-                {pillar.title}
+              <h3 className="mt-3 text-3xl font-bold text-white">
+                You do not have to figure everything out alone.
               </h3>
 
-              <p className="mt-3 leading-7 text-gray-700">
-                {pillar.description}
+              <p className="mx-auto mt-4 max-w-3xl text-white/85">
+                Whether you are navigating relationships, parenting, trauma,
+                addiction, stress, or questions about who you are becoming,
+                MyDeepTalk gives you a gentle place to begin.
               </p>
 
-              <div className="mt-5 space-y-2">
-                {pillar.items.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center gap-2 text-gray-700"
-                  >
-                    <span className="font-bold text-[#2C7A7B]">✓</span>
-                    <span>{item}</span>
-                  </div>
-                ))}
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <Link
+                  href="/self-assessment"
+                  className="rounded-full bg-white px-6 py-3 font-semibold text-[#0F4C5C] transition hover:bg-white/90"
+                >
+                  Begin Self-Discovery Check-In
+                </Link>
+
+                <Link
+                  href="/therapists"
+                  className="rounded-full border border-white/60 px-6 py-3 font-semibold text-white transition hover:bg-white hover:text-[#0F4C5C]"
+                >
+                  Find a Therapist
+                </Link>
               </div>
-
-              <Link
-                href={`/areas/${pillar.slug}`}
-                className="mt-6 inline-block font-semibold text-[#0F4C5C] hover:underline"
-              >
-                Explore this area →
-              </Link>
             </div>
-          ))}
-        </div>
-
-        <div className="mt-16 rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-center text-white shadow-lg md:p-12">
-          <p className="text-sm font-semibold uppercase tracking-widest text-white/80">
-            Self-discovery before crisis
-          </p>
-
-          <h3 className="mt-3 text-3xl font-bold">
-            You do not have to figure everything out alone.
-          </h3>
-
-          <p className="mx-auto mt-4 max-w-3xl text-white/85">
-            Whether you are navigating relationships, parenting, trauma,
-            addiction, stress, or questions about who you are becoming,
-            MyDeepTalk gives you a gentle place to begin.
-          </p>
-
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/self-assessment"
-              className="rounded-full bg-white px-6 py-3 font-semibold text-[#0F4C5C]"
-            >
-              Begin Self-Discovery Check-In
-            </Link>
-
-            <Link
-              href="/therapists"
-              className="rounded-full border border-white px-6 py-3 font-semibold text-white hover:bg-white hover:text-[#0F4C5C]"
-            >
-              Find a Therapist
-            </Link>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

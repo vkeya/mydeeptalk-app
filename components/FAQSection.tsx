@@ -47,7 +47,7 @@ export default function FAQSection() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="rounded-3xl bg-[#F7F3EC] p-6 shadow"
+              className="rounded-xl border border-[#0F4C5C]/10 bg-[#F7F3EC] p-6 shadow-sm"
             >
               <button
                 className="flex w-full items-center justify-between text-left"

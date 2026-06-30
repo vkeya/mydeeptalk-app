@@ -7,15 +7,15 @@ export default function SelfDiscoverySection() {
       <div className="mx-auto max-w-7xl grid items-center gap-16 md:grid-cols-2">
 
         <Image
-          src="/images/self-discovery.png"
+          src="/images/mental9.jpg"
           alt="Self Discovery"
           width={700}
           height={500}
-          className="rounded-[2rem] shadow-xl"
+          className="rounded-xl shadow-sm"
         />
 
         <div>
-          <p className="font-semibold uppercase tracking-widest text-[#E2954E]">
+          <p className="font-script text-2xl capitalize text-[#E2954E]">
             Begin With Awareness
           </p>
 
