@@ -1,16 +1,25 @@
 import Link from "next/link";
+import { Sprout, Heart, Users, Sparkles, Flame, Compass } from "lucide-react";
+import Reveal from "@/components/Reveal";
+
+const explores = [
+  { icon: Sprout, label: "Emotional Wellness" },
+  { icon: Heart, label: "Relationship Patterns" },
+  { icon: Users, label: "Healing From The Past" },
+  { icon: Sparkles, label: "Self-Worth & Identity" },
+  { icon: Flame, label: "Burnout, Stress & Pressure" },
+  { icon: Compass, label: "Purpose & Direction" },
+];
 
 export default function SelfAssessmentSection() {
   return (
     <section className="bg-[#F7F3EC] px-6 py-20">
       <div className="mx-auto max-w-7xl">
-        <div className="grid items-center gap-10 rounded-3xl bg-white p-10 shadow-xl md:grid-cols-2">
+        <Reveal className="grid items-center gap-10 rounded-xl border border-[#0F4C5C]/10 bg-white p-8 shadow-sm md:grid-cols-2 md:p-12">
           <div>
-            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#2C7A7B]">
-              Free Self-Discovery Check-In
-            </p>
+            <span className="eyebrow">Free Self-Discovery Check-In</span>
 
-            <h2 className="text-4xl font-bold text-[#0F4C5C]">
+            <h2 className="mt-4 text-3xl font-bold text-[#0F4C5C] md:text-4xl">
               Before You Seek Answers, Understand What You Are Carrying
             </h2>
 
@@ -43,32 +52,35 @@ export default function SelfAssessmentSection() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-[#F7F3EC] p-8">
+          <div className="rounded-xl bg-[#F7F3EC] p-8">
             <h3 className="text-2xl font-bold text-[#0F4C5C]">
               Your Check-In Explores:
             </h3>
 
-            <div className="mt-8 grid gap-4 text-gray-700">
-              <div>🌿 Emotional Wellness</div>
-              <div>❤️ Relationship Patterns</div>
-              <div>🫂 Healing From The Past</div>
-              <div>✨ Self-Worth & Identity</div>
-              <div>🔥 Burnout, Stress & Pressure</div>
-              <div>🧭 Purpose & Direction</div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {explores.map((e) => (
+                <div
+                  key={e.label}
+                  className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 text-gray-700 shadow-sm"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#E2954E]/12 text-[#E2954E]">
+                    <e.icon className="h-4 w-4" />
+                  </span>
+                  <span className="text-sm font-semibold">{e.label}</span>
+                </div>
+              ))}
             </div>
 
-            <div className="mt-8 rounded-2xl bg-white p-5 shadow">
-              <p className="font-semibold text-[#0F4C5C]">
-                Private • Free • Gentle
-              </p>
+            <div className="mt-6 rounded-xl bg-white p-5 shadow-sm">
+              <p className="font-bold text-[#0F4C5C]">Private • Free • Gentle</p>
 
-              <p className="mt-3 leading-7 text-gray-600">
-                Receive guided reflection and discover where your current
-                growth journey may need attention.
+              <p className="mt-2 leading-7 text-gray-600">
+                Receive guided reflection and discover where your current growth
+                journey may need attention.
               </p>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -6,7 +7,15 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-8 py-16">
         <div className="grid gap-10 md:grid-cols-4">
           <div>
-            <h2 className="text-2xl font-bold">MyDeepTalk</h2>
+            <Link href="/">
+              <Image
+                src="/images/logo-new.png"
+                alt="MyDeepTalk"
+                width={350}
+                height={200}
+                className="h-10 w-auto object-contain brightness-0 invert"
+              />
+            </Link>
             <p className="mt-4 text-white/70">
               AI-powered emotional wellness and therapist support built in Africa.
             </p>

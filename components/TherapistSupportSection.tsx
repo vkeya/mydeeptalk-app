@@ -7,7 +7,7 @@ export default function TherapistSupportSection() {
       <div className="mx-auto max-w-7xl grid items-center gap-16 md:grid-cols-2">
 
         <div>
-          <p className="font-semibold uppercase tracking-widest text-[#E2954E]">
+          <p className="font-script text-2xl capitalize text-[#E2954E]">
             Trusted Support
           </p>
 
@@ -30,11 +30,11 @@ export default function TherapistSupportSection() {
         </div>
 
         <Image
-          src="/images/therapist-support.png"
+          src="/images/mental10.jpg"
           alt="Therapist Support"
           width={700}
           height={500}
-          className="rounded-[2rem] shadow-xl"
+          className="rounded-xl shadow-sm"
         />
 
       </div>
