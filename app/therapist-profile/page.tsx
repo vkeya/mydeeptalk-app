@@ -24,6 +24,33 @@ const specialtyOptions = [
   "Faith-Based Counseling",
 ];
 
+const therapyStyleOptions = [
+  "Warm & Compassionate",
+  "Gentle & Supportive",
+  "Structured & Goal-Oriented",
+  "Solution-Focused",
+  "Insight-Oriented",
+  "Trauma-Informed",
+  "Strength-Based",
+  "Holistic",
+  "Faith-Based",
+  "Integrative",
+];
+
+const clientTypeOptions = [
+  "Children",
+  "Adolescents",
+  "Young Adults",
+  "Adults",
+  "Couples",
+  "Families",
+  "Parents",
+  "Students",
+  "Professionals",
+  "Seniors",
+];
+
+
 export default function TherapistProfilePage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -40,6 +67,12 @@ export default function TherapistProfilePage() {
   const [feeCurrency, setFeeCurrency] = useState("KES");
 
   const [offersPhysicalSessions, setOffersPhysicalSessions] = useState(false);
+  
+  const [therapyStyles, setTherapyStyles] = useState<string[]>([]);
+const [preferredClientTypes, setPreferredClientTypes] = useState<string[]>([]);
+const [sessionApproach, setSessionApproach] = useState("");
+const [homeworkFrequency, setHomeworkFrequency] = useState("");
+const [sessionFocus, setSessionFocus] = useState("");
 
 const [sessionFees, setSessionFees] = useState({
   virtual: {
@@ -103,6 +136,28 @@ const [sessionFees, setSessionFees] = useState({
           setBio(data.bio || "");
           setFeeCurrency(data.feeCurrency || data.currency || "KES");
           setCpbLicenseNumber(data.cpbLicenseNumber || "");
+		  
+		  const therapyProfile = data.therapyProfile || {};
+
+setTherapyStyles(
+  therapyProfile.therapyStyles || []
+);
+
+setPreferredClientTypes(
+  therapyProfile.preferredClientTypes || []
+);
+
+setSessionApproach(
+  therapyProfile.sessionApproach || ""
+);
+
+setHomeworkFrequency(
+  therapyProfile.homeworkFrequency || ""
+);
+
+setSessionFocus(
+  therapyProfile.sessionFocus || ""
+);
 
           setSpecialties(
             Array.isArray(data.specialties)
@@ -182,6 +237,29 @@ setSessionFees({
       setSpecialties([...specialties, item]);
     }
   }
+  
+  function toggleTherapyStyle(style: string) {
+  if (therapyStyles.includes(style)) {
+    setTherapyStyles(
+      therapyStyles.filter((item) => item !== style)
+    );
+  } else if (therapyStyles.length < 3) {
+    setTherapyStyles([...therapyStyles, style]);
+  }
+}
+
+function toggleClientType(type: string) {
+  if (preferredClientTypes.includes(type)) {
+    setPreferredClientTypes(
+      preferredClientTypes.filter((item) => item !== type)
+    );
+  } else {
+    setPreferredClientTypes([
+      ...preferredClientTypes,
+      type,
+    ]);
+  }
+}
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -318,6 +396,13 @@ setSessionFees({
           currency: feeCurrency,
 
           offersPhysicalSessions,
+		  therapyProfile: {
+  therapyStyles,
+  preferredClientTypes,
+  sessionApproach,
+  homeworkFrequency,
+  sessionFocus,
+},
 
 sessionFees: {
   virtual: {
@@ -768,6 +853,7 @@ sessionFee: Number(sessionFees.virtual.individual || 0),
     </div>
   </div>
 )}
+
 
             <div className="grid gap-6 md:grid-cols-2">
               <input
