@@ -39,12 +39,22 @@ export default function TherapistProfilePage() {
 
   const [feeCurrency, setFeeCurrency] = useState("KES");
 
-  const [sessionFees, setSessionFees] = useState({
+  const [offersPhysicalSessions, setOffersPhysicalSessions] = useState(false);
+
+const [sessionFees, setSessionFees] = useState({
+  virtual: {
     individual: "",
     couple: "",
-    parentChild: "",
+    childAdolescent: "",
     family: "",
-  });
+  },
+  physical: {
+    individual: "",
+    couple: "",
+    childAdolescent: "",
+    family: "",
+  },
+});
 
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
@@ -111,15 +121,43 @@ export default function TherapistProfilePage() {
 
           setYearsExperience(data.yearsExperience?.toString() || "");
 
-          setSessionFees({
-            individual:
-              data.sessionFees?.individual?.toString() ||
-              data.sessionFee?.toString() ||
-              "",
-            couple: data.sessionFees?.couple?.toString() || "",
-            parentChild: data.sessionFees?.parentChild?.toString() || "",
-            family: data.sessionFees?.family?.toString() || "",
-          });
+          setOffersPhysicalSessions(
+  data.offersPhysicalSessions || false
+);
+
+setSessionFees({
+  virtual: {
+    individual:
+      data.sessionFees?.virtual?.individual?.toString() ||
+      data.sessionFees?.individual?.toString() ||
+      data.sessionFee?.toString() ||
+      "",
+    couple:
+      data.sessionFees?.virtual?.couple?.toString() ||
+      data.sessionFees?.couple?.toString() ||
+      "",
+    childAdolescent:
+      data.sessionFees?.virtual?.childAdolescent?.toString() ||
+      data.sessionFees?.childAdolescent?.toString() ||
+	  data.sessionFees?.parentChild?.toString() ||
+      "",
+    family:
+      data.sessionFees?.virtual?.family?.toString() ||
+      data.sessionFees?.family?.toString() ||
+      "",
+  },
+
+  physical: {
+    individual:
+      data.sessionFees?.physical?.individual?.toString() || "",
+    couple:
+      data.sessionFees?.physical?.couple?.toString() || "",
+    childAdolescent:
+      data.sessionFees?.physical?.childAdolescent?.toString() || "",
+    family:
+      data.sessionFees?.physical?.family?.toString() || "",
+  },
+});
 
           setCountry(data.country || "");
           setCity(data.city || "");
@@ -279,14 +317,26 @@ export default function TherapistProfilePage() {
           feeCurrency,
           currency: feeCurrency,
 
-          sessionFees: {
-            individual: Number(sessionFees.individual || 0),
-            couple: Number(sessionFees.couple || 0),
-            parentChild: Number(sessionFees.parentChild || 0),
-            family: Number(sessionFees.family || 0),
-          },
+          offersPhysicalSessions,
 
-          sessionFee: Number(sessionFees.individual || 0),
+sessionFees: {
+  virtual: {
+    individual: Number(sessionFees.virtual.individual || 0),
+    couple: Number(sessionFees.virtual.couple || 0),
+    childAdolescent: Number(sessionFees.virtual.childAdolescent || 0),
+    family: Number(sessionFees.virtual.family || 0),
+  },
+
+  physical: {
+    individual: Number(sessionFees.physical.individual || 0),
+    couple: Number(sessionFees.physical.couple || 0),
+    childAdolescent: Number(sessionFees.physical.childAdolescent || 0),
+    family: Number(sessionFees.physical.family || 0),
+  },
+},
+
+// Backward compatibility
+sessionFee: Number(sessionFees.virtual.individual || 0),
 
           country,
           city,
@@ -511,10 +561,58 @@ export default function TherapistProfilePage() {
               onChange={(e) => setCpbLicenseNumber(e.target.value)}
               required
             />
+			
+			<div className="rounded-2xl bg-[#F7F3EC] p-6">
+  <label className="mb-2 block text-lg font-bold text-[#0F4C5C]">
+    Session Availability
+  </label>
+
+  <p className="mb-5 text-gray-700">
+    Do you offer <span className="font-semibold">in-person (physical)</span> therapy sessions?
+  </p>
+
+  <div className="flex flex-wrap gap-4">
+    <label
+      className={`flex cursor-pointer items-center gap-3 rounded-xl border px-5 py-3 transition ${
+        offersPhysicalSessions
+          ? "border-[#0F4C5C] bg-[#0F4C5C] text-white"
+          : "border-gray-300 bg-white text-gray-900"
+      }`}
+    >
+      <input
+        type="radio"
+        name="physicalSessions"
+        className="hidden"
+        checked={offersPhysicalSessions}
+        onChange={() => setOffersPhysicalSessions(true)}
+      />
+      <span className="text-lg">🏢</span>
+      <span className="font-semibold">Yes</span>
+    </label>
+
+    <label
+      className={`flex cursor-pointer items-center gap-3 rounded-xl border px-5 py-3 transition ${
+        !offersPhysicalSessions
+          ? "border-[#0F4C5C] bg-[#0F4C5C] text-white"
+          : "border-gray-300 bg-white text-gray-900"
+      }`}
+    >
+      <input
+        type="radio"
+        name="physicalSessions"
+        className="hidden"
+        checked={!offersPhysicalSessions}
+        onChange={() => setOffersPhysicalSessions(false)}
+      />
+      <span className="text-lg">💻</span>
+      <span className="font-semibold">No, Virtual Only</span>
+    </label>
+  </div>
+</div>
 
             <div className="rounded-2xl bg-[#F7F3EC] p-6">
               <label className="mb-4 block font-bold text-[#0F4C5C]">
-                Session Fees
+                Virtual Session Fees
               </label>
 
               <select
@@ -532,12 +630,15 @@ export default function TherapistProfilePage() {
                   type="number"
                   className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
                   placeholder={`Individual Session Fee (${feeCurrency})`}
-                  value={sessionFees.individual}
+                  value={sessionFees.virtual.individual}
                   onChange={(e) =>
                     setSessionFees({
-                      ...sessionFees,
-                      individual: e.target.value,
-                    })
+  ...sessionFees,
+  virtual: {
+    ...sessionFees.virtual,
+    individual: e.target.value,
+  },
+})
                   }
                   required
                 />
@@ -546,25 +647,31 @@ export default function TherapistProfilePage() {
                   type="number"
                   className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
                   placeholder={`Couple Session Fee (${feeCurrency})`}
-                  value={sessionFees.couple}
+                  value={sessionFees.virtual.couple}
                   onChange={(e) =>
                     setSessionFees({
                       ...sessionFees,
-                      couple: e.target.value,
-                    })
+  virtual: {
+    ...sessionFees.virtual,
+    couple: e.target.value,
+  },
+})
                   }
                 />
 
                 <input
                   type="number"
                   className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-                  placeholder={`Parent + Child Session Fee (${feeCurrency})`}
-                  value={sessionFees.parentChild}
+                  placeholder={`Child & Adolescent Session Fee (${feeCurrency})`}
+                  value={sessionFees.virtual.childAdolescent}
                   onChange={(e) =>
                     setSessionFees({
                       ...sessionFees,
-                      parentChild: e.target.value,
-                    })
+  virtual: {
+    ...sessionFees.virtual,
+    childAdolescent: e.target.value,
+  },
+})
                   }
                 />
 
@@ -572,16 +679,95 @@ export default function TherapistProfilePage() {
                   type="number"
                   className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
                   placeholder={`Family Session Fee (${feeCurrency})`}
-                  value={sessionFees.family}
+                  value={sessionFees.virtual.family}
                   onChange={(e) =>
                     setSessionFees({
                       ...sessionFees,
-                      family: e.target.value,
-                    })
+  virtual: {
+    ...sessionFees.virtual,
+    family: e.target.value,
+  },
+})
                   }
                 />
               </div>
             </div>
+			
+			{offersPhysicalSessions && (
+  <div className="mt-8 rounded-2xl bg-[#F7F3EC] p-6">
+    <label className="mb-4 block font-bold text-[#0F4C5C]">
+      Physical Session Fees
+    </label>
+
+    <div className="grid gap-6 md:grid-cols-2">
+
+      <input
+        type="number"
+        className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold"
+        placeholder={`Individual (${feeCurrency})`}
+        value={sessionFees.physical.individual}
+        onChange={(e) =>
+          setSessionFees({
+            ...sessionFees,
+            physical: {
+              ...sessionFees.physical,
+              individual: e.target.value,
+            },
+          })
+        }
+      />
+
+      <input
+        type="number"
+        className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold"
+        placeholder={`Couple (${feeCurrency})`}
+        value={sessionFees.physical.couple}
+        onChange={(e) =>
+          setSessionFees({
+            ...sessionFees,
+            physical: {
+              ...sessionFees.physical,
+              couple: e.target.value,
+            },
+          })
+        }
+      />
+
+      <input
+        type="number"
+        className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold"
+        placeholder={`Child & Adolescent (${feeCurrency})`}
+        value={sessionFees.physical.childAdolescent}
+        onChange={(e) =>
+          setSessionFees({
+            ...sessionFees,
+            physical: {
+              ...sessionFees.physical,
+              childAdolescent: e.target.value,
+            },
+          })
+        }
+      />
+
+      <input
+        type="number"
+        className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold"
+        placeholder={`Family (${feeCurrency})`}
+        value={sessionFees.physical.family}
+        onChange={(e) =>
+          setSessionFees({
+            ...sessionFees,
+            physical: {
+              ...sessionFees.physical,
+              family: e.target.value,
+            },
+          })
+        }
+      />
+
+    </div>
+  </div>
+)}
 
             <div className="grid gap-6 md:grid-cols-2">
               <input
