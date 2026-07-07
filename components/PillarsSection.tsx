@@ -9,13 +9,15 @@ const pillars = [
   },
   {
     title: "Reflection",
-    description: "Growth happens when we slow down and pay attention to our inner world.",
+    description:
+      "Growth happens when we slow down and pay attention to our inner world.",
     image: "/images/mental2.jpg",
   },
   {
     title: "Connection",
-    description: "Healthy relationships begin with understanding ourselves and others.",
-    image: "/images/mental3.jpg",
+    description:
+      "Healthy relationships begin with understanding ourselves and others.",
+    image: "/images/connect.jpg",
   },
   {
     title: "Healing",
@@ -29,7 +31,8 @@ const pillars = [
   },
   {
     title: "Growth",
-    description: "Healing is not perfection. It is becoming more whole over time.",
+    description:
+      "Healing is not perfection. It is becoming more whole over time.",
     image: "/images/mental6.jpg",
   },
 ];
@@ -39,7 +42,9 @@ export default function PillarsSection() {
     <section className="bg-[#F7F3EC] px-6 py-20 md:px-8">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <span className="eyebrow justify-center">The MyDeepTalk Philosophy</span>
+          <span className="eyebrow justify-center">
+            The MyDeepTalk Philosophy
+          </span>
 
           <h2 className="mt-4 text-3xl font-bold text-[#0F4C5C] md:text-4xl">
             Healing begins with understanding yourself
@@ -48,8 +53,8 @@ export default function PillarsSection() {
           <p className="mx-auto mt-5 max-w-2xl leading-8 text-gray-600">
             MyDeepTalk was built on the belief that emotional wellness should be
             preventive, accessible, and deeply human. We help people move from
-            confusion to clarity through self-discovery, reflection, and meaningful
-            support.
+            confusion to clarity through self-discovery, reflection, and
+            meaningful support.
           </p>
         </Reveal>
 

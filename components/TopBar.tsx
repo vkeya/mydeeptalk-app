@@ -25,11 +25,11 @@ export default function TopBar() {
           <span className="hidden h-4 w-px bg-white/25 md:block" />
 
           <a
-            href="tel:+254700000000"
-            className="group flex items-center gap-2 transition hover:text-[#E2954E]"
+            href="tel:0722534317"
+            className="group flex items-center gap-2 whitespace-nowrap text-white transition hover:text-[#E2954E]"
           >
             <Phone className="h-4 w-4 text-[#E2954E]" />
-            <span>+254 700 000 000</span>
+            <span className="font-semibold text-white">0722534317</span>
           </a>
         </div>
       </div>
