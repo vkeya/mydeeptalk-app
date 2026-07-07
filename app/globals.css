@@ -24,7 +24,12 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-fraunces), var(--font-nunito), sans-serif;
 }
 
@@ -272,7 +277,8 @@ a.bg-\[\#155E63\] {
 [data-reveal] {
   opacity: 0;
   transform: translateY(28px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
@@ -358,10 +364,13 @@ a.bg-\[\#155E63\] {
 /* Card lift on hover — soft, premium, no heavy gradients */
 .card-soft {
   background: #ffffff;
-  border: 1px solid rgba(15, 76, 92, 0.10);
+  border: 1px solid rgba(15, 76, 92, 0.1);
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(15, 76, 92, 0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .card-soft:hover {
@@ -381,6 +390,17 @@ a.bg-\[\#155E63\] {
 
 .img-zoom:hover img {
   transform: scale(1.06);
+}
+
+/* Keep floating WhatsApp CTA foreground white despite broad global text rules */
+.floating-whatsapp,
+.floating-whatsapp span,
+.floating-whatsapp svg {
+  color: #ffffff !important;
+}
+
+.floating-whatsapp svg {
+  stroke: #ffffff !important;
 }
 
 /* Duotone-ish brand wash for placeholder photos so reused images feel varied */

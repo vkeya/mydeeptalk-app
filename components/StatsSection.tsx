@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Reveal from "@/components/Reveal";
-import { IMAGES } from "@/lib/images";
 
 const stats = [
   {
@@ -8,27 +7,27 @@ const stats = [
     title: "Areas of Emotional Wellness",
     description:
       "From relationships and parenting to trauma, addiction, and self-discovery.",
-    image: IMAGES.peace,
+    image: "/images/emotional.jpg",
   },
   {
     number: "Preventive",
     title: "Approach to Healing",
     description:
       "Helping people understand themselves before life becomes overwhelming.",
-    image: IMAGES.hands,
+    image: "/images/healing.jpg",
   },
   {
     number: "Africa",
     title: "Built With Global Vision",
     description:
       "Created in Africa to make emotional wellness more accessible and personal.",
-    image: IMAGES.connection,
+    image: "/images/vision.jpg",
   },
   {
     number: "24/7",
     title: "Self-Discovery Access",
     description: "Reflect, journal, and begin your healing journey anytime.",
-    image: IMAGES.growth,
+    image: "/images/self.jpg",
   },
 ];
 
