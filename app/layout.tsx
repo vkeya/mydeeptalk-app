@@ -3,6 +3,7 @@ import { Fraunces, Nunito, Dancing_Script } from "next/font/google";
 import "./globals.css";
 
 import NavigationWrapper from "@/components/NavigationWrapper";
+import { Analytics } from "@vercel/analytics/react";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -45,6 +46,8 @@ export default function RootLayout({
             {children}
           </main>
         </NavigationWrapper>
+		
+		<Analytics />
 
       </body>
     </html>
