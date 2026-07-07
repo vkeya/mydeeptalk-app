@@ -17,12 +17,12 @@ type Announcement = {
 };
 
 const fallbackAnnouncement: Announcement = {
-  title: "💙 Men's Mental Health Month",
-  headline: "Strong men talk too.",
+  title: "🌱 July: Self-Discovery Month",
+  headline: "The journey within changes everything.",
   description:
-    "Men often carry stress, grief, pressure, and loneliness silently. Taking care of your emotional wellbeing is a sign of strength, not weakness.",
-  closingText: "You do not have to carry everything alone.",
-  ctaText: "Reflect Today",
+    "Self-discovery is the foundation of growth, healing, and purpose. Take time to understand your thoughts, emotions, values, and aspirations. The deeper you know yourself, the more intentionally you can live.",
+  closingText: "The answers you seek often begin with the questions you avoid.",
+  ctaText: "Begin Your Journey",
   ctaLink: "/journal",
 };
 
