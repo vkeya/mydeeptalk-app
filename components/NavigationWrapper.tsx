@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import TopBar from "@/components/TopBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import FloatingWhatsAppButton from "@/components/FloatingWhatsAppButton";
 
 const AUTH_ROUTES = ["/login", "/signup", "/forgot-password", "/verify-email"];
 
@@ -13,7 +14,9 @@ export default function NavigationWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isAuth = AUTH_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/"));
+  const isAuth = AUTH_ROUTES.some(
+    (r) => pathname === r || pathname.startsWith(r + "/"),
+  );
 
   if (isAuth) return <>{children}</>;
 
@@ -23,6 +26,7 @@ export default function NavigationWrapper({
       <Navbar />
       {children}
       <Footer />
+      <FloatingWhatsAppButton />
     </>
   );
 }

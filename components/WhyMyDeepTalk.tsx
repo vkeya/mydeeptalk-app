@@ -5,19 +5,19 @@ import Reveal from "@/components/Reveal";
 const items = [
   {
     icon: Sparkles,
-    image: "/images/mental7.jpg",
+    image: "/images/reflect.jpg",
     title: "Guided Reflection",
     text: "Discover yourself through journaling and thoughtful prompts.",
   },
   {
     icon: HeartHandshake,
-    image: "/images/mental8.jpg",
+    image: "/images/therapist.jpg",
     title: "Therapist Support",
     text: "Connect with trusted professionals whenever you need support.",
   },
   {
     icon: Sprout,
-    image: "/images/mental3.jpg",
+    image: "/images/long-term.jpg",
     title: "Long-Term Growth",
     text: "Build healthier relationships and emotional resilience.",
   },
@@ -28,7 +28,9 @@ export default function WhyMyDeepTalk() {
     <section className="px-6 py-20 md:px-8">
       <div className="mx-auto max-w-5xl">
         <Reveal className="text-center">
-          <span className="eyebrow justify-center">Self-Discovery Before Crisis</span>
+          <span className="eyebrow justify-center">
+            Self-Discovery Before Crisis
+          </span>
 
           <h2 className="mt-4 text-center text-3xl font-bold text-[#0F4C5C] md:text-4xl">
             Healing should not begin only after collapse.
