@@ -32,6 +32,12 @@ const values = [
   },
 ];
 
+export const metadata = {
+  title: "About MyDeepTalk | Online Therapy Platform",
+  description:
+    "Learn how MyDeepTalk connects people with trusted therapists for confidential counselling and mental wellness support.",
+};
+
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white">
