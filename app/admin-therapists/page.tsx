@@ -10,6 +10,7 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -250,6 +251,36 @@ export default function AdminTherapistsPage() {
       setActionLoading("");
     }
   }
+  
+  async function deleteTherapist(therapist: Therapist) {
+  const therapistId = therapist.uid || therapist.id;
+
+  const confirmed = window.confirm(
+    `Delete ${therapist.fullName}'s therapist profile?\n\nThis cannot be undone.`
+  );
+
+  if (!confirmed) return;
+
+  setActionLoading(therapistId);
+
+  try {
+    // Delete therapist profile
+    await deleteDoc(doc(db, "therapists", therapistId));
+
+    // Delete credentials document if it exists
+    await deleteDoc(doc(db, "therapistCredentials", therapistId));
+
+    // Delete agreement document if it exists
+    await deleteDoc(doc(db, "therapistAgreements", therapistId));
+
+    await loadTherapists();
+  } catch (error) {
+    console.error("Delete error:", error);
+    alert("Could not delete therapist.");
+  } finally {
+    setActionLoading("");
+  }
+}
 
   if (loading) {
     return (
@@ -523,6 +554,8 @@ export default function AdminTherapistsPage() {
     >
       Reject / Request Changes
     </button>
+	
+	
   </div>
 ) : (
   <div className="rounded-2xl bg-[#F7F3EC] p-5">
@@ -538,7 +571,34 @@ export default function AdminTherapistsPage() {
         Reason: {therapist.rejectionReason}
       </p>
     )}
+	
+	 <div className="mt-5 flex flex-wrap gap-3">
+    <button
+      onClick={() => approveTherapist(therapistId)}
+      disabled={actionLoading === therapistId}
+      className="rounded-full bg-green-700 px-5 py-2 font-bold text-white hover:bg-green-800"
+    >
+      Approve
+    </button>
+
+    <button
+      onClick={() => rejectTherapist(therapist)}
+      disabled={actionLoading === therapistId}
+      className="rounded-full bg-yellow-600 px-5 py-2 font-bold text-white hover:bg-yellow-700"
+    >
+      Reject Again
+    </button>
+
+    <button
+      onClick={() => deleteTherapist(therapist)}
+      disabled={actionLoading === therapistId}
+      className="rounded-full bg-red-700 px-5 py-2 font-bold text-white hover:bg-red-800"
+    >
+      Delete Profile
+    </button>
   </div>
+</div>
+ 
 )}
                     </div>
                   </div>
