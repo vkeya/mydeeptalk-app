@@ -5,38 +5,27 @@ import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
-const days = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
+const hours = Array.from({ length: 24 }, (_, i) =>
+  `${String(i).padStart(2, "0")}:00`
+);
 
-type WeeklySlot = {
-  day: string;
-  enabled: boolean;
-  startTime: string;
-  endTime: string;
+type AvailabilityDate = {
+  date: string;
+  slots: string[];
 };
 
 export default function TherapistAvailabilityPage() {
   const router = useRouter();
 
-  const [weeklySlots, setWeeklySlots] = useState<WeeklySlot[]>(
-    days.map((day) => ({
-      day,
-      enabled: false,
-      startTime: "",
-      endTime: "",
-    }))
-  );
+  const [selectedDate, setSelectedDate] = useState("");
+  const [availabilityDates, setAvailabilityDates] = useState<
+    AvailabilityDate[]
+  >([]);
 
-  const [sessionDuration, setSessionDuration] = useState("60");
+  const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+
 
   useEffect(() => {
     async function loadAvailability() {
@@ -54,27 +43,11 @@ export default function TherapistAvailabilityPage() {
         if (snap.exists()) {
           const data = snap.data();
 
-          if (Array.isArray(data.weeklySlots)) {
-            const savedSlots = days.map((day) => {
-              const found = data.weeklySlots.find(
-                (slot: WeeklySlot) => slot.day === day
-              );
-
-              return {
-                day,
-                enabled: found?.enabled || false,
-                startTime: found?.startTime || "",
-                endTime: found?.endTime || "",
-              };
-            });
-
-            setWeeklySlots(savedSlots);
-          }
-
-          if (data.sessionDuration) {
-            setSessionDuration(String(data.sessionDuration));
+          if (Array.isArray(data.availableDates)) {
+            setAvailabilityDates(data.availableDates);
           }
         }
+
       } catch (error) {
         console.error("Error loading availability:", error);
       } finally {
@@ -83,211 +56,307 @@ export default function TherapistAvailabilityPage() {
     }
 
     loadAvailability();
+
   }, []);
 
-  function updateSlot(
-    index: number,
-    field: "enabled" | "startTime" | "endTime",
-    value: boolean | string
-  ) {
-    setWeeklySlots((prev) =>
-      prev.map((slot, i) =>
-        i === index
-          ? {
-              ...slot,
-              [field]: value,
-              ...(field === "enabled" && value === false
-                ? { startTime: "", endTime: "" }
-                : {}),
-            }
-          : slot
-      )
-    );
+
+  function selectSlot(time:string){
+
+    setSelectedSlots((previous)=>{
+
+      if(previous.includes(time)){
+        return previous.filter(item=>item !== time);
+      }
+
+      return [...previous,time];
+
+    });
+
   }
 
-  async function handleSaveAvailability(e: React.FormEvent) {
-    e.preventDefault();
+
+  function addDateAvailability(){
+
+    if(!selectedDate){
+      alert("Please select a date");
+      return;
+    }
+
+    if(selectedSlots.length===0){
+      alert("Please select at least one available time");
+      return;
+    }
+
+
+    const existing =
+      availabilityDates.filter(
+        item=>item.date !== selectedDate
+      );
+
+
+    setAvailabilityDates([
+      ...existing,
+      {
+        date:selectedDate,
+        slots:selectedSlots.sort()
+      }
+    ]);
+
+
+    setSelectedSlots([]);
+
+  }
+
+
+
+  async function handleSave(){
 
     const user = auth.currentUser;
 
-    if (!user) {
+    if(!user){
       alert("Please login first");
       return;
     }
 
-    const activeSlots = weeklySlots.filter((slot) => slot.enabled);
-
-    if (activeSlots.length === 0) {
-      alert("Please select at least one available day.");
-      return;
-    }
-
-    const invalidSlot = activeSlots.find(
-      (slot) =>
-        !slot.startTime || !slot.endTime || slot.startTime >= slot.endTime
-    );
-
-    if (invalidSlot) {
-      alert(`Please check the start and end time for ${invalidSlot.day}.`);
-      return;
-    }
 
     setLoading(true);
 
-    try {
+
+    try{
+
       await setDoc(
-        doc(db, "therapistAvailability", user.uid),
+        doc(db,"therapistAvailability",user.uid),
         {
-          therapistId: user.uid,
-          weeklySlots,
-          sessionDuration: Number(sessionDuration),
-          updatedAt: serverTimestamp(),
+          therapistId:user.uid,
+
+          availabilityMode:"calendar",
+
+          availableDates:availabilityDates,
+
+          updatedAt:serverTimestamp()
         },
-        { merge: true }
+        {
+          merge:true
+        }
       );
 
-      
+
       router.push("/dashboard");
-    } catch (error) {
-      console.error("Error saving availability:", error);
-      alert("Error saving availability.");
-    } finally {
+
+
+    }catch(error){
+
+      console.error(error);
+      alert("Could not save availability");
+
+    }finally{
+
       setLoading(false);
+
     }
+
   }
 
-  if (pageLoading) {
-    return (
-      <main className="min-h-screen bg-[#F7F3EC] p-8">
-        <p className="font-bold text-[#0F4C5C]">Loading availability...</p>
+
+
+  if(pageLoading){
+
+    return(
+      <main className="min-h-screen bg-[#F7F3EC] p-10">
+        <p className="font-bold text-[#0F4C5C]">
+          Loading availability...
+        </p>
       </main>
     );
+
   }
 
-  return (
-    <main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
-      <div className="mx-auto max-w-5xl">
-        <section className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
-          <p className="mb-3 font-bold uppercase tracking-wide text-white">
-            Therapist Availability
-          </p>
 
-          <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
-            Set Weekly Availability
-          </h1>
 
-          <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
-            Choose the exact days and time ranges you are available. Each day
-            can have a different schedule.
-          </p>
-        </section>
+return (
 
-        <section className="mt-8 rounded-3xl bg-white p-6 shadow-lg md:p-8">
-          <form onSubmit={handleSaveAvailability} className="space-y-8">
-            <div className="rounded-2xl bg-[#F7F3EC] p-6">
-              <label className="mb-3 block font-bold text-[#0F4C5C]">
-                Session Duration
-              </label>
+<main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
 
-              <select
-                value={sessionDuration}
-                onChange={(e) => setSessionDuration(e.target.value)}
-                className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-              >
-                <option value="30">30 minutes</option>
-                <option value="45">45 minutes</option>
-                <option value="60">60 minutes</option>
-                <option value="90">90 minutes</option>
-              </select>
+<div className="mx-auto max-w-5xl">
 
-              <p className="mt-3 text-base font-semibold leading-7 text-gray-900">
-                This controls how client booking slots are generated from your
-                available time range.
-              </p>
-            </div>
 
-            <div className="space-y-4">
-              {weeklySlots.map((slot, index) => (
-                <div
-                  key={slot.day}
-                  className="rounded-2xl border border-gray-200 bg-[#F7F3EC] p-5 shadow-sm"
-                >
-                  <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                    <label className="flex items-center gap-3 text-lg font-bold text-[#0F4C5C]">
-                      <input
-                        type="checkbox"
-                        checked={slot.enabled}
-                        onChange={(e) =>
-                          updateSlot(index, "enabled", e.target.checked)
-                        }
-                        className="h-5 w-5"
-                      />
-                      {slot.day}
-                    </label>
+<section className="rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
 
-                    <div className="grid w-full gap-4 sm:grid-cols-2 md:max-w-md">
-                      <div>
-                        <label className="mb-2 block text-sm font-bold text-gray-900">
-                          Start Time
-                        </label>
 
-                        <input
-                          type="time"
-                          value={slot.startTime}
-                          disabled={!slot.enabled}
-                          required={slot.enabled}
-                          onChange={(e) =>
-                            updateSlot(index, "startTime", e.target.value)
-                          }
-                          className="w-full rounded-xl border border-gray-300 bg-white p-3 font-semibold text-gray-900 disabled:bg-gray-200 disabled:text-gray-900"
-                        />
-                      </div>
+<p className="mb-3 font-bold uppercase tracking-wide">
+Therapist Availability
+</p>
 
-                      <div>
-                        <label className="mb-2 block text-sm font-bold text-gray-900">
-                          End Time
-                        </label>
 
-                        <input
-                          type="time"
-                          value={slot.endTime}
-                          disabled={!slot.enabled}
-                          required={slot.enabled}
-                          onChange={(e) =>
-                            updateSlot(index, "endTime", e.target.value)
-                          }
-                          className="w-full rounded-xl border border-gray-300 bg-white p-3 font-semibold text-gray-900 disabled:bg-gray-200 disabled:text-gray-900"
-                        />
-                      </div>
-                    </div>
-                  </div>
+<h1 className="text-4xl font-bold md:text-5xl">
+Choose Your Available Sessions
+</h1>
 
-                  {!slot.enabled && (
-                    <p className="mt-4 rounded-xl bg-white p-3 text-sm font-bold text-gray-900">
-                      Not available on {slot.day}.
-                    </p>
-                  )}
 
-                  {slot.enabled && slot.startTime && slot.endTime && (
-                    <p className="mt-4 rounded-xl bg-white p-3 text-sm font-bold text-[#0F4C5C]">
-                      Available on {slot.day} from {slot.startTime} to{" "}
-                      {slot.endTime}.
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+<p className="mt-4 max-w-3xl text-lg font-semibold leading-8">
+Select a date and the exact hours you want clients to book.
+</p>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945] disabled:opacity-70"
-            >
-              {loading ? "Saving..." : "Save Availability"}
-            </button>
-          </form>
-        </section>
-      </div>
-    </main>
-  );
+
+</section>
+
+
+
+
+<section className="mt-8 rounded-3xl bg-white p-8 shadow-lg">
+
+
+<label className="block font-bold text-[#0F4C5C]">
+Choose Date
+</label>
+
+
+<input
+
+type="date"
+
+value={selectedDate}
+
+onChange={(e)=>setSelectedDate(e.target.value)}
+
+className="mt-3 w-full rounded-2xl border p-4 font-semibold"
+
+/>
+
+
+
+<h2 className="mt-8 text-xl font-bold text-[#0F4C5C]">
+Available Hours
+</h2>
+
+
+<div className="mt-4 grid grid-cols-3 gap-3 md:grid-cols-6">
+
+
+{hours.map(hour=>(
+
+<button
+
+key={hour}
+
+type="button"
+
+onClick={()=>selectSlot(hour)}
+
+className={`rounded-xl p-3 font-bold border
+
+${
+selectedSlots.includes(hour)
+
+?
+"bg-[#0F4C5C] text-white"
+
+:
+"bg-[#F7F3EC] text-gray-900"
+
+}
+
+`}
+
+>
+
+{hour}
+
+</button>
+
+))}
+
+
+</div>
+
+
+
+
+<button
+
+type="button"
+
+onClick={addDateAvailability}
+
+className="mt-8 rounded-full bg-[#2C7A7B] px-8 py-3 font-bold text-white"
+
+>
+
+Add Date Availability
+
+</button>
+
+
+
+
+
+<div className="mt-10">
+
+
+<h2 className="text-xl font-bold text-[#0F4C5C]">
+Your Availability
+</h2>
+
+
+
+{availabilityDates.map(item=>(
+
+<div
+
+key={item.date}
+
+className="mt-4 rounded-2xl bg-[#F7F3EC] p-5"
+
+>
+
+<p className="font-bold text-[#0F4C5C]">
+{item.date}
+</p>
+
+
+<p className="mt-2 font-semibold">
+
+{item.slots.join(", ")}
+
+</p>
+
+
+</div>
+
+
+))}
+
+
+</div>
+
+
+
+
+
+<button
+
+onClick={handleSave}
+
+disabled={loading}
+
+className="mt-10 w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white"
+
+>
+
+{loading?"Saving...":"Save Availability"}
+
+</button>
+
+
+
+</section>
+
+
+</div>
+
+</main>
+
+
+);
+
 }
