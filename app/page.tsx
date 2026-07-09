@@ -18,11 +18,12 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
+	  <SelfAssessmentSection />
       <StatsSection />
 	  <WhyMyDeepTalk />
-	  <SelfDiscoverySection />
+	  
       <TherapistSupportSection />
-	  <SelfAssessmentSection />
+	  
 	  <HelpsWithSection />
       <PillarsSection />
       <ClientJourneySection />

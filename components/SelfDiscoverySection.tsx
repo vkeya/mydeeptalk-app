@@ -30,10 +30,10 @@ export default function SelfDiscoverySection() {
           </p>
 
           <Link
-            href="/self-assessment"
+            href="/assessments"
             className="mt-8 inline-block rounded-full bg-[#0F4C5C] px-8 py-4 font-semibold text-white"
           >
-            Start Your Check-In
+            Start Your Free Mental Wellness Assessments
           </Link>
         </div>
 
