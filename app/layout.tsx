@@ -5,6 +5,7 @@ import "./globals.css";
 import NavigationWrapper from "@/components/NavigationWrapper";
 import { Analytics } from "@vercel/analytics/react";
 import JsonLd from "@/components/JsonLd";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -96,6 +97,8 @@ export default function RootLayout({
         </NavigationWrapper>
 		
 		<Analytics />
+		
+		<SpeedInsights />
 
       </body>
     </html>
