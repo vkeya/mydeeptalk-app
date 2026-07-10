@@ -90,7 +90,7 @@ export default function FeaturedTherapistsSection() {
 
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Link
-                href="/self-assessment"
+                href="/assessments"
                 className="rounded-full bg-[#0F4C5C] px-6 py-3 font-semibold text-white hover:bg-[#0b3945]"
               >
                 Begin Self-Assessment

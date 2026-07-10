@@ -164,7 +164,7 @@ export default function AIReflectionsPage() {
                 growth, healing, and meaningful connection.
               </p>
               <Link
-                href="/self-assessment"
+                href="/assessments"
                 className="group mt-8 inline-flex items-center gap-2 rounded-full bg-[#E2954E] px-8 py-4 font-semibold text-white shadow-lg transition hover:bg-[#d07f34]"
               >
                 Start a Check-In

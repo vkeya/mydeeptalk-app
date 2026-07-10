@@ -335,7 +335,7 @@ function WellnessTools({ title = "Wellness Tools" }: { title?: string }) {
         </Link>
 
         <Link
-          href="/self-assessment"
+          href="/assessments"
           className="group rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
         >
           <div className="text-5xl">🧠</div>

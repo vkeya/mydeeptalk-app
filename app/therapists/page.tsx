@@ -227,7 +227,7 @@ export default function TherapistsPage() {
               </Link>
 
               <Link
-                href="/self-assessment"
+                href="/assessments"
                 className="rounded-full border-2 border-[#0F4C5C] bg-white px-6 py-3 font-bold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white"
               >
                 Begin Free Check-In

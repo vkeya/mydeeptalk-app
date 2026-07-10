@@ -147,7 +147,7 @@ export default function HowItWorksPage() {
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <Link
-                  href="/self-assessment"
+                  href="/assessments"
                   className="group inline-flex items-center gap-2 rounded-full bg-[#E2954E] px-8 py-4 font-semibold text-white shadow-lg transition hover:bg-[#d07f34]"
                 >
                   Free Check-In

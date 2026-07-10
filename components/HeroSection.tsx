@@ -39,7 +39,7 @@ export default function HeroSection() {
             </Link>
 
             <Link
-              href="/self-assessment"
+              href="/assessments"
               className="inline-flex items-center gap-2 rounded-full border border-[#0F4C5C] px-8 py-4 font-semibold text-[#0F4C5C] transition hover:border-[#E2954E] hover:bg-[#E2954E] hover:text-white"
             >
               <Compass className="h-5 w-5" />

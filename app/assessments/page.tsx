@@ -62,7 +62,7 @@ export default function AssessmentsPage() {
 
 
               <Link
-                href="/self-assessment"
+                href="/assessments"
                 className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white hover:bg-[#0b3945]"
               >
                 Start Assessment

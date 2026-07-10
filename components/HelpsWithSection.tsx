@@ -312,7 +312,7 @@ export default function HelpsWithSection() {
 
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <Link
-                  href="/self-assessment"
+                  href="/assessments"
                   className="rounded-full bg-white px-6 py-3 font-semibold text-[#0F4C5C] transition hover:bg-white/90"
                 >
                   Begin Self-Discovery Check-In
