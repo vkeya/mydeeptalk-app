@@ -1,11 +1,27 @@
-unlockActivity()
+// lib/journey/progression.ts
 
-unlockExperience()
+export class JourneyProgression {
+  unlockActivity(activityId: string): void {
+    // TODO: Implement
+  }
 
-unlockChapter()
+  unlockExperience(experienceId: string): void {
+    // TODO: Implement
+  }
 
-calculateProgress()
+  unlockChapter(chapterId: string): void {
+    // TODO: Implement
+  }
 
-calculateXP()
+  calculateProgress(): number {
+    return 0;
+  }
 
-calculateCompletion()
+  calculateXP(): number {
+    return 0;
+  }
+
+  calculateCompletion(): number {
+    return 0;
+  }
+}
