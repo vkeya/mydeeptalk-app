@@ -1,15 +1,35 @@
 "use client";
 
+import { useState } from "react";
+import { useJourney } from "@/context/JourneyContext";
+
+import JourneyLayout from "@/components/journey/JourneyLayout";
+import JourneyProgress from "@/components/journey/JourneyProgress";
+import JourneyCard from "@/components/journey/JourneyCard";
+import JourneyNavigation from "@/components/journey/JourneyNavigation";
+
 interface IdentityQuestionSceneProps {
   onContinue: () => void;
+  onBack?: () => void;
 }
 
 export default function IdentityQuestionScene({
   onContinue,
+  onBack,
 }: IdentityQuestionSceneProps) {
+  const { setIdentityAnswer } = useJourney();
+  const [answer, setAnswer] = useState("");
+
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#F7F3EC] px-6">
-      <div className="w-full max-w-3xl">
+    <JourneyLayout>
+
+      <JourneyProgress
+        title="Meeting Yourself"
+        current={2}
+        total={6}
+      />
+
+      <JourneyCard>
 
         <p className="mb-4 text-center text-sm uppercase tracking-[0.4em] text-[#8A6E4B]">
           Meeting Yourself
@@ -28,20 +48,24 @@ export default function IdentityQuestionScene({
         </p>
 
         <textarea
-          className="min-h-[220px] w-full rounded-3xl border border-gray-300 bg-white p-6 text-lg outline-none focus:border-[#8A6E4B]"
+          value={answer}
+          onChange={(e) => setAnswer(e.target.value)}
+          className="min-h-[220px] w-full rounded-2xl border border-gray-300 bg-[#FAFAFA] p-6 text-lg outline-none transition focus:border-[#8A6E4B]"
           placeholder="Write whatever comes naturally..."
         />
 
-        <div className="mt-10 text-center">
-          <button
-            onClick={onContinue}
-            className="rounded-full bg-[#8A6E4B] px-10 py-4 text-lg font-semibold text-white transition hover:bg-[#73593C]"
-          >
-            Continue →
-          </button>
-        </div>
+        <JourneyNavigation
+          showBack
+          onBack={onBack}
+          continueDisabled={!answer.trim()}
+          onContinue={() => {
+            setIdentityAnswer(answer);
+            onContinue();
+          }}
+        />
 
-      </div>
-    </main>
+      </JourneyCard>
+
+    </JourneyLayout>
   );
 }

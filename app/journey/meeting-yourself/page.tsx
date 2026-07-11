@@ -12,39 +12,51 @@ import CelebrationScene from "./components/CelebrationScene";
 export default function MeetingYourselfPage() {
   const [scene, setScene] = useState(0);
 
+  const nextScene = () => {
+    setScene((prev) => Math.min(prev + 1, 5));
+  };
+
+  const previousScene = () => {
+    setScene((prev) => Math.max(prev - 1, 0));
+  };
+
   switch (scene) {
     case 0:
       return (
         <ArrivalScene
-          onContinue={() => setScene(1)}
+          onContinue={nextScene}
         />
       );
 
     case 1:
       return (
         <IdentityQuestionScene
-          onContinue={() => setScene(2)}
+          onContinue={nextScene}
+          onBack={previousScene}
         />
       );
 
     case 2:
       return (
         <ReflectionScene
-          onContinue={() => setScene(3)}
+          onContinue={nextScene}
+          onBack={previousScene}
         />
       );
 
     case 3:
       return (
         <JournalScene
-          onContinue={() => setScene(4)}
+          onContinue={nextScene}
+          onBack={previousScene}
         />
       );
 
     case 4:
       return (
         <InsightScene
-          onContinue={() => setScene(5)}
+          onContinue={nextScene}
+          onBack={previousScene}
         />
       );
 
@@ -52,9 +64,9 @@ export default function MeetingYourselfPage() {
       return (
         <CelebrationScene
           onContinue={() => {
-            // We'll connect this later
             alert("Experience Complete!");
           }}
+          onBack={previousScene}
         />
       );
 

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+
 import GuideGrid from "@/components/journey/GuideGrid";
+import { useJourney } from "@/context/JourneyContext";
 
 const guides = [
   {
@@ -40,7 +42,14 @@ const guides = [
 ];
 
 export default function GuidePage() {
-  const [selectedGuide, setSelectedGuide] = useState<string | null>(null);
+  const { setSelectedGuide } = useJourney();
+
+  const [selectedGuide, setSelectedGuideLocal] = useState<string | null>(null);
+
+  const handleSelect = (guideId: string) => {
+    setSelectedGuideLocal(guideId);
+    setSelectedGuide(guideId);
+  };
 
   return (
     <main className="min-h-screen bg-[#F7F3EC] px-6 py-20">
@@ -67,7 +76,7 @@ export default function GuidePage() {
         <GuideGrid
           guides={guides}
           selectedGuide={selectedGuide}
-          onSelect={setSelectedGuide}
+          onSelect={handleSelect}
         />
 
         <div className="mt-16 text-center">

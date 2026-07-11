@@ -2,10 +2,12 @@
 
 interface CelebrationSceneProps {
   onContinue: () => void;
+  onBack: () => void;
 }
 
 export default function CelebrationScene({
   onContinue,
+  onBack,
 }: CelebrationSceneProps) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F7F3EC] px-6">

@@ -4,10 +4,12 @@ import { useJourney } from "@/context/JourneyContext";
 
 interface InsightSceneProps {
   onContinue: () => void;
+  onBack: () => void;
 }
 
 export default function InsightScene({
   onContinue,
+  onBack,
 }: InsightSceneProps) {
   const { state } = useJourney();
 

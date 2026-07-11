@@ -1,22 +1,22 @@
 interface JourneyProgressProps {
+  title: string;
   current: number;
   total: number;
-  title: string;
 }
 
 export default function JourneyProgress({
+  title,
   current,
   total,
-  title,
 }: JourneyProgressProps) {
-  const percentage = (current / total) * 100;
+  const progress = (current / total) * 100;
 
   return (
-    <div className="mb-12">
+    <div className="mb-10">
 
       <div className="mb-3 flex items-center justify-between">
 
-        <h2 className="text-lg font-semibold text-[#1C2434]">
+        <h2 className="text-xl font-semibold text-[#1C2434]">
           {title}
         </h2>
 
@@ -31,7 +31,7 @@ export default function JourneyProgress({
         <div
           className="h-full rounded-full bg-[#8A6E4B] transition-all duration-500"
           style={{
-            width: `${percentage}%`,
+            width: `${progress}%`,
           }}
         />
 

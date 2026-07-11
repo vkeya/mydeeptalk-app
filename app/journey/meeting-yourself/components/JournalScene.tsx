@@ -2,10 +2,12 @@
 
 interface JournalSceneProps {
   onContinue: () => void;
+  onBack: () => void;
 }
 
 export default function JournalScene({
   onContinue,
+  onBack,
 }: JournalSceneProps) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F7F3EC] px-6">
