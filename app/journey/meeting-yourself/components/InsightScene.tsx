@@ -1,5 +1,7 @@
 "use client";
 
+import { useJourney } from "@/context/JourneyContext";
+
 interface InsightSceneProps {
   onContinue: () => void;
 }
@@ -7,6 +9,11 @@ interface InsightSceneProps {
 export default function InsightScene({
   onContinue,
 }: InsightSceneProps) {
+  const { state } = useJourney();
+
+  const answer =
+    state.identityAnswer.trim() || "someone still discovering who they are";
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F7F3EC] px-6">
       <div className="max-w-3xl text-center">
@@ -16,25 +23,34 @@ export default function InsightScene({
         </p>
 
         <h1 className="mb-10 font-serif text-5xl font-bold text-[#1C2434]">
-          Here's what I notice...
+          Here's what I noticed...
         </h1>
 
         <div className="rounded-3xl bg-white p-10 shadow-lg">
 
+          <div className="mb-8 rounded-2xl border border-[#E8DCC8] bg-[#FFF9F2] p-6 text-left">
+            <p className="mb-2 text-sm uppercase tracking-wider text-[#8A6E4B]">
+              Earlier you described yourself as:
+            </p>
+
+            <p className="italic text-lg leading-8 text-[#1C2434]">
+              "{answer}"
+            </p>
+          </div>
+
           <p className="mb-6 text-lg leading-8 text-gray-700">
-            From the way you've reflected today, it seems you naturally
-            describe yourself through the roles you play and the
-            responsibilities you carry.
+            It's interesting that this is where your mind naturally went.
           </p>
 
           <p className="mb-6 text-lg leading-8 text-gray-700">
-            That's something many people do.
+            Most of us instinctively describe ourselves through our roles,
+            responsibilities, achievements or relationships.
           </p>
 
           <p className="mb-6 text-lg leading-8 text-gray-700">
-            But over the coming journey, we'll explore something deeper:
-            the values, beliefs and experiences that make you who you are,
-            even when every title is taken away.
+            During this journey, we'll slowly uncover something deeper:
+            your values, beliefs, experiences and the qualities that remain
+            even if every title in your life changed.
           </p>
 
           <div className="mt-10 rounded-2xl border border-[#E8DCC8] bg-[#FFF9F2] p-6">

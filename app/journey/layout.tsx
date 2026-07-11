@@ -1,13 +1,16 @@
-import type { ReactNode } from "react";
+import { ReactNode } from "react";
+import { JourneyProvider } from "@/context/JourneyContext";
+
+interface JourneyLayoutProps {
+  children: ReactNode;
+}
 
 export default function JourneyLayout({
   children,
-}: {
-  children: ReactNode;
-}) {
+}: JourneyLayoutProps) {
   return (
-    <main className="min-h-screen bg-[#F7F3EC] text-gray-800">
+    <JourneyProvider>
       {children}
-    </main>
+    </JourneyProvider>
   );
 }
