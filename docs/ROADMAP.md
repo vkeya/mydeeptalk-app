@@ -58,70 +58,17 @@ Build a trusted platform connecting emotional wellness tools with professional s
 
 ---
 
-# Stage 2 — Guided Self-Discovery Journey
+Stage 2
 
-## Goal
+The MyDeepTalk Journey™
 
-Help users understand themselves before they reach crisis.
+The Journey is the flagship product of MyDeepTalk.
 
-## The 10 Steps to Wholeness
+All AI conversations, journals, assessments, therapist support, gamification, and reflections feed into the Journey Engine.
 
-### 1. Identity & Self-Awareness
+The Journey is powered by the Journey Engine, Growth Engine, AI Memory Engine and Companion Engine.
 
-Who am I?
-
-### 2. Life Story & Meaning
-
-Where have I come from?
-
-### 3. Emotional Regulation
-
-How do I handle emotions?
-
-### 4. Healing From The Past
-
-What needs healing?
-
-### 5. Resilience & Strength
-
-How do I recover from setbacks?
-
-### 6. Boundaries & Self-Protection
-
-How do I protect myself?
-
-### 7. Attachment & Relationships
-
-How do I connect with others?
-
-### 8. Love & Connection
-
-How do I love and receive love?
-
-### 9. Purpose & Future Self
-
-Who am I becoming?
-
-### 10. Wholeness & Self-Compassion
-
-How do I live with grace and acceptance?
-
----
-
-## Features
-
-* Interactive questions
-* Gamification
-* Progress tracking
-* Streaks
-* Milestones
-* Achievements
-* Reflection exercises
-* Guided journaling
-* AI insights
-
----
-
+Every future journey (Marriage, Parenting, Leadership, Recovery) uses the same architecture.
 # Stage 3 — Learning Ecosystem
 
 ## Goal
