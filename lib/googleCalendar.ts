@@ -7,6 +7,9 @@ type MeetEventInput = {
   therapistEmail: string;
   sessionDate: string;
   sessionTime: string;
+
+  // Optional for backward compatibility
+  timeZone?: string;
 };
 
 export async function createGoogleMeetEvent({
@@ -16,6 +19,7 @@ export async function createGoogleMeetEvent({
   therapistEmail,
   sessionDate,
   sessionTime,
+  timeZone = "Africa/Nairobi",
 }: MeetEventInput) {
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -39,15 +43,15 @@ export async function createGoogleMeetEvent({
     conferenceDataVersion: 1,
     requestBody: {
       summary: `MyDeepTalk Session: ${clientName} with ${therapistName}`,
-      description: "Therapy session booked and paid for on MyDeepTalk.",
+      description: "Welcome to your MyDeepTalk Therapy Session",
       start: {
-        dateTime: startDateTime.toISOString(),
-        timeZone: "Africa/Nairobi",
-      },
+  dateTime: startDateTime.toISOString(),
+  timeZone,
+},
       end: {
-        dateTime: endDateTime.toISOString(),
-        timeZone: "Africa/Nairobi",
-      },
+  dateTime: endDateTime.toISOString(),
+  timeZone,
+},
       attendees: [{ email: clientEmail }, { email: therapistEmail }],
       conferenceData: {
         createRequest: {
