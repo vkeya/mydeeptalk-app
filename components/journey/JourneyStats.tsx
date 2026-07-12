@@ -1,5 +1,7 @@
 "use client";
 
+import { getJourneyProgress } from "@/lib/journey/progressEngine";
+
 interface StatCardProps {
   label: string;
   value: string | number;
@@ -33,30 +35,33 @@ function StatCard({
 }
 
 export default function JourneyStats() {
+	
+	const progress = getJourneyProgress();
+	
   return (
     <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
       <StatCard
-        label="Experiences"
-        value="1 / 10"
-        subtitle="Meeting Yourself completed"
-      />
+  label="Experiences"
+  value={`${progress.completedExperiences.length} / 9`}
+  subtitle="Experiences completed"
+/>
 
       <StatCard
         label="Current Streak"
-        value="3"
+        value={progress.currentStreak}
         subtitle="Days"
       />
 
       <StatCard
         label="Journal Entries"
-        value="5"
+        value={progress.journalEntries}
         subtitle="Reflections written"
       />
 
       <StatCard
         label="Achievements"
-        value="2"
+        value={progress.achievements}
         subtitle="Milestones unlocked"
       />
 

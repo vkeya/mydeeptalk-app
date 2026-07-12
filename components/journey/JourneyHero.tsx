@@ -2,16 +2,18 @@
 
 import useGuide from "@/hooks/useGuide";
 import { useJourney } from "@/context/JourneyContext";
+import { getJourneyProgress } from "@/lib/journey/progressEngine";
+import { calculateXP } from "@/lib/journey/xpEngine";
 
 export default function JourneyHero() {
   const guide = useGuide();
-  const { state } = useJourney();
+  
 
   // Placeholder values for now.
   // These will later come from the XP engine.
-  const level = 1;
-  const title = "Explorer";
-  const xp = 250;
+  const progress = getJourneyProgress();
+  
+  const xp = calculateXP(progress.totalXP);
 
   return (
     <section className="overflow-hidden rounded-3xl bg-gradient-to-r from-[#8A6E4B] to-[#B89A72] p-8 text-white shadow-xl">
@@ -57,11 +59,11 @@ export default function JourneyHero() {
           </p>
 
           <h3 className="mt-2 text-5xl font-bold">
-            {level}
+            {xp.level}
           </h3>
 
           <p className="mt-1 text-xl">
-            {title}
+            {xp.title}
           </p>
 
           <div className="mt-6">
@@ -74,14 +76,20 @@ export default function JourneyHero() {
 
               <div
                 className="h-full rounded-full bg-white"
-                style={{ width: "50%" }}
+                style={{ 
+				  width: `${xp.percentage}%`,
+				  }}
               />
 
             </div>
 
             <p className="mt-2 text-sm">
-              {xp} XP
+              {xp.currentXP} / {xp.nextLevelXP} XP
             </p>
+			
+			<p className="mt-1 text-xs text-white/70">
+  {xp.nextLevelXP - xp.currentXP} XP until Level {xp.level + 1}
+</p>
 
           </div>
 
