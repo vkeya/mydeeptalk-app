@@ -3,6 +3,7 @@
 import JourneyHero from "./JourneyHero";
 import JourneyStats from "./JourneyStats";
 import ExperienceCard from "./ExperienceCard";
+import JourneyTimeline from "./JourneyTimeline";
 
 export default function JourneyDashboard() {
   return (
@@ -11,6 +12,8 @@ export default function JourneyDashboard() {
       <JourneyHero />
 
       <JourneyStats />
+	  
+	  <JourneyTimeline />
 
       <section>
 
