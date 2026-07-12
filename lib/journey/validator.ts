@@ -1,9 +1,21 @@
-canStartJourney()
+export class JourneyValidator {
+  canStartJourney() {
+    return true;
+  }
 
-canOpenChapter()
+  canOpenChapter() {
+    return true;
+  }
 
-canOpenExperience()
+  canOpenExperience() {
+    return true;
+  }
 
-canCompleteActivity()
+  canCompleteActivity() {
+    return true;
+  }
 
-canClaimAchievement()
+  canClaimAchievement() {
+    return true;
+  }
+}
