@@ -7,7 +7,9 @@ interface JourneyLayoutProps {
 
 export default function JourneyLayout({
   children,
-}: JourneyLayoutProps) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <JourneyProvider>
       {children}

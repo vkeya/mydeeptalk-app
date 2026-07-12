@@ -1,24 +1,43 @@
-import { Chapter } from "./chapter";
+export interface JourneyAnswer {
+  questionId: string;
+  value: string;
+}
 
-export interface Journey {
+export interface JournalEntry {
+  sceneId: string;
+  content: string;
+  createdAt: string;
+}
 
+export interface JourneyProgress {
+  currentExperience: string;
+  currentScene: string;
+  xp: number;
+  level: number;
+}
+
+export type JourneySceneType =
+  | "arrival"
+  | "question"
+  | "reflection"
+  | "journal"
+  | "insight"
+  | "celebration";
+
+export interface JourneyScene {
   id: string;
-
-  slug: string;
-
+  type: JourneySceneType;
   title: string;
-
   subtitle?: string;
+  content?: string;
+  question?: string;
+}
 
+export interface JourneyExperience {
+  id: string;
+  title: string;
   description: string;
-
-  version: number;
-
-  estimatedDurationDays: number;
-
-  coverImage?: string;
-
-  chapters: Chapter[];
-
-  published: boolean;
+  xpReward: number;
+  badge?: string;
+  scenes: JourneyScene[];
 }
