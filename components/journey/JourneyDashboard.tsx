@@ -7,8 +7,17 @@ import JourneyTimeline from "./JourneyTimeline";
 import JourneyAchievements from "./JourneyAchievements";
 import GuideMessage from "./GuideMessage";
 import { journeyExperiences } from "@/data/journeyExperiences";
+import {
+  getJourneyProgress,
+  isExperienceCompleted,
+  isExperienceUnlocked,
+} from "@/lib/journey/progressEngine";
+
 
 export default function JourneyDashboard() {
+	
+  const progress = getJourneyProgress();
+
   return (
     <div className="space-y-10">
 
@@ -54,9 +63,9 @@ export default function JourneyDashboard() {
       duration={experience.duration}
       href={experience.href}
 
-      completed={experience.id === 1}
+      completed={isExperienceCompleted(experience.id, progress)}
 
-      unlocked={experience.id <= 2}
+      unlocked={isExperienceUnlocked(experience.id, progress)}
     />
 
   ))}
