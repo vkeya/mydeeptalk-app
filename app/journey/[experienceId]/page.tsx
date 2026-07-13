@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import SceneRenderer from "@/components/journey/SceneRenderer";
 import { journeyExperiences } from "@/data/journeys";
 import { useJourney } from "@/context/JourneyContext";
+import ExperienceNavigation from "@/components/journey/ExperienceNavigation";
 
 interface JourneyPageProps {
   params: {
@@ -29,6 +30,10 @@ export default function JourneyExperiencePage({
   return (
     <main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
       <SceneRenderer scene={scene} />
+	  
+	   <ExperienceNavigation
+      totalScenes={experience.scenes.length}
+    />
     </main>
   );
 }
