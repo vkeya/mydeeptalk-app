@@ -25,55 +25,92 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSignup(e: React.FormEvent) {
-    e.preventDefault();
-    if (!acceptedLegal) {
-      setError("Please accept the Terms and Conditions and Privacy Policy to continue.");
-      return;
-    }
-    if (role === "client" && !alias.trim()) {
-      setError("Please choose a privacy name / alias.");
-      return;
-    }
-    try {
-      setLoading(true);
-      setError("");
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      await sendEmailVerification(user);
-      await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: email,
-          subject: "Welcome to MyDeepTalk 💙",
-          html: welcomeEmailTemplate(fullName),
-        }),
-      });
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        fullName,
-        ...(role === "client" && { alias: alias.trim() }),
-        email,
-        role,
-        provider: "email",
-        emailVerified: false,
-        ageConfirmed18: true,
-        termsAccepted: true,
-        privacyAccepted: true,
-        legalAccepted: true,
-        legalAcceptedAt: serverTimestamp(),
-        termsVersion: "2026-06",
-        privacyVersion: "2026-06",
-        createdAt: serverTimestamp(),
-      });
-      router.push("/verify-email");
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+async function handleSignup(e: React.FormEvent) {
+  e.preventDefault();
+
+  if (!acceptedLegal) {
+    setError(
+      "Please accept the Terms and Conditions and Privacy Policy to continue."
+    );
+    return;
   }
+
+  if (role === "client" && !alias.trim()) {
+    setError("Please choose a privacy name / alias.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    setError("");
+
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    const user = userCredential.user;
+
+    console.log("Sending verification email to:", user.email);
+
+    try {
+      await sendEmailVerification(user);
+
+      console.log("✅ Firebase accepted verification request.");
+    } catch (verificationError) {
+      console.error(
+        "❌ Verification email failed:",
+        verificationError
+      );
+    }
+
+    const emailResponse = await fetch("/api/send-email", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    to: email,
+    subject: "Welcome to MyDeepTalk 💙",
+    html: welcomeEmailTemplate(fullName),
+  }),
+});
+
+const emailResult = await emailResponse.json();
+
+console.log("WELCOME EMAIL RESPONSE:", emailResult);
+
+if (!emailResponse.ok) {
+  console.error("WELCOME EMAIL FAILED:", emailResult);
+}
+
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      fullName,
+      ...(role === "client" && { alias: alias.trim() }),
+      email,
+      role,
+      provider: "email",
+      emailVerified: false,
+      ageConfirmed18: true,
+      termsAccepted: true,
+      privacyAccepted: true,
+      legalAccepted: true,
+      legalAcceptedAt: serverTimestamp(),
+      termsVersion: "2026-06",
+      privacyVersion: "2026-06",
+      createdAt: serverTimestamp(),
+    });
+
+    router.push("/verify-email");
+  } catch (err: any) {
+    console.error(err);
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+}
 
   return (
     <div className="flex min-h-screen">
