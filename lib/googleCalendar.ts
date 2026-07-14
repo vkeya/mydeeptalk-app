@@ -44,22 +44,43 @@ export async function createGoogleMeetEvent({
 	sendUpdates: "all",
     requestBody: {
       summary: `MyDeepTalk Session: ${clientName} with ${therapistName}`,
-      description: `Welcome to your MyDeepTalk Therapy Session
+      description: `💙 Welcome to your MyDeepTalk Therapy Session
 
-Therapist:
+Thank you for choosing MyDeepTalk.
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+👩🏽‍⚕️ Therapist
 ${therapistName}
 
-Client:
+🧑🏽 Client
 ${clientName}
 
-Duration:
+⏱ Duration
 60 minutes
 
-Please join the meeting 5 minutes before your scheduled session.
+━━━━━━━━━━━━━━━━━━━━━━
 
-Need assistance?
-info@mydeeptalk.com
-https://mydeeptalk.com`,
+Before your session
+
+• Join 5 minutes before your scheduled time.
+• Choose a quiet, private place.
+• Use headphones if available.
+• Have water and a notebook nearby if you'd like.
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+Need to reschedule or have questions?
+
+📧 info@mydeeptalk.com
+🌐 https://mydeeptalk.com
+
+If you're experiencing an emotional crisis, please seek immediate support from your local emergency services or visit:
+https://mydeeptalk.com/crisis-resources
+
+We look forward to supporting your healing journey.
+
+— The MyDeepTalk Team 💙`,
       start: {
   dateTime: startDateTime.toISOString(),
   timeZone,
