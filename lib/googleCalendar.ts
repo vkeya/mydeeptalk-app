@@ -41,6 +41,7 @@ export async function createGoogleMeetEvent({
   const event = await calendar.events.insert({
     calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
     conferenceDataVersion: 1,
+	sendUpdates: "all",
     requestBody: {
       summary: `MyDeepTalk Session: ${clientName} with ${therapistName}`,
       description: `Welcome to your MyDeepTalk Therapy Session
