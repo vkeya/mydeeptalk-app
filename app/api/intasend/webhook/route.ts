@@ -12,6 +12,8 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { createGoogleMeetEvent } from "@/lib/googleCalendar";
+import { BookingConfirmedEmail } from "@/emails";
+import { therapistBookingNotification } from "@/emails/therapistBookingNotification";
 
 export async function GET() {
   return new Response("OK", { status: 200 });
@@ -190,6 +192,34 @@ export async function POST(request: Request) {
           calendarCreatedAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
+		
+		const baseUrl =
+  process.env.NEXT_PUBLIC_APP_URL || "https://mydeeptalk.com";
+
+const clientResponse = await fetch(`${baseUrl}/api/send-email`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    to: booking.clientEmail,
+    subject: "Your Therapy Session is Confirmed",
+    html: BookingConfirmedEmail({
+      clientName: booking.clientAlias || booking.clientName || "Client",
+      therapistName: booking.therapistName || "Your Therapist",
+      sessionDate: booking.sessionDate,
+      sessionTime: booking.sessionTime,
+      meetingLink: meetEvent.meetingLink,
+    }),
+  }),
+});
+
+const clientResult = await clientResponse.json();
+
+console.log("BOOKING CONFIRMATION EMAIL:", clientResult);
+		
+		
+		
       } else {
         console.log("Missing clientEmail or therapistEmail for Meet generation");
       }
