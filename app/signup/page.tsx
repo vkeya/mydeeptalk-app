@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import { welcomeEmailTemplate } from "@/lib/emailTemplates";
+import { WelcomeEmail } from "@/emails";
 import { ArrowLeft } from "lucide-react";
 import { IMAGES } from "@/lib/images";
 
@@ -72,17 +72,19 @@ async function handleSignup(e: React.FormEvent) {
   },
   body: JSON.stringify({
     to: email,
-    subject: "Welcome to MyDeepTalk 💙",
-    html: welcomeEmailTemplate(fullName),
+    subject: "Welcome to MyDeepTalk",
+    html: WelcomeEmail({
+  fullName,
+}),
   }),
 });
 
 const emailResult = await emailResponse.json();
 
-console.log("WELCOME EMAIL RESPONSE:", emailResult);
+console.log("WELCOME EMAIL:", emailResult);
 
 if (!emailResponse.ok) {
-  console.error("WELCOME EMAIL FAILED:", emailResult);
+  console.error("Failed to send welcome email:", emailResult);
 }
 
     await setDoc(doc(db, "users", user.uid), {

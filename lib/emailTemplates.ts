@@ -7,18 +7,34 @@ export function welcomeEmailTemplate(name: string) {
         <p>Hello ${name || "Friend"},</p>
 
         <p>
-          Thank you for joining MyDeepTalk. We are honored to walk with you on
-          your journey toward healing, self-discovery, and emotional wellness.
+          Welcome to MyDeepTalk.
+
+          You have just taken the first step towards greater self-awareness, emotional healing, and a more meaningful 
+		  connection with yourself.
+
+          Before you begin your journey, please verify your email address to activate your account.(check on your 
+		  spam folder too)
         </p>
 
         <p>
-          Please verify your email address to activate your account and begin
-          your journey.
+          Once verified, you'll be able to:
+
+          ✨ Explore guided self-discovery journeys
+
+          📝 Capture your thoughts in your private journal
+          
+          🤖 Have AI-guided reflective conversations
+          
+          🧠 Discover personalized insights
+          
+          👩‍⚕️ Connect with qualified therapists whenever you need support
+          
+          We are truly honoured to walk this journey with you.
         </p>
 
         <p style="margin-top:32px;">
-          Warm regards,<br/>
-          <strong>MyDeepTalk Team</strong>
+          With warmth,<br/>
+          <strong>The MyDeepTalk Team</strong>
         </p>
       </div>
     </div>
