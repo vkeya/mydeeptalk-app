@@ -161,7 +161,8 @@ export default function BookSessionPage() {
       (booking) =>
         booking.sessionDate === date &&
         booking.sessionTime === time &&
-        booking.status !== "cancelled"
+        booking.status === "confirmed" &&
+        booking.paymentStatus === "paid"
     );
   }
 
@@ -255,7 +256,7 @@ export default function BookSessionPage() {
         createdAt: serverTimestamp(),
       });
 	  
-
+/*
 if (user.email) {
   await fetch("/api/send-email", {
     method: "POST",
@@ -293,6 +294,7 @@ if (therapist.email) {
     }),
   });
 }
+*/
 
       if (useGiftCredit && therapyCredits?.remainingSessions > 0) {
         await updateDoc(doc(db, "therapyCredits", user.uid), {
