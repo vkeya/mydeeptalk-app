@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, Globe2, MapPin, ArrowRight, LifeBuoy, MessageCircle } from "lucide-react";
@@ -25,6 +28,55 @@ const details = [
 ];
 
 export default function ContactPage() {
+	
+	const [form, setForm] = useState({
+  name: "",
+  email: "",
+  subject: "",
+  message: "",
+});
+
+const [sending, setSending] = useState(false);
+const [success, setSuccess] = useState(false);
+const [error, setError] = useState("");
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  setSending(true);
+  setSuccess(false);
+  setError("");
+
+  try {
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Failed to send message.");
+    }
+
+    setSuccess(true);
+
+    setForm({
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    });
+  } catch (err: any) {
+    setError(err.message || "Something went wrong.");
+  } finally {
+    setSending(false);
+  }
+};
+	
   return (
     <main className="min-h-screen bg-white">
       <PageHeader
@@ -63,14 +115,99 @@ export default function ContactPage() {
                 ))}
               </ul>
 
-              <a
-                href="mailto:info@mydeeptalk.com"
-                className="group mt-8 inline-flex items-center gap-2 rounded-full bg-[#0F4C5C] px-6 py-3 font-semibold text-white transition hover:bg-[#0b3945]"
-              >
-                <Mail className="h-5 w-5" />
-                Send an Email
-                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-              </a>
+             <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+
+  {/* Full Name */}
+  <div>
+    <label className="mb-2 block font-semibold text-[#0F4C5C]">
+      Full Name
+    </label>
+
+    <input
+      type="text"
+      required
+      value={form.name}
+      onChange={(e) =>
+        setForm({ ...form, name: e.target.value })
+      }
+      className="w-full rounded-xl border border-gray-300 px-4 py-3"
+      placeholder="Your full name"
+    />
+  </div>
+
+  {/* Email */}
+  <div>
+    <label className="mb-2 block font-semibold text-[#0F4C5C]">
+      Email
+    </label>
+
+    <input
+      type="email"
+      required
+      value={form.email}
+      onChange={(e) =>
+        setForm({ ...form, email: e.target.value })
+      }
+      className="w-full rounded-xl border border-gray-300 px-4 py-3"
+      placeholder="you@example.com"
+    />
+  </div>
+
+  {/* Subject */}
+  <div>
+    <label className="mb-2 block font-semibold text-[#0F4C5C]">
+      Subject
+    </label>
+
+    <input
+      type="text"
+      required
+      value={form.subject}
+      onChange={(e) =>
+        setForm({ ...form, subject: e.target.value })
+      }
+      className="w-full rounded-xl border border-gray-300 px-4 py-3"
+      placeholder="Subject"
+    />
+  </div>
+
+  {/* Message */}
+  <div>
+    <label className="mb-2 block font-semibold text-[#0F4C5C]">
+      Message
+    </label>
+
+    <textarea
+      rows={5}
+      required
+      value={form.message}
+      onChange={(e) =>
+        setForm({ ...form, message: e.target.value })
+      }
+      className="w-full rounded-xl border border-gray-300 px-4 py-3"
+      placeholder="How can we help?"
+    />
+  </div>
+
+  {error && (
+    <p className="text-red-600">{error}</p>
+  )}
+
+  {success && (
+    <p className="text-green-600">
+      Thank you! We've received your message.
+    </p>
+  )}
+
+  <button
+    type="submit"
+    disabled={sending}
+    className="w-full rounded-full bg-[#0F4C5C] px-6 py-3 font-semibold text-white hover:bg-[#0b3945]"
+  >
+    {sending ? "Sending..." : "Send Message"}
+  </button>
+
+</form>
             </div>
           </Reveal>
 
