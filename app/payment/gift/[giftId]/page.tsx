@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 export default function GiftPaymentPage() {
   const params = useParams();
@@ -12,6 +20,9 @@ export default function GiftPaymentPage() {
 
   const [gift, setGift] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState("");
+const [paying, setPaying] = useState(false);
+const [error, setError] = useState("");
 
   useEffect(() => {
     async function fetchGift() {
@@ -36,6 +47,67 @@ export default function GiftPaymentPage() {
       fetchGift();
     }
   }, [giftId]);
+
+  async function handlePayment(e: React.FormEvent) {
+  e.preventDefault();
+
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Please login first.");
+    return;
+  }
+
+  if (!gift) {
+    alert("Gift not found.");
+    return;
+  }
+
+  setPaying(true);
+
+  try {
+    const response = await fetch("/api/intasend", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: gift.amount,
+        phoneNumber,
+        giftId,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      alert(result.error || "Payment failed.");
+      setPaying(false);
+      return;
+    }
+
+    await addDoc(collection(db, "payments"), {
+      giftId,
+      amount: gift.amount,
+      recipientEmail: gift.recipientEmail,
+      phoneNumber,
+      status: "pending",
+      provider: "intasend",
+      intasendResponse: result.data,
+      createdAt: serverTimestamp(),
+    });
+
+    alert(
+      "STK Push sent successfully. Please check your phone and enter your M-Pesa PIN."
+    );
+
+  } catch (err: any) {
+    console.error(err);
+    alert(err.message || "Payment request failed.");
+  }
+
+  setPaying(false);
+}
 
   if (loading) {
     return (
@@ -93,11 +165,26 @@ export default function GiftPaymentPage() {
 
           </div>
 
-          <button
-            className="mt-10 w-full rounded-full bg-[#0F4C5C] p-4 font-bold text-white hover:bg-[#0b3945]"
-          >
-            Pay With IntaSend
-          </button>
+          <form onSubmit={handlePayment} className="mt-8 space-y-5">
+
+  <input
+    type="tel"
+    placeholder="2547XXXXXXXX"
+    className="w-full rounded-2xl border p-4"
+    value={phoneNumber}
+    onChange={(e) => setPhoneNumber(e.target.value)}
+    required
+  />
+
+  <button
+    type="submit"
+    disabled={paying}
+    className="w-full rounded-full bg-[#0F4C5C] p-4 font-semibold text-white hover:bg-[#0b3945] disabled:opacity-50"
+  >
+    {paying ? "Sending STK Push..." : "Pay With IntaSend"}
+  </button>
+
+</form>
 
         </section>
 

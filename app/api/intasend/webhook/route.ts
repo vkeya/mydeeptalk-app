@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { processGiftPayment } from "@/lib/payments/giftPayment";
 import {
   collection,
   getDocs,
@@ -50,6 +51,21 @@ export async function POST(request: Request) {
         paymentState,
       });
     }
+	
+	// Gift Session payment check
+const giftHandled = await processGiftPayment(
+  bookingId,
+  payload
+);
+
+if (giftHandled) {
+  return NextResponse.json({
+    success: true,
+    giftId: bookingId,
+    paymentState,
+    message: "Gift payment confirmed",
+  });
+}
 	
 	// Healing Circle contribution payment check
     const contributionRef = doc(db, "healingCircleContributions", bookingId);

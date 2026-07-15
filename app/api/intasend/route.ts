@@ -22,14 +22,22 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const { amount, phoneNumber, bookingId } = body;
+    const {
+  amount,
+  phoneNumber,
+  bookingId,
+  giftId,
+} = body;
 
-    if (!amount || !phoneNumber || !bookingId) {
-      return NextResponse.json(
-        { success: false, error: "Missing required fields." },
-        { status: 400 }
-      );
-    }
+    if (!amount || !phoneNumber || (!bookingId && !giftId)) {
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Missing required fields.",
+    },
+    { status: 400 }
+  );
+}
 
     const secretKey = process.env.INTASEND_SECRET_KEY;
     const useSandbox = process.env.INTASEND_TEST === "true";
@@ -69,8 +77,10 @@ export async function POST(request: Request) {
           amount: Number(amount),
           phone_number: formattedPhoneNumber,
           currency: "KES",
-          api_ref: bookingId,
-          narrative: "MyDeepTalk Therapy Session",
+          api_ref: bookingId || giftId,
+narrative: bookingId
+  ? "MyDeepTalk Therapy Session"
+  : "MyDeepTalk Gift Therapy",
         }),
       }
     );
