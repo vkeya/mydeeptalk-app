@@ -168,7 +168,7 @@ export const assessments: Assessment[] = [
 
     category: "Work & Lifestyle",
 
-    duration: "10 minutes",
+    duration: "2 minutes",
 
 
     questions: [
@@ -288,7 +288,7 @@ export const assessments: Assessment[] = [
 
     category: "Recovery & Support",
 
-    duration: "10 minutes",
+    duration: "2 minutes",
 
 
     questions: [
