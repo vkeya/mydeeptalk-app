@@ -101,12 +101,12 @@ export default function AboutPage() {
             {
               icon: Compass,
               label: "Our Mission",
-              text: "To make emotional awareness, self-discovery, healing conversations, and therapist support easier to access — before emotional struggles become overwhelming.",
+              text: "To redefine how the world experiences emotional wellbeing.",
             },
             {
               icon: Eye,
               label: "Our Vision",
-              text: "To become a trusted emotional wellness platform born in Africa, helping people reflect, heal, grow, and connect with professional support when they need it.",
+              text: "Build technology that helps people understand themselves, strengthen relationships, develop emotional intelligence, and access the right support throughout every stage of life.",
             },
           ].map((item, i) => (
             <Reveal key={item.label} delay={i * 120}>

@@ -48,7 +48,7 @@ export const assessments: Assessment[] = [
 
     category: "Mental Wellness",
 
-    duration: "10 minutes",
+    duration: "2 minutes",
 
 
     questions: [

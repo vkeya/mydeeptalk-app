@@ -29,10 +29,10 @@ export default function AssessmentsPage() {
 
           {assessments.map((assessment) => (
 
-            <article
-              key={assessment.id}
-              className="rounded-3xl bg-white p-6 shadow-lg"
-            >
+           <article
+  key={assessment.id}
+  className="flex flex-col rounded-3xl bg-white p-6 shadow-lg"
+>
 
               <div className="mb-4">
                 <span className="rounded-full bg-[#F7F3EC] px-4 py-2 text-sm font-bold text-[#0F4C5C]">
@@ -46,27 +46,26 @@ export default function AssessmentsPage() {
               </h2>
 
 
-              <p className="mt-3 font-semibold leading-7 text-gray-700">
+              <p className="mt-3 flex-1 font-semibold leading-7 text-gray-700">
                 {assessment.description}
               </p>
 
 
-              <div className="mt-5">
-                <p className="font-bold text-gray-900">
-                  Duration:
-                  <span className="ml-2 text-[#0F4C5C]">
-                    {assessment.duration}
-                  </span>
-                </p>
-              </div>
+              <div className="mt-8 flex items-center justify-between">
+  <p className="font-bold text-gray-900 whitespace-nowrap">
+    Duration:
+    <span className="ml-2 text-[#0F4C5C]">
+      {assessment.duration}
+    </span>
+  </p>
 
-
-              <Link
-                href={`/assessments/${assessment.id}`}
-                className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white hover:bg-[#0b3945]"
-              >
-                Start Assessment
-              </Link>
+  <Link
+    href={`/assessments/${assessment.id}`}
+    className="rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white whitespace-nowrap transition hover:bg-[#0b3945]"
+  >
+    Start Assessment
+  </Link>
+</div>
 
             </article>
 
