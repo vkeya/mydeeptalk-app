@@ -1,12 +1,12 @@
-import { JourneyProgress } from "./progressEngine";
+import type { JourneyProgress } from "@/types/journey";
+
 import { saveJourneyProgress } from "./storage";
 
 export function completeExperience(
   progress: JourneyProgress,
-  experienceId: number,
+  experienceId: string,
   xpReward: number
 ): JourneyProgress {
-
   // Prevent duplicate completion
   if (progress.completedExperiences.includes(experienceId)) {
     return progress;
@@ -17,12 +17,15 @@ export function completeExperience(
     experienceId,
   ];
 
-  const unlockedExperiences = [
-    ...new Set([
-      ...progress.unlockedExperiences,
-      experienceId + 1,
-    ]),
-  ];
+  const unlockedExperiences = [...progress.unlockedExperiences];
+
+  // Temporary unlock logic
+  if (
+    experienceId === "meeting-yourself" &&
+    !unlockedExperiences.includes("your-story")
+  ) {
+    unlockedExperiences.push("your-story");
+  }
 
   const updated: JourneyProgress = {
     ...progress,
@@ -31,13 +34,13 @@ export function completeExperience(
 
     unlockedExperiences,
 
-    currentExperience: experienceId + 1,
+    currentExperienceId: experienceId,
 
     totalXP: progress.totalXP + xpReward,
 
-    achievements: progress.achievements + 1,
+    level: progress.level,
 
-    journalEntries: progress.journalEntries + 1,
+    updatedAt: new Date().toISOString(),
   };
 
   saveJourneyProgress(updated);

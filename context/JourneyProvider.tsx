@@ -8,10 +8,9 @@ import {
   ReactNode,
 } from "react";
 
-import {
-  JourneyProgress,
-  getJourneyProgress,
-} from "@/lib/journey/progressEngine";
+import type { JourneyProgress } from "@/types/journey";
+
+import { getJourneyProgress } from "@/lib/journey/progressEngine";
 
 import { loadJourneyProgress } from "@/lib/journey/storage";
 

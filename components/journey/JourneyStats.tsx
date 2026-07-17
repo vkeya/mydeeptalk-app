@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { getJourneyProgress } from "@/lib/journey/progressEngine";
+import { defaultJourneyProgress } from "@/lib/journey/defaultProgress";
 
 interface StatCardProps {
   label: string;
@@ -36,7 +38,11 @@ function StatCard({
 
 export default function JourneyStats() {
 	
-	const progress = getJourneyProgress();
+	const [progress, setProgress] = useState(defaultJourneyProgress);
+
+useEffect(() => {
+  setProgress(getJourneyProgress());
+}, []);
 	
   return (
     <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -54,14 +60,14 @@ export default function JourneyStats() {
       />
 
       <StatCard
-        label="Journal Entries"
-        value={progress.journalEntries}
-        subtitle="Reflections written"
-      />
+  label="Total XP"
+  value={progress.totalXP}
+  subtitle="Experience points earned"
+/>
 
       <StatCard
         label="Achievements"
-        value={progress.achievements}
+        value={progress.achievements.length}
         subtitle="Milestones unlocked"
       />
 

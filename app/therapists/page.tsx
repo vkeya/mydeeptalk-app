@@ -26,6 +26,8 @@ import PageHeader from "@/components/PageHeader";
 
 type Therapist = {
   id: string;
+
+  // Existing
   fullName?: string;
   gender?: string;
   bio?: string;
@@ -43,6 +45,32 @@ type Therapist = {
   photoPositionY?: number;
   averageRating?: number;
   reviewCount?: number;
+
+  // ---------- Global Ready ----------
+  state?: string;
+  timezone?: string;
+
+  professionalTitle?: string;
+
+  licenseAuthority?: string;
+  licenseNumber?: string;
+  licenseCountry?: string;
+  licenseExpiry?: string;
+  licenseVerificationUrl?: string;
+
+  acceptedCountries?: string[];
+
+  identityVerified?: boolean;
+  licenseVerified?: boolean;
+
+  sessionModes?: (
+    | "virtual"
+    | "physical"
+    | "group"
+    | "corporate"
+  )[];
+
+  onlineWorldwide?: boolean;
 };
 
 type Review = {

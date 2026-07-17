@@ -1,50 +1,71 @@
-export interface JourneyProgress {
-  currentExperience: number;
+import { loadJourneyProgress, saveJourneyProgress } from "./storage";
+import { defaultJourneyProgress } from "./defaultProgress";
+import type { JourneyProgress } from "@/types/journey";
+import { journeyExperiences } from "@/data/journeyExperiences";
 
-  completedExperiences: number[];
 
-  unlockedExperiences: number[];
 
-  totalXP: number;
-
-  currentLevel: number;
-
-  currentStreak: number;
-
-  journalEntries: number;
-
-  achievements: number;
-}
 
 export function getJourneyProgress(): JourneyProgress {
-  return {
-    currentExperience: 2,
+  return loadJourneyProgress() ?? defaultJourneyProgress;
+}
 
-    completedExperiences: [1],
+function calculateLevel(totalXP: number): number {
+  return Math.floor(totalXP / 500) + 1;
+}
 
-    unlockedExperiences: [1, 2],
+export function completeExperience(
+  experienceId: string
+): JourneyProgress {
+  const progress = getJourneyProgress();
 
-    totalXP: 250,
+  if (!progress.completedExperiences.includes(experienceId)) {
+    progress.completedExperiences.push(experienceId);
+  }
 
-    currentLevel: 1,
+  // Update the active experience
+  progress.currentExperienceId = experienceId;
+  
+  const experience = journeyExperiences.find(
+  (exp) => exp.slug === experienceId
+);
 
-    currentStreak: 3,
+if (experience) {
+  progress.totalXP += experience.xp;
+}
 
-    journalEntries: 5,
+progress.level = calculateLevel(progress.totalXP);
 
-    achievements: 2,
-  };
+  // Unlock the next experience (temporary until the full unlock engine)
+  const currentIndex = journeyExperiences.findIndex(
+  (exp) => exp.slug === experienceId
+);
+
+const nextExperience = journeyExperiences[currentIndex + 1];
+
+if (
+  nextExperience &&
+  !progress.unlockedExperiences.includes(nextExperience.slug)
+) {
+  progress.unlockedExperiences.push(nextExperience.slug);
+}
+
+  progress.updatedAt = new Date().toISOString();
+
+  saveJourneyProgress(progress);
+
+  return progress;
 }
 
 export function isExperienceUnlocked(
-  experienceId: number,
+  experienceId: string,
   progress: JourneyProgress
 ): boolean {
   return progress.unlockedExperiences.includes(experienceId);
 }
 
 export function isExperienceCompleted(
-  experienceId: number,
+  experienceId: string,
   progress: JourneyProgress
 ): boolean {
   return progress.completedExperiences.includes(experienceId);

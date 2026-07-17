@@ -63,9 +63,9 @@ export default function JourneyDashboard() {
       duration={experience.duration}
       href={experience.href}
 
-      completed={isExperienceCompleted(experience.id, progress)}
+      completed={isExperienceCompleted(experience.slug, progress)}
 
-      unlocked={isExperienceUnlocked(experience.id, progress)}
+      unlocked={isExperienceUnlocked(experience.slug, progress)}
     />
 
   ))}

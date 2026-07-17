@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+
+
+import { completeExperience } from "@/lib/journey/progressEngine";
 
 import ArrivalScene from "./components/ArrivalScene";
 import IdentityQuestionScene from "./components/IdentityQuestionScene";
@@ -11,6 +16,8 @@ import CelebrationScene from "./components/CelebrationScene";
 
 export default function MeetingYourselfPage() {
   const [scene, setScene] = useState(0);
+  
+  const router = useRouter();
 
   const nextScene = () => {
     setScene((prev) => Math.min(prev + 1, 5));
@@ -19,7 +26,12 @@ export default function MeetingYourselfPage() {
   const previousScene = () => {
     setScene((prev) => Math.max(prev - 1, 0));
   };
+  
+  const finishJourney = () => {
+  completeExperience("meeting-yourself");
 
+router.push("/journey/dashboard");
+  };
   switch (scene) {
     case 0:
       return (
@@ -63,11 +75,9 @@ export default function MeetingYourselfPage() {
     case 5:
       return (
         <CelebrationScene
-          onContinue={() => {
-            alert("Experience Complete!");
-          }}
-          onBack={previousScene}
-        />
+  onContinue={finishJourney}
+  onBack={previousScene}
+/>
       );
 
     default:

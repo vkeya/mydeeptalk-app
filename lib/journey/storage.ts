@@ -1,4 +1,4 @@
-import { JourneyProgress } from "./progressEngine";
+import type { JourneyProgress } from "@/types/journey";
 
 const STORAGE_KEY = "mydeeptalk_journey_progress";
 
