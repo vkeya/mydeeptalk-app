@@ -1,5 +1,6 @@
 import { ClientStatsProps } from "@/components/therapist/workspace";
 import { getClientHeader } from "./clientService";
+import { getClinicalNotes } from "./notesService";
 import {
   ActivityItem,
 } from "@/components/therapist/workspace";
@@ -10,9 +11,7 @@ import {
 import {
   ClientSession,
 } from "@/components/therapist/workspace/sections/SessionsSection";
-import {
-  ClinicalNote,
-} from "@/components/therapist/workspace/sections/NotesSection";
+import type { ClinicalNote } from "@/types/therapist/notes";
 import {
   TreatmentGoal,
 } from "@/components/therapist/workspace/sections/TreatmentSection";
@@ -124,7 +123,7 @@ if (!header) {
       history: [],
     },
 
-    notes: [],
+    notes: await getClinicalNotes(clientId),
 
     treatment: [],
 

@@ -123,7 +123,10 @@ export default function TherapistClientWorkspacePage() {
       )}
 
       {activeTab === "notes" && (
-        <NotesSection notes={workspace.notes} />
+        <NotesSection
+  clientId={clientId}
+  notes={workspace.notes}
+/>
       )}
 
       {activeTab === "treatment" && (
