@@ -2,10 +2,11 @@ import { ClientStatsProps } from "@/components/therapist/workspace";
 import { getClientHeader } from "./clientService";
 import { getClinicalNotes } from "./notesService";
 import type { TimelineEvent } from "@/types/therapist/timeline";
-import {
+import type {
   AssessmentResult,
   AssessmentSummary,
-} from "@/components/therapist/workspace/sections/AssessmentsSection";
+} from "@/types/therapist/assessment";
+
 import {
   ClientSession,
 } from "@/components/therapist/workspace/sections/SessionsSection";

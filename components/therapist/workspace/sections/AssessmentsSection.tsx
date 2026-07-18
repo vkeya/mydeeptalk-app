@@ -7,20 +7,10 @@ import {
   Clock,
 } from "lucide-react";
 
-export type AssessmentSummary = {
-  totalCompleted: number;
-  latestAssessment: string;
-  averageScore: number;
-  riskLevel: "Low" | "Moderate" | "High";
-};
-
-export type AssessmentResult = {
-  id: string;
-  name: string;
-  completedAt: string;
-  score: number;
-  interpretation: string;
-};
+import type {
+  AssessmentSummary,
+  AssessmentResult,
+} from "@/types/therapist/assessment";
 
 type AssessmentsSectionProps = {
   summary: AssessmentSummary;
