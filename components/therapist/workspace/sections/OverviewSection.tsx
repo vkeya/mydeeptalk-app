@@ -4,14 +4,15 @@ import {
   ClientStats,
   QuickActions,
   RecentActivity,
-  type ActivityItem,
   type ClientStatsProps,
   type QuickAction,
 } from "../";
 
+import type { TimelineEvent } from "@/types/therapist/timeline";
+
 type OverviewSectionProps = {
   stats: ClientStatsProps;
-  activities: ActivityItem[];
+  activities: TimelineEvent[];
   actions?: QuickAction[];
 };
 

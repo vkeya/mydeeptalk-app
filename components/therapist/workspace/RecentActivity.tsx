@@ -7,47 +7,63 @@ import {
   BookOpen,
   FileText,
   Sparkles,
+  AlertTriangle,
+  Target,
+  Calendar,
 } from "lucide-react";
 
-export type ActivityType =
-  | "session"
-  | "assessment"
-  | "journey"
-  | "homework"
-  | "note"
-  | "ai";
-
-export type ActivityItem = {
-  id: string;
-  type: ActivityType;
-  title: string;
-  description: string;
-  timestamp: string;
-};
+import type { TimelineEvent } from "@/types/therapist/timeline";
 
 type RecentActivityProps = {
-  activities: ActivityItem[];
+  activities: TimelineEvent[];
 };
 
-const activityIcons: Record<
-  ActivityType,
-  React.ElementType
-> = {
-  session: CalendarCheck2,
-  assessment: ClipboardCheck,
-  journey: Brain,
-  homework: BookOpen,
-  note: FileText,
-  ai: Sparkles,
+const activityIcons: Record<string, React.ElementType> = {
+  note_created: FileText,
+  note_updated: FileText,
+  note_deleted: FileText,
+
+  session_booked: Calendar,
+  session_completed: CalendarCheck2,
+  session_cancelled: Calendar,
+
+  assessment_completed: ClipboardCheck,
+
+  homework_assigned: BookOpen,
+  homework_completed: BookOpen,
+
+  treatment_goal_created: Target,
+  treatment_goal_updated: Target,
+
+  journey_milestone_completed: Brain,
+
+  ai_insight: Sparkles,
+
+  risk_alert: AlertTriangle,
 };
 
-const activityColors: Record<ActivityType, string> = {
-  session: "bg-blue-100 text-blue-600",
-  assessment: "bg-purple-100 text-purple-600",
-  journey: "bg-green-100 text-green-600",
-  homework: "bg-orange-100 text-orange-600",
-  note: "bg-gray-100 text-gray-600",
-  ai: "bg-indigo-100 text-indigo-600",
+const activityColors: Record<string, string> = {
+  note_created: "bg-gray-100 text-gray-600",
+  note_updated: "bg-gray-100 text-gray-600",
+  note_deleted: "bg-red-100 text-red-600",
+
+  session_booked: "bg-blue-100 text-blue-600",
+  session_completed: "bg-blue-100 text-blue-600",
+  session_cancelled: "bg-red-100 text-red-600",
+
+  assessment_completed: "bg-purple-100 text-purple-600",
+
+  homework_assigned: "bg-orange-100 text-orange-600",
+  homework_completed: "bg-orange-100 text-orange-600",
+
+  treatment_goal_created: "bg-green-100 text-green-600",
+  treatment_goal_updated: "bg-green-100 text-green-600",
+
+  journey_milestone_completed: "bg-emerald-100 text-emerald-600",
+
+  ai_insight: "bg-indigo-100 text-indigo-600",
+
+  risk_alert: "bg-red-100 text-red-600",
 };
 
 export default function RecentActivity({
@@ -73,7 +89,12 @@ export default function RecentActivity({
         )}
 
         {activities.map((activity) => {
-          const Icon = activityIcons[activity.type];
+          const Icon =
+            activityIcons[activity.type] ?? FileText;
+
+          const color =
+            activityColors[activity.type] ??
+            "bg-gray-100 text-gray-600";
 
           return (
             <div
@@ -81,7 +102,7 @@ export default function RecentActivity({
               className="flex gap-4 px-6 py-5"
             >
               <div
-                className={`flex h-11 w-11 items-center justify-center rounded-full ${activityColors[activity.type]}`}
+                className={`flex h-11 w-11 items-center justify-center rounded-full ${color}`}
               >
                 <Icon className="h-5 w-5" />
               </div>
@@ -97,9 +118,11 @@ export default function RecentActivity({
                   </span>
                 </div>
 
-                <p className="mt-1 text-sm text-gray-600">
-                  {activity.description}
-                </p>
+                {activity.description && (
+                  <p className="mt-1 text-sm text-gray-600">
+                    {activity.description}
+                  </p>
+                )}
               </div>
             </div>
           );

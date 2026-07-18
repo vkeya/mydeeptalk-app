@@ -1,9 +1,7 @@
 import { ClientStatsProps } from "@/components/therapist/workspace";
 import { getClientHeader } from "./clientService";
 import { getClinicalNotes } from "./notesService";
-import {
-  ActivityItem,
-} from "@/components/therapist/workspace";
+import type { TimelineEvent } from "@/types/therapist/timeline";
 import {
   AssessmentResult,
   AssessmentSummary,
@@ -21,6 +19,7 @@ import {
 import {
   TherapyResource,
 } from "@/components/therapist/workspace/sections/ResourcesSection";
+import { getTimeline } from "./timelineService";
 import {
   AIInsight,
 } from "@/components/therapist/workspace/sections/AIAssistantSection";
@@ -30,7 +29,7 @@ export interface TherapistClientWorkspace {
   header: TherapistClientHeader;
   stats: ClientStatsProps;
 
-  activities: ActivityItem[];
+  activities: TimelineEvent[];
 
   journey: {
     activeJourney: string;
@@ -96,7 +95,7 @@ if (!header) {
       lastSession: "12 Jul 2026",
     },
 
-    activities: [],
+    activities: await getTimeline(clientId),
 
     journey: {
       activeJourney: "Meeting Yourself",

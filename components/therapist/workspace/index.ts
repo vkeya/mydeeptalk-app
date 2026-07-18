@@ -14,7 +14,3 @@ export type {
 } from "./WorkspaceTabs";
 
 export { default as RecentActivity } from "./RecentActivity";
-export type {
-  ActivityItem,
-  ActivityType,
-} from "./RecentActivity";
