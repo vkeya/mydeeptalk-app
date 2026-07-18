@@ -23,3 +23,8 @@ export interface HomeworkItem {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface HomeworkWorkspaceData {
+  active: HomeworkItem[];
+  completed: HomeworkItem[];
+}

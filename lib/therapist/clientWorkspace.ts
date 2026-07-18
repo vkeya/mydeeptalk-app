@@ -6,17 +6,21 @@ import type {
   AssessmentResult,
   AssessmentSummary,
 } from "@/types/therapist/assessment";
+import { getClientTreatmentPlan } from "./treatmentService";
+import { getClientHomework } from "./homeworkService";
+import {
+  getAssessmentHistory,
+} from "./assessmentService";
+import { getClientSessions } from "./sessionService";
 
-import {
-  ClientSession,
-} from "@/components/therapist/workspace/sections/SessionsSection";
+import type { ClientSession } from "@/types/therapist/session";
+import type { HomeworkItem } from "@/types/therapist/homework";
+
 import type { ClinicalNote } from "@/types/therapist/notes";
-import {
+import type {
   TreatmentGoal,
-} from "@/components/therapist/workspace/sections/TreatmentSection";
-import {
-  HomeworkItem,
-} from "@/components/therapist/workspace/sections/HomeworkSection";
+} from "@/types/therapist/treatment";
+
 import {
   TherapyResource,
 } from "@/components/therapist/workspace/sections/ResourcesSection";
@@ -81,7 +85,20 @@ export async function getClientWorkspace(
 if (!header) {
   throw new Error("Client not found");
 }
-
+  const assessmentHistory =
+    await getAssessmentHistory(clientId);
+	
+  const sessionData =
+    await getClientSessions(clientId);
+	
+  const homeworkData =
+    await getClientHomework(clientId);
+	
+  const treatmentData =
+    await getClientTreatmentPlan(clientId);
+	
+  
+  
   console.log("Loading workspace for", clientId);
 
   return {
@@ -108,26 +125,30 @@ if (!header) {
     },
 
     assessments: {
-      summary: {
-        totalCompleted: 5,
-        latestAssessment: "10 Jul 2026",
-        averageScore: 73,
-        riskLevel: "Low",
-      },
+  summary: {
+    totalCompleted: assessmentHistory.length,
+    latestAssessment:
+      assessmentHistory[0]?.completedAt ?? "-",
+    averageScore: 0,
+    riskLevel: "Low",
+  },
 
-      history: [],
-    },
+  history: assessmentHistory,
+},
 
-    sessions: {
-      nextSession: undefined,
-      history: [],
-    },
+    sessions: sessionData,
 
     notes: await getClinicalNotes(clientId),
 
-    treatment: [],
+    treatment: [
+  ...treatmentData.activeGoals,
+  ...treatmentData.completedGoals,
+],
 
-    homework: [],
+    homework: [
+  ...homeworkData.active,
+  ...homeworkData.completed,
+],
 
     resources: [],
 

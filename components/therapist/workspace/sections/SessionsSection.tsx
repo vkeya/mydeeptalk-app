@@ -1,5 +1,9 @@
 "use client";
 
+import type {
+  ClientSession,
+  SessionStatus,
+} from "@/types/therapist/session";
 import {
   CalendarDays,
   Clock,
@@ -8,22 +12,6 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react";
-
-export type SessionStatus =
-  | "upcoming"
-  | "completed"
-  | "cancelled"
-  | "missed";
-
-export type ClientSession = {
-  id: string;
-  date: string;
-  time: string;
-  duration: string;
-  type: "Virtual" | "In Person";
-  status: SessionStatus;
-  therapistNote?: string;
-};
 
 type SessionsSectionProps = {
   nextSession?: ClientSession;

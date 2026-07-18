@@ -1,5 +1,9 @@
 "use client";
 
+import type {
+  HomeworkItem,
+  HomeworkStatus,
+} from "@/types/therapist/homework";
 import {
   BookOpen,
   CheckCircle2,
@@ -7,20 +11,6 @@ import {
   CalendarDays,
   Circle,
 } from "lucide-react";
-
-export type HomeworkStatus =
-  | "assigned"
-  | "in_progress"
-  | "completed";
-
-export type HomeworkItem = {
-  id: string;
-  title: string;
-  description: string;
-  assignedDate: string;
-  dueDate?: string;
-  status: HomeworkStatus;
-};
 
 type HomeworkSectionProps = {
   homework: HomeworkItem[];

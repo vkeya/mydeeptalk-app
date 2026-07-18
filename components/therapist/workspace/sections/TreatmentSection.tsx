@@ -1,19 +1,12 @@
 "use client";
 
+import type { TreatmentGoal } from "@/types/therapist/treatment";
 import {
   Target,
   CheckCircle2,
   Circle,
   CalendarDays,
 } from "lucide-react";
-
-export type TreatmentGoal = {
-  id: string;
-  title: string;
-  description: string;
-  targetDate?: string;
-  completed: boolean;
-};
 
 type TreatmentSectionProps = {
   goals: TreatmentGoal[];
@@ -23,7 +16,7 @@ export default function TreatmentSection({
   goals,
 }: TreatmentSectionProps) {
   const completedGoals = goals.filter(
-    (goal) => goal.completed
+    (goal) => goal.status === "completed"
   ).length;
 
   return (
@@ -78,7 +71,7 @@ export default function TreatmentSection({
               >
                 <div className="flex gap-4">
                   <div className="mt-1">
-                    {goal.completed ? (
+                    {goal.status === "completed" ? (
                       <CheckCircle2 className="h-6 w-6 text-green-600" />
                     ) : (
                       <Circle className="h-6 w-6 text-gray-400" />
@@ -105,12 +98,12 @@ export default function TreatmentSection({
 
                 <span
                   className={`rounded-full px-3 py-1 text-sm font-medium ${
-                    goal.completed
+                    goal.status === "completed"
                       ? "bg-green-100 text-green-700"
                       : "bg-yellow-100 text-yellow-700"
                   }`}
                 >
-                  {goal.completed
+                  {goal.status === "completed"
                     ? "Completed"
                     : "In Progress"}
                 </span>
