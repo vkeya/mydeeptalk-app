@@ -6,8 +6,13 @@ import type { TreatmentGoal } from "@/types/therapist/treatment";
 export interface WorkspaceStats {
   totalSessions: number;
   completedAssessments: number;
+
   activeTreatmentGoals: number;
   completedHomework: number;
+
+  wellbeingScore: number;
+  streak: number;
+  lastSession?: string;
 }
 
 export function buildWorkspaceStats(params: {
@@ -24,13 +29,27 @@ export function buildWorkspaceStats(params: {
   } = params;
 
   return {
-    totalSessions: sessions.length,
-    completedAssessments: assessments.length,
-    activeTreatmentGoals: treatment.filter(
-      goal => goal.status === "active"
-    ).length,
-    completedHomework: homework.filter(
-      item => item.status === "completed"
-    ).length,
-  };
+  totalSessions: sessions.length,
+
+  completedAssessments: assessments.length,
+
+  activeTreatmentGoals: treatment.filter(
+    goal => goal.status === "active"
+  ).length,
+
+  completedHomework: homework.filter(
+    item => item.status === "completed"
+  ).length,
+
+  // Placeholder until Progress Analytics exists
+  wellbeingScore: 0,
+
+  // Placeholder until Journey Analytics exists
+  streak: 0,
+
+  lastSession:
+    sessions.length > 0
+      ? sessions[0].date
+      : undefined,
+};
 }

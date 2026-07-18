@@ -6,6 +6,9 @@ import type {
   AssessmentResult,
   AssessmentSummary,
 } from "@/types/therapist/assessment";
+import {
+  buildWorkspaceStats,
+} from "./workspaceAnalytics";
 import { getClientTreatmentPlan } from "./treatmentService";
 import { getClientHomework } from "./homeworkService";
 import {
@@ -97,7 +100,22 @@ if (!header) {
   const treatmentData =
     await getClientTreatmentPlan(clientId);
 	
-  
+  const stats = buildWorkspaceStats({
+  sessions: sessionData.history,
+
+  assessments: assessmentHistory,
+
+  homework: [
+    ...homeworkData.active,
+    ...homeworkData.completed,
+  ],
+
+  treatment: [
+    ...treatmentData.activeGoals,
+    ...treatmentData.completedGoals,
+  ],
+});
+
   
   console.log("Loading workspace for", clientId);
 
@@ -105,13 +123,16 @@ if (!header) {
 	header,
 	
     stats: {
-      totalSessions: 12,
-      completedAssessments: 5,
-      activeJourney: "Meeting Yourself",
-      wellbeingScore: 74,
-      streak: 9,
-      lastSession: "12 Jul 2026",
-    },
+  totalSessions: stats.totalSessions,
+  completedAssessments: stats.completedAssessments,
+
+  // Journey module will provide this later
+  activeJourney: "Meeting Yourself",
+
+  wellbeingScore: stats.wellbeingScore,
+  streak: stats.streak,
+  lastSession: stats.lastSession ?? "-",
+},
 
     activities: await getTimeline(clientId),
 
