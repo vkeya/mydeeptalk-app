@@ -31,6 +31,7 @@
  * Future modules simply subscribe through these handlers.
  * ------------------------------------------------------------------
  */
+import { addTimelineEvent } from "@/lib/therapist/timelineService";
 
 export interface WorkspaceEvent {
   clientId: string;
@@ -71,10 +72,28 @@ export async function onClinicalNoteCreated(
 ): Promise<void> {
   console.info("[Workspace] Clinical note created", event);
 
+  await addTimelineEvent({
+    id: crypto.randomUUID(),
+
+    clientId: event.clientId,
+    therapistId: event.therapistId,
+
+    type: "note_created",
+
+    title: "Clinical note created",
+
+    description: "A new clinical note was added.",
+
+    timestamp: event.timestamp,
+
+    metadata: {
+      noteId: event.noteId,
+    },
+  });
+
   // TODO:
-  // - Update Timeline
-  // - Refresh Analytics
-  // - Refresh AI Context
+  // Refresh Analytics
+  // Refresh AI Context
 }
 
 export async function onClinicalNoteUpdated(
