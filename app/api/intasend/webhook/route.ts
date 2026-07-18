@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { processGiftPayment } from "@/lib/payments/giftPayment";
 import {
   collection,
   getDocs,
@@ -13,8 +12,6 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { createGoogleMeetEvent } from "@/lib/googleCalendar";
-import { BookingConfirmedEmail } from "@/emails";
-import { therapistBookingNotification } from "@/emails/therapistBookingNotification";
 
 export async function GET() {
   return new Response("OK", { status: 200 });
@@ -51,21 +48,6 @@ export async function POST(request: Request) {
         paymentState,
       });
     }
-	
-	// Gift Session payment check
-const giftHandled = await processGiftPayment(
-  bookingId,
-  payload
-);
-
-if (giftHandled) {
-  return NextResponse.json({
-    success: true,
-    giftId: bookingId,
-    paymentState,
-    message: "Gift payment confirmed",
-  });
-}
 	
 	// Healing Circle contribution payment check
     const contributionRef = doc(db, "healingCircleContributions", bookingId);
@@ -155,6 +137,14 @@ if (giftHandled) {
     }
 
     const booking = bookingSnap.data();
+	
+	if (booking.googleEventId) {
+  return NextResponse.json({
+    success: true,
+    bookingId,
+    message: "Calendar event already exists.",
+  });
+}
 
     await updateDoc(bookingRef, {
       paymentStatus: "paid",
@@ -199,43 +189,25 @@ if (giftHandled) {
           therapistEmail: booking.therapistEmail,
           sessionDate: booking.sessionDate,
           sessionTime: booking.sessionTime,
+		  
+		  timeZone: booking.therapistTimezone || "Africa/Nairobi",
           
         });
 
         await updateDoc(bookingRef, {
           meetingLink: meetEvent.meetingLink || "",
           googleEventId: meetEvent.eventId || "",
+		  
+		  googleCalendarLink: meetEvent.htmlLink || "",
+          calendarStatus: meetEvent.status || "created",
+          calendarOrganizer: meetEvent.organizer || "",
+		  calendarSequence: meetEvent.sequence,
+  
           calendarCreatedAt: serverTimestamp(),
+          calendarUpdatedAt: serverTimestamp(),
+		  
           updatedAt: serverTimestamp(),
         });
-		
-		const baseUrl =
-  process.env.NEXT_PUBLIC_APP_URL || "https://mydeeptalk.com";
-
-const clientResponse = await fetch(`${baseUrl}/api/send-email`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    to: booking.clientEmail,
-    subject: "Your Therapy Session is Confirmed",
-    html: BookingConfirmedEmail({
-      clientName: booking.clientAlias || booking.clientName || "Client",
-      therapistName: booking.therapistName || "Your Therapist",
-      sessionDate: booking.sessionDate,
-      sessionTime: booking.sessionTime,
-      meetingLink: meetEvent.meetingLink,
-    }),
-  }),
-});
-
-const clientResult = await clientResponse.json();
-
-console.log("BOOKING CONFIRMATION EMAIL:", clientResult);
-		
-		
-		
       } else {
         console.log("Missing clientEmail or therapistEmail for Meet generation");
       }

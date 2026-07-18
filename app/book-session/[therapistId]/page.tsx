@@ -161,8 +161,7 @@ export default function BookSessionPage() {
       (booking) =>
         booking.sessionDate === date &&
         booking.sessionTime === time &&
-        booking.status === "confirmed" &&
-        booking.paymentStatus === "paid"
+        booking.status !== "cancelled"
     );
   }
 
@@ -180,7 +179,28 @@ export default function BookSessionPage() {
           Number(availability?.sessionDuration || 60)
         )
       : [];
+  function formatClientLocalTime(
+  date: string,
+  time: string,
+  therapistTimezone: string
+) {
+  if (!date || !time || !therapistTimezone) return "";
 
+  try {
+    // Create a date representing the therapist's selected local time.
+    // (We'll replace this implementation with a proper timezone conversion
+    // library in a later milestone.)
+    const appointment = new Date(`${date}T${time}`);
+
+    return appointment.toLocaleString(undefined, {
+      dateStyle: "full",
+      timeStyle: "short",
+    });
+  } catch {
+    return "";
+  }
+}
+ 
   async function handleBooking(e: React.FormEvent) {
     e.preventDefault();
 
@@ -236,10 +256,20 @@ export default function BookSessionPage() {
         clientName: user.displayName || "",
 		clientAlias,
         clientEmail: user.email || "",
+		
+		clientTimezone:
+  Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+
+clientLocale:
+  navigator.language || "en-US",
 
         therapistId: therapist.id,
-        therapistName: therapist.fullName,
-        therapistEmail: therapist.email || "",
+therapistName: therapist.fullName,
+therapistEmail: therapist.email || "",
+
+therapistTimezone: therapist.timezone || "UTC",
+therapistCountry: therapist.country || "",
+therapistState: therapist.state || "",
 
         sessionFee: useGiftCredit ? 0 : therapist.sessionFee || 0,
         sessionDate,
@@ -256,7 +286,7 @@ export default function BookSessionPage() {
         createdAt: serverTimestamp(),
       });
 	  
-/*
+
 if (user.email) {
   await fetch("/api/send-email", {
     method: "POST",
@@ -294,7 +324,6 @@ if (therapist.email) {
     }),
   });
 }
-*/
 
       if (useGiftCredit && therapyCredits?.remainingSessions > 0) {
         await updateDoc(doc(db, "therapyCredits", user.uid), {
@@ -346,11 +375,17 @@ if (therapist.email) {
 
         <div className="mt-8 rounded-3xl bg-white p-10 shadow-lg">
           <div className="rounded-2xl bg-[#F7F3EC] p-6">
-            <h2 className="text-2xl font-bold text-[#0F4C5C]">
-              {therapist.fullName}
-            </h2>
+           <h2 className="text-2xl font-bold text-[#0F4C5C]">
+  {therapist.fullName}
+</h2>
 
-            <p className="mt-4 text-gray-700">Session Fee</p>
+{therapist.timezone && (
+  <div className="mt-3 rounded-xl bg-blue-50 p-3 text-sm text-blue-800">
+    🌍 Time Zone: <strong>{therapist.timezone}</strong>
+  </div>
+)}
+
+<p className="mt-4 text-gray-700">Session Fee</p>
 
             <p className="text-3xl font-bold text-[#0F4C5C]">
               {useGiftCredit ? "Gifted Session" : `KES ${therapist.sessionFee || 0}`}
@@ -359,8 +394,14 @@ if (therapist.email) {
 
           <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-6">
             <h3 className="text-xl font-bold text-[#0F4C5C]">
-              Therapist Availability
-            </h3>
+    Therapist Availability
+  </h3>
+			{therapist.timezone && (
+  <p className="mt-2 text-sm text-gray-600">
+    All appointment times are currently shown in the therapist's timezone (
+    <strong>{therapist.timezone}</strong>).
+  </p>
+)}
 
             {!availability ? (
               <p className="mt-4 text-gray-700">
@@ -446,6 +487,23 @@ if (therapist.email) {
                     );
                   })}
                 </div>
+				
+				{sessionTime && therapist.timezone && (
+  <div className="mt-6 rounded-2xl bg-green-50 p-4">
+    <p className="text-sm font-semibold text-green-800">
+      Your selected appointment
+    </p>
+
+    <p className="mt-1 text-green-700">
+      {formatClientLocalTime(
+        sessionDate,
+        sessionTime,
+        therapist.timezone
+      )}
+    </p>
+  </div>
+)}
+				
               </div>
             )}
 

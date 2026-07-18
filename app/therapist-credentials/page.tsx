@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 
 type EducationQualification = {
   id: string;
@@ -46,6 +51,44 @@ export default function TherapistCredentialsPage() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [professionalTitle, setProfessionalTitle] = useState("");
+const [licenseAuthority, setLicenseAuthority] = useState("");
+const [licenseCountry, setLicenseCountry] = useState("");
+
+  useEffect(() => {
+  async function loadTherapistProfile() {
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    const therapistSnap = await getDoc(doc(db, "therapists", user.uid));
+
+    if (!therapistSnap.exists()) return;
+
+    const therapist = therapistSnap.data();
+
+    setProfessionalTitle(therapist.professionalTitle || "");
+
+    setCpbLicenseNumber(
+      therapist.licenseNumber ||
+      therapist.cpbLicenseNumber ||
+      ""
+    );
+
+    setLicenseAuthority(
+      therapist.licenseAuthority ||
+      "Counsellors & Psychologists Board"
+    );
+
+    setLicenseCountry(
+      therapist.licenseCountry ||
+      therapist.country ||
+      ""
+    );
+  }
+
+  loadTherapistProfile();
+}, []);
 
   function updateEducationQualification(
     id: string,
@@ -251,17 +294,61 @@ export default function TherapistCredentialsPage() {
                 Professional License
               </h2>
 
-              <label className="mb-3 block font-bold text-[#0F4C5C]">
-                CPB License Number
-              </label>
+              <h3 className="mb-5 text-xl font-bold text-[#0F4C5C]">
+  Professional License Information
+</h3>
 
-              <input
-                className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900 placeholder:text-gray-700"
-                value={cpbLicenseNumber}
-                onChange={(e) => setCpbLicenseNumber(e.target.value)}
-                placeholder="Enter your CPB license number"
-                required
-              />
+<div className="grid gap-5 md:grid-cols-2">
+
+  <div>
+    <label className="mb-2 block font-bold text-[#0F4C5C]">
+      Professional Title
+    </label>
+
+    <input
+      className="w-full rounded-2xl border border-gray-300 bg-gray-100 p-4 font-semibold text-gray-900"
+      value={professionalTitle}
+      readOnly
+    />
+  </div>
+
+  <div>
+    <label className="mb-2 block font-bold text-[#0F4C5C]">
+      License Number
+    </label>
+
+    <input
+      className="w-full rounded-2xl border border-gray-300 bg-gray-100 p-4 font-semibold text-gray-900"
+      value={cpbLicenseNumber}
+      readOnly
+    />
+  </div>
+
+  <div>
+    <label className="mb-2 block font-bold text-[#0F4C5C]">
+      Licensing Authority
+    </label>
+
+    <input
+      className="w-full rounded-2xl border border-gray-300 bg-gray-100 p-4 font-semibold text-gray-900"
+      value={licenseAuthority}
+      readOnly
+    />
+  </div>
+
+  <div>
+    <label className="mb-2 block font-bold text-[#0F4C5C]">
+      Country of License
+    </label>
+
+    <input
+      className="w-full rounded-2xl border border-gray-300 bg-gray-100 p-4 font-semibold text-gray-900"
+      value={licenseCountry}
+      readOnly
+    />
+  </div>
+
+</div>
 
               <label className="mb-3 mt-6 block font-bold text-[#0F4C5C]">
                 Upload CPB License Certificate

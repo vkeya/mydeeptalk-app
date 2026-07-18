@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import { fromZonedTime } from "date-fns-tz";
 
 type MeetEventInput = {
   clientName: string;
@@ -35,52 +36,41 @@ export async function createGoogleMeetEvent({
     auth: oauth2Client,
   });
 
-  const startDateTime = new Date(`${sessionDate}T${sessionTime}:00+03:00`);
-  const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+  const localDateTime = `${sessionDate}T${sessionTime}:00`;
+
+// Convert the therapist's local time into UTC
+const startDateTime = fromZonedTime(localDateTime, timeZone);
+
+// Session duration remains 60 minutes
+const endDateTime = new Date(
+  startDateTime.getTime() + 60 * 60 * 1000
+);
 
   const event = await calendar.events.insert({
     calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
     conferenceDataVersion: 1,
-	sendUpdates: "all",
     requestBody: {
-      summary: `MyDeepTalk Session: ${clientName} with ${therapistName}`,
-      description: `💙 Welcome to your MyDeepTalk Therapy Session
+      summary: `MyDeepTalk Therapy Session`,
 
-Thank you for choosing MyDeepTalk.
+description: `
+Welcome to your MyDeepTalk therapy session.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
-👩🏽‍⚕️ Therapist
-${therapistName}
-
-🧑🏽 Client
+Client:
 ${clientName}
 
-⏱ Duration
-60 minutes
+Therapist:
+${therapistName}
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
-Before your session
+Please join using the Google Meet link attached to this calendar invitation.
 
-• Join 5 minutes before your scheduled time.
-• Choose a quiet, private place.
-• Use headphones if available.
-• Have water and a notebook nearby if you'd like.
+If you need to reschedule or cancel your session, please do so through your MyDeepTalk account.
 
-━━━━━━━━━━━━━━━━━━━━━━
-
-Need to reschedule or have questions?
-
-📧 info@mydeeptalk.com
-🌐 https://mydeeptalk.com
-
-If you're experiencing an emotional crisis, please seek immediate support from your local emergency services or visit:
-https://mydeeptalk.com/crisis-resources
-
-We look forward to supporting your healing journey.
-
-— The MyDeepTalk Team 💙`,
+Thank you for choosing MyDeepTalk.
+`,
       start: {
   dateTime: startDateTime.toISOString(),
   timeZone,
@@ -102,7 +92,34 @@ We look forward to supporting your healing journey.
   });
 
   return {
-    eventId: event.data.id || "",
-    meetingLink: event.data.hangoutLink || "",
-  };
+  eventId: event.data.id || "",
+  meetingLink: event.data.hangoutLink || "",
+
+  htmlLink: event.data.htmlLink || "",
+  status: event.data.status || "",
+  organizer: event.data.organizer?.email || "",
+  sequence: event.data.sequence ?? 0,
+};
 }
+
+export async function deleteGoogleCalendarEvent(eventId: string) {
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET
+  );
+
+  oauth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+  });
+
+  const calendar = google.calendar({
+    version: "v3",
+    auth: oauth2Client,
+  });
+
+  await calendar.events.delete({
+    calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
+    eventId,
+  });
+}
+

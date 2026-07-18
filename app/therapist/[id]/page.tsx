@@ -24,6 +24,12 @@ type Therapist = {
   sessionFeeCurrency?: "KES" | "USD";
   country?: string;
   city?: string;
+  state?: string;
+timezone?: string;
+
+professionalTitle?: string;
+licenseAuthority?: string;
+licenseCountry?: string;
   status?: string;
   profilePhoto?: string;
   photoPositionX?: number;
@@ -149,7 +155,13 @@ export default function TherapistProfilePage() {
                   </span>
                 )}
               </div>
-
+              
+			  {therapist.professionalTitle && (
+  <p className="mt-2 text-lg font-semibold text-[#2C7A7B]">
+    {therapist.professionalTitle}
+  </p>
+)}
+			  
               <div className="mt-4">
                 {reviews.length > 0 ? (
                   <div className="flex flex-wrap items-center gap-3">
@@ -167,8 +179,13 @@ export default function TherapistProfilePage() {
               </div>
 
               <p className="mt-4 text-gray-600">
-                {[therapist.city, therapist.country].filter(Boolean).join(", ") ||
-                  "Online"}
+                {[
+  therapist.city,
+  therapist.state,
+  therapist.country,
+]
+  .filter(Boolean)
+  .join(", ") || "Online"}
               </p>
 
               <div className="mt-6 flex flex-wrap gap-3">
@@ -222,6 +239,18 @@ export default function TherapistProfilePage() {
               title="Experience"
               value={`${therapist.yearsExperience || 0} years`}
             />
+			
+			<InfoCard
+  title="Professional Information"
+  value={[
+    therapist.professionalTitle,
+    therapist.licenseAuthority,
+    therapist.licenseCountry,
+  ]
+    .filter(Boolean)
+    .join("\n") || "Not specified"}
+  multiline
+/>
 
             <SessionFeesCard therapist={therapist} currency={currency} />
           </div>
@@ -330,11 +359,28 @@ function FeeRow({
   );
 }
 
-function InfoCard({ title, value }: { title: string; value: string }) {
+function InfoCard({
+  title,
+  value,
+  multiline = false,
+}: {
+  title: string;
+  value: string;
+  multiline?: boolean;
+}) {
   return (
     <div className="rounded-2xl bg-[#F7F3EC] p-6">
-      <h3 className="mb-2 text-lg font-semibold text-[#0F4C5C]">{title}</h3>
-      <p className="text-gray-700">{value}</p>
+      <h3 className="mb-2 text-lg font-semibold text-[#0F4C5C]">
+        {title}
+      </h3>
+
+      <p
+        className={`text-gray-700 ${
+          multiline ? "whitespace-pre-line" : ""
+        }`}
+      >
+        {value}
+      </p>
     </div>
   );
 }

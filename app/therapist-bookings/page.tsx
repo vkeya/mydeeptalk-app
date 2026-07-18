@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+
 import {
   collection,
   doc,
@@ -128,55 +129,84 @@ export default function TherapistBookingsPage() {
   }, [bookings]);
 
   async function markCompleted(id: string) {
-    setActionLoading(id);
+  setActionLoading(id);
 
-    try {
-      await updateDoc(doc(db, "bookings", id), {
-        status: "completed",
-        completedAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+  try {
+    const response = await fetch("/api/bookings/complete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        bookingId: id,
+      }),
+    });
 
-      setBookings((prev) =>
-        prev.map((booking) =>
-          booking.id === id ? { ...booking, status: "completed" } : booking
-        )
-      );
-    } catch (error) {
-      console.error(error);
-      alert("Could not mark session as completed.");
-    } finally {
-      setActionLoading("");
+    if (!response.ok) {
+      throw new Error("Failed to complete session.");
     }
+
+    setBookings((prev) =>
+      prev.map((booking) =>
+        booking.id === id
+          ? {
+              ...booking,
+              status: "completed",
+            }
+          : booking
+      )
+    );
+  } catch (error) {
+    console.error(error);
+    alert("Could not mark session as completed.");
+  } finally {
+    setActionLoading("");
   }
+}
 
   async function cancelSession(id: string) {
-    const confirmed = confirm("Are you sure you want to cancel this session?");
+  const confirmed = confirm(
+    "Are you sure you want to cancel this session?"
+  );
 
-    if (!confirmed) return;
+  if (!confirmed) return;
 
-    setActionLoading(id);
+  setActionLoading(id);
 
-    try {
-      await updateDoc(doc(db, "bookings", id), {
-        status: "cancelled",
-        cancelledAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+  try {
+    const response = await fetch("/api/bookings/cancel", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    bookingId: id,
+    cancelledBy: "therapist",
+  }),
+});
 
-      setBookings((prev) =>
-        prev.map((booking) =>
-          booking.id === id ? { ...booking, status: "cancelled" } : booking
-        )
-      );
-    } catch (error) {
-      console.error(error);
-      alert("Could not cancel session.");
-    } finally {
-      setActionLoading("");
-    }
+if (!response.ok) {
+  throw new Error("Failed to cancel booking.");
+}
+
+    setBookings((prev) =>
+      prev.map((booking) =>
+        booking.id === id
+          ? {
+              ...booking,
+              status: "cancelled",
+              meetingLink: "",
+            }
+          : booking
+      )
+    );
+  } catch (error) {
+    console.error(error);
+    alert("Could not cancel session.");
+  } finally {
+    setActionLoading("");
   }
-
+}
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F7F3EC] p-6 text-[#0F4C5C]">

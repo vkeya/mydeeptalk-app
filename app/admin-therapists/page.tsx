@@ -26,10 +26,18 @@ type Therapist = {
   languages?: string[];
   yearsExperience?: number;
   cpbLicenseNumber?: string;
+  professionalTitle?: string;
+  licenseNumber?: string;
+  licenseAuthority?: string;
+  licenseCountry?: string;
+ 
   feeCurrency?: string;
   sessionFee?: number;
+  
   country?: string;
+  state?: string;
   city?: string;
+  timezone?: string;
   profilePhoto?: string;
   status?: string;
   credentialsUploaded?: boolean;
@@ -48,6 +56,11 @@ type EducationQualification = {
 type Credentials = {
   cpbLicenseNumber?: string;
   cpbLicenseUrl?: string;
+
+  licenseNumber?: string;
+  licenseAuthority?: string;
+  licenseCountry?: string;
+
   educationQualifications?: EducationQualification[];
   status?: string;
 };
@@ -305,8 +318,8 @@ export default function AdminTherapistsPage() {
           </h1>
 
           <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
-            Review therapist profiles, CPB license details, education
-            qualifications, agreement acceptance, and verification status.
+            Review therapist profiles, professional license details, education
+qualifications, agreement acceptance, and verification status.
           </p>
         </section>
 
@@ -434,18 +447,59 @@ export default function AdminTherapistsPage() {
                       <InfoSection title="Professional License">
                         <div className="grid gap-4 md:grid-cols-2">
                           <InfoBox
-                            label="CPB License Number"
-                            value={
-                              therapistCredentials?.cpbLicenseNumber ||
-                              therapist.cpbLicenseNumber ||
-                              "Not uploaded"
-                            }
-                          />
+  label="Professional Title"
+  value={
+    therapist.professionalTitle ||
+    "Not specified"
+  }
+/>
+
+<InfoBox
+  label="License Number"
+  value={
+    therapist.licenseNumber ||
+    therapistCredentials?.licenseNumber ||
+    therapist.cpbLicenseNumber ||
+    therapistCredentials?.cpbLicenseNumber ||
+    "Not uploaded"
+  }
+/>
+
+<InfoBox
+  label="Licensing Authority"
+  value={
+    therapist.licenseAuthority ||
+    therapistCredentials?.licenseAuthority ||
+    "Not specified"
+  }
+/>
+
+<InfoBox
+  label="Country of License"
+  value={
+    therapist.licenseCountry ||
+    therapistCredentials?.licenseCountry ||
+    therapist.country ||
+    "Not specified"
+  }
+/>
+
+<div className="mt-4 grid gap-4 md:grid-cols-2">
+  <InfoBox
+    label="State / Province"
+    value={therapist.state || "Not specified"}
+  />
+
+  <InfoBox
+    label="Timezone"
+    value={therapist.timezone || "Not specified"}
+  />
+</div>
 
                           <div className="rounded-2xl bg-[#F7F3EC] p-4">
                             <p className="text-sm font-bold uppercase text-[#0F4C5C]">
-                              CPB License Document
-                            </p>
+  Professional License Certificate
+</p>
 
                             {therapistCredentials?.cpbLicenseUrl ? (
                               <a
@@ -454,7 +508,7 @@ export default function AdminTherapistsPage() {
                                 rel="noopener noreferrer"
                                 className="mt-2 inline-block font-bold text-[#0F4C5C] underline"
                               >
-                                View CPB License
+                                View License Certificate
                               </a>
                             ) : (
                               <p className="mt-2 font-semibold text-gray-900">
