@@ -6,6 +6,9 @@ export type SessionStatus =
 
 export interface ClientSession {
   id: string;
+  
+  clientId: string;
+  therapistId: string;
 
   date: string;
   time: string;
@@ -16,6 +19,12 @@ export interface ClientSession {
   status: SessionStatus;
 
   therapistNote?: string;
+  
+  meetingUrl?: string;
+  cancellationReason?: string;
+
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface SessionWorkspaceData {

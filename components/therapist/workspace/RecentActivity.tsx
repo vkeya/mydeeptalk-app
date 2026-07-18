@@ -16,6 +16,7 @@ import type { TimelineEvent } from "@/types/therapist/timeline";
 
 type RecentActivityProps = {
   activities: TimelineEvent[];
+   onActivitySelected?: (activity: TimelineEvent) => void;
 };
 
 const activityIcons: Record<string, React.ElementType> = {
@@ -66,6 +67,30 @@ const activityColors: Record<string, string> = {
   risk_alert: "bg-red-100 text-red-600",
 };
 
+const activityLabels: Record<string, string> = {
+  note_created: "Clinical Note",
+  note_updated: "Clinical Note",
+  note_deleted: "Clinical Note",
+
+  session_booked: "Session",
+  session_completed: "Session",
+  session_cancelled: "Session",
+
+  assessment_completed: "Assessment",
+
+  homework_assigned: "Homework",
+  homework_completed: "Homework",
+
+  treatment_goal_created: "Treatment Goal",
+  treatment_goal_updated: "Treatment Goal",
+
+  journey_milestone_completed: "Journey",
+
+  ai_insight: "AI Insight",
+
+  risk_alert: "Risk Alert",
+};
+
 function formatRelativeTime(timestamp: string): string {
   const now = new Date();
   const date = new Date(timestamp);
@@ -91,6 +116,7 @@ function formatRelativeTime(timestamp: string): string {
 
 export default function RecentActivity({
   activities,
+  onActivitySelected,
 }: RecentActivityProps) {
   return (
     <div className="rounded-2xl border bg-white shadow-sm">
@@ -118,12 +144,22 @@ export default function RecentActivity({
           const color =
             activityColors[activity.type] ??
             "bg-gray-100 text-gray-600";
+			
+		  const label =
+  activityLabels[activity.type] ??
+  "Activity";
 
           return (
             <div
-              key={activity.id}
-              className="flex gap-4 px-6 py-5"
-            >
+  key={activity.id}
+  onClick={() => onActivitySelected?.(activity)}
+  className={
+    "flex gap-4 px-6 py-5 transition-colors " +
+    (onActivitySelected
+      ? "cursor-pointer hover:bg-gray-50"
+      : "")
+  }
+>
               <div
                 className={`flex h-11 w-11 items-center justify-center rounded-full ${color}`}
               >
@@ -147,11 +183,17 @@ export default function RecentActivity({
                   </span>
                 </div>
 
-                {activity.description && (
-                  <p className="mt-1 text-sm text-gray-600">
-                    {activity.description}
-                  </p>
-                )}
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+  <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
+    {label}
+  </span>
+</div>
+
+{activity.description && (
+  <p className="mt-2 text-sm text-gray-600">
+    {activity.description}
+  </p>
+)}
               </div>
             </div>
           );
