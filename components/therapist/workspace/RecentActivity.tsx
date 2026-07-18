@@ -66,6 +66,29 @@ const activityColors: Record<string, string> = {
   risk_alert: "bg-red-100 text-red-600",
 };
 
+function formatRelativeTime(timestamp: string): string {
+  const now = new Date();
+  const date = new Date(timestamp);
+
+  const diffMs = now.getTime() - date.getTime();
+
+  const minutes = Math.floor(diffMs / (1000 * 60));
+
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes} min ago`;
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) return `${hours} hr${hours > 1 ? "s" : ""} ago`;
+
+  const days = Math.floor(hours / 24);
+
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days} days ago`;
+
+  return date.toLocaleDateString();
+}
+
 export default function RecentActivity({
   activities,
 }: RecentActivityProps) {
@@ -114,7 +137,13 @@ export default function RecentActivity({
                   </h3>
 
                   <span className="text-sm text-gray-500">
-                    {activity.timestamp}
+                    <time
+  dateTime={activity.timestamp}
+  title={new Date(activity.timestamp).toLocaleString()}
+  className="text-sm text-gray-500"
+>
+  {formatRelativeTime(activity.timestamp)}
+</time>
                   </span>
                 </div>
 
