@@ -21,6 +21,7 @@
     "openai": "^6.42.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-select": "^5.10.2",
     "react-timezone-select": "^3.3.3",
     "resend": "^6.12.4"
   },

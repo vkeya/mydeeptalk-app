@@ -7,6 +7,7 @@ import TherapistAgreementModal from "@/components/TherapistAgreementModal";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import TimezoneSelect from "react-timezone-select";
 import { insuranceProviders } from "@/data/insuranceProviders";
+import Select from "react-select";
 
 const specialtyOptions = [
   "Relationships",
@@ -111,6 +112,11 @@ const [sessionFees, setSessionFees] = useState({
   const [timezone, setTimezone] = useState("");
   const supportedInsuranceProviders = insuranceProviders[country];
 const supportsInsurance = !!supportedInsuranceProviders;
+const insuranceOptions =
+  supportedInsuranceProviders?.map((provider) => ({
+    value: provider,
+    label: provider,
+  })) ?? [];
   const [acceptsInsurance, setAcceptsInsurance] = useState(false);
   const [acceptedInsuranceProviders, setAcceptedInsuranceProviders] = useState<string[]>([]);
   
@@ -1008,6 +1014,28 @@ sessionFee: Number(sessionFees.virtual.individual || 0),
         <span>No</span>
       </label>
     </div>
+  </div>
+)}
+
+{acceptsInsurance && (
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-gray-700">
+      Accepted Insurance Providers
+    </label>
+
+    <Select
+      isMulti
+      options={insuranceOptions}
+      placeholder="Search and select insurance providers..."
+      value={insuranceOptions.filter((option) =>
+        acceptedInsuranceProviders.includes(option.value)
+      )}
+      onChange={(selected) =>
+        setAcceptedInsuranceProviders(
+          selected.map((option) => option.value)
+        )
+      }
+    />
   </div>
 )}
   
