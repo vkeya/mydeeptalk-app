@@ -43,6 +43,7 @@ type Therapist = {
   photoPositionY?: number;
   averageRating?: number;
   reviewCount?: number;
+  offersPhysicalSessions?: boolean;
 };
 
 type Review = {
@@ -111,6 +112,12 @@ export default function TherapistsPage() {
         )
           .trim()
           .toLowerCase();
+		  
+		const preferredSessionMode = String(
+  intakeData?.therapistPreferences?.sessionMode || ""
+)
+  .trim()
+  .toLowerCase();
 
         const therapistsQuery = query(
           collection(db, "therapists"),
@@ -171,6 +178,13 @@ export default function TherapistsPage() {
       return false;
     }
   }
+   if (
+  preferredSessionMode === "in person" &&
+  !therapist.offersPhysicalSessions
+) {
+  return false;
+}
+  
 
   return true;
 });
