@@ -108,6 +108,8 @@ const [sessionFees, setSessionFees] = useState({
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [timezone, setTimezone] = useState("");
+  const [acceptsInsurance, setAcceptsInsurance] = useState(false);
+  const [acceptedInsuranceProviders, setAcceptedInsuranceProviders] = useState<string[]>([]);
   
   const [professionalTitle, setProfessionalTitle] = useState("");
   
@@ -156,14 +158,16 @@ const [sessionFees, setSessionFees] = useState({
 		  
           setExistingProfile(data);
 		  setCountry(data.country || "");
-setState(data.state || "");
-setCity(data.city || "");
-setTimezone(data.timezone || "");
+          setState(data.state || "");
+          setCity(data.city || "");
+          setTimezone(data.timezone || "");
+          setAcceptsInsurance(data.acceptsInsurance ?? false);
+          setAcceptedInsuranceProviders(data.acceptedInsuranceProviders ?? []);
 
-setProfessionalTitle(data.professionalTitle || "");
-
-setLicenseAuthority(
-  data.licenseAuthority || "Counsellors & Psychologists Board"
+          setProfessionalTitle(data.professionalTitle || "");
+          
+          setLicenseAuthority(
+            data.licenseAuthority || "Counsellors & Psychologists Board"
 );
 
 setLicenseCountry(
@@ -446,6 +450,8 @@ function toggleClientType(type: string) {
           state,
           city,
           timezone,
+		  acceptsInsurance,
+          acceptedInsuranceProviders,
           
           feeCurrency,
           currency: feeCurrency,
