@@ -105,6 +105,12 @@ export default function TherapistsPage() {
             intakeData?.gender ||
             ""
         );
+		
+		const preferredLanguage = String(
+          intakeData?.therapistPreferences?.language || ""
+        )
+          .trim()
+          .toLowerCase();
 
         const therapistsQuery = query(
           collection(db, "therapists"),
@@ -146,14 +152,28 @@ export default function TherapistsPage() {
         });
 
         const filteredTherapists = therapistList.filter((therapist) => {
-          const therapistGender = normalizeGender(therapist.gender);
+  const therapistGender = normalizeGender(therapist.gender);
 
-          if (!preferredGender) {
-            return true;
-          }
+  if (
+    preferredGender &&
+    therapistGender !== preferredGender
+  ) {
+    return false;
+  }
 
-          return therapistGender === preferredGender;
-        });
+  if (preferredLanguage) {
+    const therapistLanguages =
+      therapist.languages?.map((language) =>
+        language.toLowerCase()
+      ) ?? [];
+
+    if (!therapistLanguages.includes(preferredLanguage)) {
+      return false;
+    }
+  }
+
+  return true;
+});
 
         filteredTherapists.sort(
           (a, b) => (b.averageRating || 0) - (a.averageRating || 0)
