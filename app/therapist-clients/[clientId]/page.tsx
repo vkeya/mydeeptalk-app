@@ -100,7 +100,10 @@ export default function TherapistClientWorkspacePage() {
       {activeTab === "overview" && (
         <OverviewSection
           stats={workspace.stats}
+		  progress={workspace.progress}
+  risk={workspace.risk}
           activities={workspace.activities}
+		  
         />
       )}
 

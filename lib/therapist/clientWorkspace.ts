@@ -6,9 +6,11 @@ import type {
   AssessmentResult,
   AssessmentSummary,
 } from "@/types/therapist/assessment";
+import { buildRiskAnalytics } from "./riskAnalytics";
 import {
   buildWorkspaceStats,
 } from "./workspaceAnalytics";
+import { buildProgressAnalytics } from "./progressAnalytics";
 import { getClientTreatmentPlan } from "./treatmentService";
 import { getClientHomework } from "./homeworkService";
 import {
@@ -36,6 +38,12 @@ export interface TherapistClientWorkspace {
 	
   header: TherapistClientHeader;
   stats: ClientStatsProps;
+  progress: {
+  sessionAttendance: number;
+  homeworkCompletion: number;
+  treatmentCompletion: number;
+  overallProgress: number;
+};
 
   activities: TimelineEvent[];
 
@@ -47,6 +55,14 @@ export interface TherapistClientWorkspace {
     badges: number;
     reflections: number;
   };
+  
+  risk: {
+  level: "low" | "medium" | "high";
+  missedSessions: number;
+  overdueHomework: number;
+  stalledGoals: number;
+  alerts: string[];
+};
 
   assessments: {
     summary: AssessmentSummary;
@@ -116,6 +132,30 @@ if (!header) {
   ],
 });
 
+   const progress = buildProgressAnalytics({
+  sessions: sessionData.history,
+  homework: [
+    ...homeworkData.active,
+    ...homeworkData.completed,
+  ],
+  treatment: [
+    ...treatmentData.activeGoals,
+    ...treatmentData.completedGoals,
+  ],
+});
+
+   const risk = buildRiskAnalytics({
+  sessions: sessionData.history,
+  homework: [
+    ...homeworkData.active,
+    ...homeworkData.completed,
+  ],
+  treatment: [
+    ...treatmentData.activeGoals,
+    ...treatmentData.completedGoals,
+  ],
+});
+
   
   console.log("Loading workspace for", clientId);
 
@@ -133,7 +173,10 @@ if (!header) {
   streak: stats.streak,
   lastSession: stats.lastSession ?? "-",
 },
-
+    progress,
+	
+	risk,
+	
     activities: await getTimeline(clientId),
 
     journey: {
