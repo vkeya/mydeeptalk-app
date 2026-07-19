@@ -149,6 +149,17 @@ const completeExperience = () => {
 
   setMemory(updatedMemory);
   
+  /*try {
+  if (user) {
+    await profileService.updateMemory(
+      user.uid,
+      updatedMemory
+    );
+  }
+} catch (error) {
+  console.error("Failed to save Genesis profile:", error);
+}*/
+  
   const reflection = buildReflection(updatedMemory);
 
   // Update journey progress

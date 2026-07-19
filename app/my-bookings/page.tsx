@@ -35,7 +35,8 @@ export default function MyBookingsPage() {
   const [loading, setLoading] = useState(true);
   const [ratings, setRatings] = useState<{ [key: string]: number }>({});
   const [comments, setComments] = useState<{ [key: string]: string }>({});
-
+  const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -194,6 +195,13 @@ export default function MyBookingsPage() {
                     Meeting link will appear after confirmation.
                   </p>
                 )}
+				
+				<button
+                  onClick={() => setBookingToCancel(booking)}
+                  className="mt-4 rounded-full border border-red-600 px-5 py-3 font-bold text-red-600 hover:bg-red-50"
+                >
+                  Cancel Session
+                </button>
               </SessionCard>
             ))
           )}
@@ -265,6 +273,37 @@ export default function MyBookingsPage() {
           )}
         </SessionSection>
       </div>
+	  
+	  {bookingToCancel && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+      <h2 className="text-2xl font-bold text-[#0F4C5C]">
+        Cancel Session?
+      </h2>
+
+      <p className="mt-3 text-gray-700">
+        Are you sure you want to cancel your session with{" "}
+        <strong>{bookingToCancel.therapistName}</strong>?
+      </p>
+
+      <div className="mt-6 flex justify-end gap-3">
+        <button
+          onClick={() => setBookingToCancel(null)}
+          className="rounded-full border px-5 py-2 font-semibold"
+        >
+          Keep Booking
+        </button>
+
+        <button
+          className="rounded-full bg-red-600 px-5 py-2 font-semibold text-white"
+        >
+          Yes, Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+	  
     </main>
   );
 }
