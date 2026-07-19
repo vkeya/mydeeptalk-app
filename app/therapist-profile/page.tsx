@@ -6,6 +6,7 @@ import { auth, db } from "@/lib/firebase";
 import TherapistAgreementModal from "@/components/TherapistAgreementModal";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import TimezoneSelect from "react-timezone-select";
+import { insuranceProviders } from "@/data/insuranceProviders";
 
 const specialtyOptions = [
   "Relationships",
@@ -108,6 +109,8 @@ const [sessionFees, setSessionFees] = useState({
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [timezone, setTimezone] = useState("");
+  const supportedInsuranceProviders = insuranceProviders[country];
+const supportsInsurance = !!supportedInsuranceProviders;
   const [acceptsInsurance, setAcceptsInsurance] = useState(false);
   const [acceptedInsuranceProviders, setAcceptedInsuranceProviders] = useState<string[]>([]);
   
@@ -971,6 +974,42 @@ sessionFee: Number(sessionFees.virtual.individual || 0),
     onChange={(e) => setCity(e.target.value)}
     required
   />
+  
+ {supportsInsurance && (
+  <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+    <div>
+      <h3 className="text-sm font-semibold text-gray-900">
+        Health Insurance
+      </h3>
+      <p className="text-sm text-gray-600">
+        Let clients know whether you accept health insurance for therapy sessions.
+      </p>
+    </div>
+
+    <div className="flex gap-6">
+      <label className="flex items-center gap-2">
+        <input
+          type="radio"
+          checked={acceptsInsurance}
+          onChange={() => setAcceptsInsurance(true)}
+        />
+        <span>Yes</span>
+      </label>
+
+      <label className="flex items-center gap-2">
+        <input
+          type="radio"
+          checked={!acceptsInsurance}
+          onChange={() => {
+            setAcceptsInsurance(false);
+            setAcceptedInsuranceProviders([]);
+          }}
+        />
+        <span>No</span>
+      </label>
+    </div>
+  </div>
+)}
   
   <div className="rounded-2xl border border-gray-300 bg-white px-2 py-1">
   <TimezoneSelect

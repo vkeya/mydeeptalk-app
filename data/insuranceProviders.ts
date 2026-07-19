@@ -1,4 +1,4 @@
-export const insuranceProviders = {
+export const insuranceProviders: Record<string, string[]> = {
   Kenya: [
     "AAR Insurance",
     "Jubilee Health Insurance",
