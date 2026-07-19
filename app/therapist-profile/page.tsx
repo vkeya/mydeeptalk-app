@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import TherapistAgreementModal from "@/components/TherapistAgreementModal";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import TimezoneSelect from "react-timezone-select";
 
 const specialtyOptions = [
   "Relationships",
@@ -965,12 +966,12 @@ sessionFee: Number(sessionFees.virtual.individual || 0),
     required
   />
   
-  <input
-  className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-  placeholder="Timezone (e.g. Africa/Nairobi)"
-  value={timezone}
-  onChange={(e) => setTimezone(e.target.value)}
-/>
+  <div className="rounded-2xl border border-gray-300 bg-white px-2 py-1">
+  <TimezoneSelect
+    value={timezone}
+    onChange={(tz) => setTimezone(tz.value)}
+  />
+</div>
 </div>
 
             <button
