@@ -10,6 +10,12 @@ import {
   useCallback,
   ReactNode,
 } from "react";
+import { memoryEngine } from "@/lib/genesis/memory/memoryEngine";
+import { journeyProcessor } from "@/lib/genesis/journey/journeyProcessor";
+import { buildMeetingYourselfResponse } from "@/lib/genesis/journey/builders/meetingYourselfBuilder";
+import { JourneyReflection } from "@/types/genesisReflection";
+import { GenesisMemory } from "@/types/genesisMemory";
+import { buildReflection } from "@/lib/genesis/reflection/reflectionBuilder";
 
 export interface JourneyState {
   experienceId: string;
@@ -20,10 +26,13 @@ export interface JourneyState {
   
   completedExperiences: string[];
 completed: boolean;
+
+reflection?: JourneyReflection;
 }
 
 interface JourneyContextType {
   state: JourneyState;
+  memory: GenesisMemory;
   
   startExperience: (experienceId: string) => void;
 
@@ -54,6 +63,8 @@ const initialState: JourneyState = {
   
   completedExperiences: [],
   completed: false,
+  
+  reflection: undefined,
 };
 
 const JourneyContext = createContext<JourneyContextType | undefined>(
@@ -66,6 +77,10 @@ export function JourneyProvider({
   children: ReactNode;
 }) {
   const [state, setState] = useState(initialState);
+  
+  const [memory, setMemory] = useState<GenesisMemory>(
+  memoryEngine.createMemory()
+);
   
   const startExperience = useCallback((experienceId: string) => {
   setState((prev) => {
@@ -118,22 +133,37 @@ const goToScene = (scene: number) => {
 };
 
 const completeExperience = () => {
-  setState((prev) => {
-    if (!prev.experienceId) {
-      return prev;
-    }
+  if (!state.experienceId) {
+    return;
+  }
 
-    const progress = completeJourneyExperience(
-      prev.experienceId
-    );
+  // Build a structured response from the completed journey
+  const journeyResponse =
+    buildMeetingYourselfResponse(state);
 
-    return {
-      ...prev,
-      completed: true,
-      completedExperiences:
-        progress.completedExperiences,
-    };
-  });
+  // Process discoveries and update Genesis memory
+  const updatedMemory = journeyProcessor.processJourney(
+    journeyResponse,
+    memory
+  );
+
+  setMemory(updatedMemory);
+  
+  const reflection = buildReflection(updatedMemory);
+
+  // Update journey progress
+  const progress = completeJourneyExperience(
+    state.experienceId
+  );
+
+  // Mark experience as completed
+  setState((prev) => ({
+    ...prev,
+    completed: true,
+	 reflection,
+    completedExperiences:
+      progress.completedExperiences,
+  }));
 };
 
   const setIdentityAnswer = (answer: string) => {
@@ -158,6 +188,7 @@ const completeExperience = () => {
     <JourneyContext.Provider
       value={{
   state,
+  memory,
   startExperience,
   setSelectedGuide,
   setCurrentScene,

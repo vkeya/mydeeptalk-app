@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import TherapistAgreementModal from "@/components/TherapistAgreementModal";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import TimezoneSelect from "react-timezone-select";
+import { insuranceProviders } from "@/data/insuranceProviders";
+import Select from "react-select";
 
 const specialtyOptions = [
   "Relationships",
@@ -50,6 +53,20 @@ const clientTypeOptions = [
   "Seniors",
 ];
 
+const professionalTitleOptions = [
+  "Clinical Psychologist",
+  "Counselling Psychologist",
+  "Psychotherapist",
+  "Psychiatrist",
+  "Marriage & Family Therapist",
+  "Licensed Professional Counselor",
+  "Mental Health Counselor",
+  "Clinical Social Worker",
+  "Addiction Counselor",
+  "Behavioral Therapist",
+  "Other",
+];
+
 
 export default function TherapistProfilePage() {
   const router = useRouter();
@@ -90,7 +107,25 @@ const [sessionFees, setSessionFees] = useState({
 });
 
   const [country, setCountry] = useState("");
+  const [state, setState] = useState("");
   const [city, setCity] = useState("");
+  const [timezone, setTimezone] = useState("");
+  const supportedInsuranceProviders = insuranceProviders[country];
+const supportsInsurance = !!supportedInsuranceProviders;
+const insuranceOptions =
+  supportedInsuranceProviders?.map((provider) => ({
+    value: provider,
+    label: provider,
+  })) ?? [];
+  const [acceptsInsurance, setAcceptsInsurance] = useState(false);
+  const [acceptedInsuranceProviders, setAcceptedInsuranceProviders] = useState<string[]>([]);
+  
+  const [professionalTitle, setProfessionalTitle] = useState("");
+  
+  const [licenseAuthority, setLicenseAuthority] = useState("");
+  const [licenseCountry, setLicenseCountry] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
+  
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState("");
   const [photoPositionX, setPhotoPositionX] = useState(50);
@@ -128,8 +163,29 @@ const [sessionFees, setSessionFees] = useState({
 
         if (profileSnap.exists()) {
           const data = profileSnap.data();
-
+          
+		  
           setExistingProfile(data);
+		  setCountry(data.country || "");
+          setState(data.state || "");
+          setCity(data.city || "");
+          setTimezone(data.timezone || "");
+          setAcceptsInsurance(data.acceptsInsurance ?? false);
+          setAcceptedInsuranceProviders(data.acceptedInsuranceProviders ?? []);
+
+          setProfessionalTitle(data.professionalTitle || "");
+          
+          setLicenseAuthority(
+            data.licenseAuthority || "Counsellors & Psychologists Board"
+);
+
+setLicenseCountry(
+  data.licenseCountry || data.country || ""
+);
+
+setLicenseNumber(
+  data.licenseNumber || data.cpbLicenseNumber || ""
+);
           setFullName(data.fullName || "");
 		  setAge(data.age ? String(data.age) : "");
           setGender(data.gender || "");
@@ -214,8 +270,7 @@ setSessionFees({
   },
 });
 
-          setCountry(data.country || "");
-          setCity(data.city || "");
+          
           setPhotoPreview(data.profilePhoto || data.photoUrl || "");
           setPhotoPositionX(data.photoPositionX ?? 50);
           setPhotoPositionY(data.photoPositionY ?? 50);
@@ -390,8 +445,23 @@ function toggleClientType(type: string) {
             .map((item) => item.trim())
             .filter(Boolean),
           yearsExperience: Number(yearsExperience),
-          cpbLicenseNumber: cpbLicenseNumber.trim(),
 
+          // Legacy field (keep for backward compatibility)
+          cpbLicenseNumber: cpbLicenseNumber.trim(),
+          
+          // New global fields
+          professionalTitle,
+          licenseNumber,
+          licenseAuthority,
+          licenseCountry,
+          
+          country,
+          state,
+          city,
+          timezone,
+		  acceptsInsurance,
+          acceptedInsuranceProviders,
+          
           feeCurrency,
           currency: feeCurrency,
 
@@ -423,8 +493,7 @@ sessionFees: {
 // Backward compatibility
 sessionFee: Number(sessionFees.virtual.individual || 0),
 
-          country,
-          city,
+          
           profilePhoto: finalPhotoUrl,
           photoUrl: finalPhotoUrl,
           photoPositionX,
@@ -560,13 +629,19 @@ sessionFee: Number(sessionFees.virtual.individual || 0),
            
             </div>
 
-            <input
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-              placeholder="Full Name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-            />
+            <select
+  className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+  value={professionalTitle}
+  onChange={(e) => setProfessionalTitle(e.target.value)}
+>
+  <option value="">Professional Title</option>
+
+  {professionalTitleOptions.map((title) => (
+    <option key={title} value={title}>
+      {title}
+    </option>
+  ))}
+</select>
 
             <select
               className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
@@ -639,13 +714,40 @@ sessionFee: Number(sessionFees.virtual.individual || 0),
               required
             />
 
-            <input
-              className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-              placeholder="CPB License Number"
-              value={cpbLicenseNumber}
-              onChange={(e) => setCpbLicenseNumber(e.target.value)}
-              required
-            />
+            <div className="rounded-2xl bg-[#F7F3EC] p-6 space-y-5">
+  <h3 className="text-lg font-bold text-[#0F4C5C]">
+    Professional License
+  </h3>
+
+  <input
+    className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+    placeholder="License Number"
+    value={licenseNumber}
+    onChange={(e) => {
+      setLicenseNumber(e.target.value);
+
+      // Keep existing Kenyan compatibility
+      setCpbLicenseNumber(e.target.value);
+    }}
+    required
+  />
+
+  <input
+    className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+    placeholder="Licensing Authority"
+    value={licenseAuthority}
+    onChange={(e) => setLicenseAuthority(e.target.value)}
+    required
+  />
+
+  <input
+    className="w-full rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+    placeholder="Country of License"
+    value={licenseCountry}
+    onChange={(e) => setLicenseCountry(e.target.value)}
+    required
+  />
+</div>
 			
 			<div className="rounded-2xl bg-[#F7F3EC] p-6">
   <label className="mb-2 block text-lg font-bold text-[#0F4C5C]">
@@ -856,22 +958,100 @@ sessionFee: Number(sessionFees.virtual.individual || 0),
 
 
             <div className="grid gap-6 md:grid-cols-2">
-              <input
-                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-                placeholder="Country"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                required
-              />
+  <input
+    className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+    placeholder="Country"
+    value={country}
+    onChange={(e) => setCountry(e.target.value)}
+    required
+  />
 
-              <input
-                className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
-                placeholder="City"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                required
-              />
-            </div>
+  <input
+    className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+    placeholder="State / Province"
+    value={state}
+    onChange={(e) => setState(e.target.value)}
+  />
+
+  <input
+    className="rounded-2xl border border-gray-300 bg-white p-4 font-semibold text-gray-900"
+    placeholder="City"
+    value={city}
+    onChange={(e) => setCity(e.target.value)}
+    required
+  />
+  
+ {supportsInsurance && (
+  <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+    <div>
+      <h3 className="text-sm font-semibold text-gray-900">
+        Health Insurance
+      </h3>
+      <p className="text-sm text-gray-600">
+        Let clients know whether you accept health insurance for therapy sessions.
+      </p>
+    </div>
+
+    <div className="flex gap-6">
+      <label className="flex items-center gap-2">
+        <input
+          type="radio"
+          checked={acceptsInsurance}
+          onChange={() => setAcceptsInsurance(true)}
+        />
+        <span>Yes</span>
+      </label>
+
+      <label className="flex items-center gap-2">
+        <input
+          type="radio"
+          checked={!acceptsInsurance}
+          onChange={() => {
+            setAcceptsInsurance(false);
+            setAcceptedInsuranceProviders([]);
+          }}
+        />
+        <span>No</span>
+      </label>
+    </div>
+  </div>
+)}
+
+{acceptsInsurance && (
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-gray-700">
+      Accepted Insurance Providers
+    </label>
+
+    <Select
+      isMulti
+      options={insuranceOptions}
+      placeholder="Search and select insurance providers..."
+      value={insuranceOptions.filter((option) =>
+        acceptedInsuranceProviders.includes(option.value)
+      )}
+      onChange={(selected) =>
+        setAcceptedInsuranceProviders(
+          selected.map((option) => option.value)
+        )
+      }
+    />
+  </div>
+)}
+  
+  <div className="space-y-2">
+  <label className="block text-sm font-medium text-gray-700">
+    Timezone
+  </label>
+
+  <div className="rounded-2xl border border-gray-300 bg-white px-2 py-1">
+    <TimezoneSelect
+      value={timezone}
+      onChange={(tz) => setTimezone(tz.value)}
+    />
+  </div>
+</div>
+</div>
 
             <button
               type="submit"

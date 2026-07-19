@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-
-
-import { completeExperience } from "@/lib/journey/progressEngine";
+import { useJourney } from "@/context/JourneyContext";
 
 import ArrivalScene from "./components/ArrivalScene";
 import IdentityQuestionScene from "./components/IdentityQuestionScene";
@@ -13,32 +11,35 @@ import ReflectionScene from "./components/ReflectionScene";
 import JournalScene from "./components/JournalScene";
 import InsightScene from "./components/InsightScene";
 import CelebrationScene from "./components/CelebrationScene";
+import ReflectionCard from "@/components/genesis/ReflectionCard";
 
 export default function MeetingYourselfPage() {
-  const [scene, setScene] = useState(0);
-  
   const router = useRouter();
 
-  const nextScene = () => {
-    setScene((prev) => Math.min(prev + 1, 5));
-  };
+  const {
+    state,
+    startExperience,
+    nextScene,
+    previousScene,
+    completeExperience,
+  } = useJourney();
 
-  const previousScene = () => {
-    setScene((prev) => Math.max(prev - 1, 0));
-  };
-  
-  const finishJourney = () => {
-  completeExperience("meeting-yourself");
+  useEffect(() => {
+    startExperience("meeting-yourself");
+  }, [startExperience]);
 
-router.push("/journey/dashboard");
-  };
-  switch (scene) {
+if (state.completed && state.reflection) {
+  return (
+    <ReflectionCard
+      reflection={state.reflection}
+      onContinue={() => router.push("/journey/dashboard")}
+    />
+  );
+}
+
+  switch (state.currentScene) {
     case 0:
-      return (
-        <ArrivalScene
-          onContinue={nextScene}
-        />
-      );
+      return <ArrivalScene onContinue={nextScene} />;
 
     case 1:
       return (
@@ -75,9 +76,9 @@ router.push("/journey/dashboard");
     case 5:
       return (
         <CelebrationScene
-  onContinue={finishJourney}
-  onBack={previousScene}
-/>
+          onContinue={completeExperience}
+          onBack={previousScene}
+        />
       );
 
     default:
