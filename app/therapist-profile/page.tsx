@@ -1039,11 +1039,17 @@ sessionFee: Number(sessionFees.virtual.individual || 0),
   </div>
 )}
   
+  <div className="space-y-2">
+  <label className="block text-sm font-medium text-gray-700">
+    Timezone
+  </label>
+
   <div className="rounded-2xl border border-gray-300 bg-white px-2 py-1">
-  <TimezoneSelect
-    value={timezone}
-    onChange={(tz) => setTimezone(tz.value)}
-  />
+    <TimezoneSelect
+      value={timezone}
+      onChange={(tz) => setTimezone(tz.value)}
+    />
+  </div>
 </div>
 </div>
 
