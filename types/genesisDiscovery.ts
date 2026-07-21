@@ -9,6 +9,10 @@ export enum DiscoveryCategory {
 
 export interface GenesisDiscovery {
   id: string;
+  
+  sceneId: string;
+
+  response: string;
 
   category: DiscoveryCategory;
 

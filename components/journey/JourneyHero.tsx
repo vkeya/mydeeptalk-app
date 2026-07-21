@@ -4,6 +4,8 @@ import useGuide from "@/hooks/useGuide";
 import { useJourney } from "@/context/JourneyContext";
 import { getJourneyProgress } from "@/lib/journey/progressEngine";
 import { calculateXP } from "@/lib/journey/xpEngine";
+import { useEffect, useState } from "react";
+import { defaultJourneyProgress } from "@/lib/journey/defaultProgress";
 
 export default function JourneyHero() {
   const guide = useGuide();
@@ -11,9 +13,13 @@ export default function JourneyHero() {
 
   // Placeholder values for now.
   // These will later come from the XP engine.
-  const progress = getJourneyProgress();
-  
-  const xp = calculateXP(progress.totalXP);
+  const [progress, setProgress] = useState(defaultJourneyProgress);
+
+useEffect(() => {
+  setProgress(getJourneyProgress());
+}, []);
+
+const xp = calculateXP(progress.totalXP);
 
   return (
     <section className="overflow-hidden rounded-3xl bg-gradient-to-r from-[#8A6E4B] to-[#B89A72] p-8 text-white shadow-xl">

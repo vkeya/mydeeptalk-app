@@ -1,0 +1,87 @@
+export const meetingYourselfScenes = [
+  {
+    id: "arrival",
+    type: "arrival",
+    title: "Welcome",
+    component: "arrival",
+    next: "guide",
+  },
+  {
+    id: "guide",
+    type: "guide",
+    title: "Choose Your Guide",
+    component: "guide",
+    next: "intention",
+  },
+  {
+    id: "intention",
+    type: "intention",
+    title: "Set Your Intention",
+    component: "intention",
+    next: "emotion",
+  },
+  {
+    id: "emotion",
+    type: "emotion",
+    title: "How are you feeling today?",
+    component: "emotion",
+    next: "identity",
+  },
+
+  {
+    id: "identity",
+    type: "identity",
+    title: "Who are you?",
+    component: "identity",
+    next: "public-self",
+  },
+  {
+    id: "public-self",
+    type: "identity",
+    title: "Who do other people see?",
+    component: "identity",
+    next: "private-self",
+  },
+  {
+    id: "private-self",
+    type: "identity",
+    title: "Who are you when no one is watching?",
+    component: "identity",
+    next: "labels",
+  },
+  {
+    id: "labels",
+    type: "identity",
+    title: "The Labels You Carry",
+    component: "identity",
+    next: "reflection",
+  },
+
+  {
+    id: "reflection",
+    type: "reflection",
+    title: "Pause & Reflect",
+    component: "reflection",
+    next: "journal",
+  },
+  {
+    id: "journal",
+    type: "journal",
+    title: "Write Your Thoughts",
+    component: "journal",
+    next: "discovery",
+  },
+  {
+    id: "discovery",
+    type: "discovery",
+    title: "Your Genesis Reflection",
+    component: "discovery",
+    next: "celebration",
+  },
+  {
+    id: "celebration",
+    type: "celebration",
+    title: "A New Beginning",
+    component: "celebration",
+  },
+];

@@ -10,6 +10,13 @@ export interface GenesisMemory {
 
 export interface IdentityMemory {
   descriptors: string[];
+
+  publicTraits: string[];
+
+  privateTraits: string[];
+
+  labels: string[];
+
   affirmations: string[];
 }
 
@@ -27,7 +34,7 @@ export interface StrengthMemory {
 }
 
 export interface RelationshipMemory {
-  attachmentStyle?: string;
+  attachmentStyle?: string | null;
   recurringPatterns: string[];
 }
 
@@ -50,9 +57,16 @@ export interface JourneyMilestone {
 export function createEmptyMemory(): GenesisMemory {
   return {
     identity: {
-      descriptors: [],
-      affirmations: [],
-    },
+  descriptors: [],
+
+  publicTraits: [],
+
+  privateTraits: [],
+
+  labels: [],
+
+  affirmations: [],
+},
 
     emotions: {
       recurring: [],
@@ -68,7 +82,7 @@ export function createEmptyMemory(): GenesisMemory {
     },
 
     relationships: {
-      attachmentStyle: undefined,
+      attachmentStyle: null,
       recurringPatterns: [],
     },
 

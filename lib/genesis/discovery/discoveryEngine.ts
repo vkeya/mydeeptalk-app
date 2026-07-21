@@ -13,35 +13,40 @@ export class DiscoveryEngine {
    * Extract structured discoveries from a user's response.
    */
   extractDiscoveries(
-    context: DiscoveryContext
-  ): DiscoveryResult {
-    const normalized = context.response
-  .trim()
-  .toLowerCase();
+  context: DiscoveryContext
+): DiscoveryResult {
+	const { response, experienceId } = context;
+
+const normalized = response.trim().toLowerCase();
 
     const discoveries: GenesisDiscovery[] = [];
     const matchedRules: DiscoveryRule[] = [];
 
-    discoveryRules.forEach((rule) => {
-      if (!normalized.includes(rule.trigger.toLowerCase())) {
-        return;
-      }
+    const sceneRules = discoveryRules.filter(
+  (rule) => rule.sceneId === context.sceneId
+);
+
+sceneRules.forEach((rule) => {
 
       discoveries.push({
-        id: crypto.randomUUID(),
+  id: crypto.randomUUID(),
 
-        category: rule.category,
+  category: rule.category,
 
-        title: rule.title,
+  sceneId: rule.sceneId,
 
-        description: rule.description,
+  title: rule.title,
 
-        confidence: rule.confidence,
+  description: rule.description,
 
-        sourceExperience: context.experienceId,
+  response,
 
-        createdAt: new Date().toISOString(),
-      });
+  confidence: rule.confidence,
+
+  sourceExperience: experienceId,
+
+  createdAt: new Date().toISOString(),
+});
 
       matchedRules.push(rule);
     });

@@ -26,8 +26,6 @@ import PageHeader from "@/components/PageHeader";
 
 type Therapist = {
   id: string;
-
-  // Existing
   fullName?: string;
   gender?: string;
   bio?: string;
@@ -45,32 +43,7 @@ type Therapist = {
   photoPositionY?: number;
   averageRating?: number;
   reviewCount?: number;
-
-  // ---------- Global Ready ----------
-  state?: string;
-  timezone?: string;
-
-  professionalTitle?: string;
-
-  licenseAuthority?: string;
-  licenseNumber?: string;
-  licenseCountry?: string;
-  licenseExpiry?: string;
-  licenseVerificationUrl?: string;
-
-  acceptedCountries?: string[];
-
-  identityVerified?: boolean;
-  licenseVerified?: boolean;
-
-  sessionModes?: (
-    | "virtual"
-    | "physical"
-    | "group"
-    | "corporate"
-  )[];
-
-  onlineWorldwide?: boolean;
+  offersPhysicalSessions?: boolean;
 };
 
 type Review = {
@@ -133,6 +106,18 @@ export default function TherapistsPage() {
             intakeData?.gender ||
             ""
         );
+		
+		const preferredLanguage = String(
+          intakeData?.therapistPreferences?.language || ""
+        )
+          .trim()
+          .toLowerCase();
+		  
+		const preferredSessionMode = String(
+  intakeData?.therapistPreferences?.sessionMode || ""
+)
+  .trim()
+  .toLowerCase();
 
         const therapistsQuery = query(
           collection(db, "therapists"),
@@ -174,14 +159,35 @@ export default function TherapistsPage() {
         });
 
         const filteredTherapists = therapistList.filter((therapist) => {
-          const therapistGender = normalizeGender(therapist.gender);
+  const therapistGender = normalizeGender(therapist.gender);
 
-          if (!preferredGender) {
-            return true;
-          }
+  if (
+    preferredGender &&
+    therapistGender !== preferredGender
+  ) {
+    return false;
+  }
 
-          return therapistGender === preferredGender;
-        });
+  if (preferredLanguage) {
+    const therapistLanguages =
+      therapist.languages?.map((language) =>
+        language.toLowerCase()
+      ) ?? [];
+
+    if (!therapistLanguages.includes(preferredLanguage)) {
+      return false;
+    }
+  }
+   if (
+  preferredSessionMode === "in person" &&
+  !therapist.offersPhysicalSessions
+) {
+  return false;
+}
+  
+
+  return true;
+});
 
         filteredTherapists.sort(
           (a, b) => (b.averageRating || 0) - (a.averageRating || 0)

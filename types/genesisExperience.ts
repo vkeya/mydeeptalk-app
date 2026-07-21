@@ -1,40 +1,89 @@
-export type ExperienceDifficulty =
-  | "gentle"
-  | "moderate"
-  | "deep";
+// ======================================================
+// Project Genesis
+// Experience Domain Types
+// ======================================================
 
-export type ExperienceCategory =
-  | "identity"
-  | "life-story"
-  | "emotions"
-  | "healing"
-  | "resilience"
-  | "boundaries"
-  | "relationships"
-  | "purpose"
-  | "wholeness";
+import { GenesisMemory } from "./genesisMemory";
 
-export enum SceneType {
-  Arrival = "arrival",
-  Guide = "guide",
-  Reflection = "reflection",
-  Question = "question",
-  Exercise = "exercise",
-  Journal = "journal",
-  Insight = "insight",
-  Celebration = "celebration",
+export type GenesisExperienceStatus =
+  | "locked"
+  | "available"
+  | "in-progress"
+  | "completed";
+
+export interface GenesisReward {
+  xp: number;
+  badge?: string;
+  achievement?: string;
 }
 
-export interface GenesisScene {
+export interface GenesisUnlockCondition {
+  completedExperiences?: string[];
+  minimumXP?: number;
+}
+
+export type GenesisSceneType =
+  | "arrival"
+  | "guide"
+  | "intention"
+  | "emotion"
+  | "identity"
+  | "public-self"
+  | "private-self"
+  | "labels"
+  | "values"
+  | "strengths"
+  | "reflection"
+  | "journal"
+  | "discovery"
+  | "celebration"
+  | "intro"
+  | "guide-selection"
+  | "identity-card"
+  | "insight"
+  | "childhood"
+  | "important-people"
+  | "defining-moments"
+  | "difficult-seasons"
+  | "turning-points"
+  | "life-lessons"
+  | "timeline";
+
+export interface GenesisSceneDefinition {
   id: string;
-
-  type: SceneType;
-
+  type: GenesisSceneType;
   title?: string;
+  description?: string;
 
+  /**
+   * Scene component key
+   * Example:
+   * arrival
+   * identity
+   * reflection
+   * journal
+   * insight
+   * celebration
+   */
+  component: string;
+
+  required?: boolean;
   next?: string;
+}
 
-  data: Record<string, unknown>;
+export interface GenesisExperienceMetadata {
+  title: string;
+  subtitle: string;
+
+  description: string;
+
+  duration: string;
+
+  difficulty: "Easy" | "Medium" | "Deep";
+
+  coverImage?: string;
+
+  color?: string;
 }
 
 export interface GenesisExperience {
@@ -42,21 +91,26 @@ export interface GenesisExperience {
 
   slug: string;
 
-  title: string;
+  metadata: GenesisExperienceMetadata;
 
-  subtitle: string;
+  scenes: GenesisSceneDefinition[];
 
-  description: string;
+  rewards: GenesisReward;
 
-  category: ExperienceCategory;
+  unlock?: GenesisUnlockCondition;
 
-  difficulty: ExperienceDifficulty;
+  /**
+   * Memory domains this experience contributes to.
+   *
+   * Examples:
+   * identity
+   * values
+   * emotions
+   * strengths
+   * relationships
+   * purpose
+   */
+  memoryDomains: (keyof GenesisMemory)[];
 
-  estimatedMinutes: number;
-
-  xpReward: number;
-
-  badge?: string;
-
-  scenes: GenesisScene[];
+  enabled: boolean;
 }

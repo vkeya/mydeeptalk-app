@@ -1,12 +1,38 @@
 import { Chapter } from "./chapter";
+import { IdentityCardOption, EmotionOption } from "@/types/genesis";
 
+export type JourneyOption =
+  | IdentityCardOption
+  | EmotionOption;
+  
 export type JourneySceneType =
   | "arrival"
-  | "question"
+  | "guide"
+  | "intention"
+  | "identity"
+  | "emotion"
+  | "public-self"
+  | "private-self"
+  | "labels"
+  | "values"
+  | "strengths"
   | "reflection"
   | "journal"
-  | "insight"
+  | "discovery"
   | "celebration";
+  
+export type QuestionPresentation =
+  | "default"
+  | "identity-cards"
+  | "emotion-compass"
+  | "trait-selector"
+  | "label-selector"
+  | "values-selector"
+  | "strength-selector"
+  | "multiple-choice"
+  | "scale"
+  | "timeline"
+  | "backpack";
 
 export interface JourneyScene {
   id: string;
@@ -23,6 +49,10 @@ export interface JourneyScene {
 
   // Question scenes
   question?: string;
+  
+  presentation?: QuestionPresentation;
+
+  options?: JourneyOption[];
 
   // Reflection / Journal scenes
   prompt?: string;

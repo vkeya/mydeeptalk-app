@@ -10,26 +10,29 @@ export class JourneyProcessor {
    * Process a completed journey and update Genesis memory.
    */
   processJourney(
-    journey: JourneyResponse,
-    memory: GenesisMemory
-  ): GenesisMemory {
-    const discoveries: GenesisDiscovery[] = [];
+  journey: JourneyResponse,
+  memory: GenesisMemory
+): GenesisMemory {
+  let currentMemory = memory;
 
-    for (const scene of journey.responses) {
-      const result = discoveryEngine.extractDiscoveries({
+  for (const scene of journey.responses) {
+    const result =
+      discoveryEngine.extractDiscoveries({
         experienceId: journey.experienceId,
         sceneId: scene.sceneId,
         response: scene.response,
       });
 
-      discoveries.push(...result.discoveries);
-    }
-
-    return memoryEngine.applyDiscoveries(
-      memory,
-      discoveries
-    );
+    currentMemory =
+      memoryEngine.applyDiscoveries(
+        currentMemory,
+        result.discoveries
+      );
   }
+
+  return currentMemory;
 }
+  }
+
 
 export const journeyProcessor = new JourneyProcessor();

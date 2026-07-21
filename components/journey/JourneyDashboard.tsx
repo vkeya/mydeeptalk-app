@@ -13,10 +13,16 @@ import {
   isExperienceUnlocked,
 } from "@/lib/journey/progressEngine";
 
+import { useEffect, useState } from "react";
+import { defaultJourneyProgress } from "@/lib/journey/defaultProgress";
 
 export default function JourneyDashboard() {
 	
-  const progress = getJourneyProgress();
+  const [progress, setProgress] = useState(defaultJourneyProgress);
+
+useEffect(() => {
+  setProgress(getJourneyProgress());
+}, []);
 
   return (
     <div className="space-y-10">

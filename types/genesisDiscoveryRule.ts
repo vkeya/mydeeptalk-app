@@ -5,15 +5,12 @@ import {
 
 export interface DiscoveryRule {
   id: string;
-
+  sceneId: string;
   category: DiscoveryCategory;
 
   trigger: string;
-
   title: string;
-
   confidence: number;
-
   description?: string;
 }
 

@@ -1,27 +1,78 @@
+// ======================================================
+// Project Genesis
+// Experience Registry
+// ======================================================
+
 import { GenesisExperience } from "@/types/genesisExperience";
 
-class ExperienceRegistry {
-  private experiences = new Map<string, GenesisExperience>();
+const registry = new Map<string, GenesisExperience>();
 
-  register(experience: GenesisExperience): void {
-    this.experiences.set(experience.id, experience);
+/**
+ * Register a Genesis experience.
+ *
+ * Safe to call during application startup.
+ * Duplicate IDs are rejected to avoid accidental overrides.
+ */
+export function registerExperience(
+  experience: GenesisExperience
+): GenesisExperience {
+  if (registry.has(experience.id)) {
+    throw new Error(
+      `Genesis experience "${experience.id}" is already registered.`
+    );
   }
 
-  get(id: string): GenesisExperience | undefined {
-    return this.experiences.get(id);
-  }
+  registry.set(experience.id, experience);
 
-  getAll(): GenesisExperience[] {
-    return Array.from(this.experiences.values());
-  }
-
-  has(id: string): boolean {
-    return this.experiences.has(id);
-  }
-
-  clear(): void {
-    this.experiences.clear();
-  }
+  return experience;
 }
 
-export const experienceRegistry = new ExperienceRegistry();
+/**
+ * Retrieve an experience by ID.
+ */
+export function getExperience(
+  id: string
+): GenesisExperience | undefined {
+  return registry.get(id);
+}
+
+/**
+ * Retrieve an experience by slug.
+ */
+export function getExperienceBySlug(
+  slug: string
+): GenesisExperience | undefined {
+  return [...registry.values()].find(
+    (experience) => experience.slug === slug
+  );
+}
+
+/**
+ * Return every registered experience.
+ */
+export function getAllExperiences(): GenesisExperience[] {
+  return [...registry.values()];
+}
+
+/**
+ * Return only enabled experiences.
+ */
+export function getEnabledExperiences(): GenesisExperience[] {
+  return getAllExperiences().filter(
+    (experience) => experience.enabled
+  );
+}
+
+/**
+ * Check whether an experience exists.
+ */
+export function hasExperience(id: string): boolean {
+  return registry.has(id);
+}
+
+/**
+ * Useful for testing.
+ */
+export function clearExperienceRegistry(): void {
+  registry.clear();
+}

@@ -3,13 +3,17 @@
 import { useRouter } from "next/navigation";
 
 import { useJourney } from "@/context/JourneyContext";
+import GenesisFooter from "@/components/journey/layout/GenesisFooter";
+import type { JourneyScene } from "@/types/journey";
 
 interface ExperienceNavigationProps {
   totalScenes: number;
+  nextSceneType?: JourneyScene["type"];
 }
 
 export default function ExperienceNavigation({
   totalScenes,
+  nextSceneType,
 }: ExperienceNavigationProps) {
   const {
     state,
@@ -28,37 +32,26 @@ export default function ExperienceNavigation({
     previousScene();
   };
 
-  const handleNext = () => {
-    if (!isLastScene) {
-      nextScene();
-      return;
-    }
+  const handleNext = async () => {
+ if (!isLastScene) {
+  nextScene(nextSceneType);
+  return;
+}
 
-    completeExperience();
+  await completeExperience();
 
-    resetJourney();
+  resetJourney();
 
-    router.push("/journey/dashboard");
-  };
+  router.push("/journey/dashboard");
+};
 
-  return (
-    <div className="mt-10 flex justify-between">
-      <button
-        type="button"
-        onClick={handlePrevious}
-        disabled={state.currentScene === 0}
-        className="rounded-lg border px-5 py-2 disabled:opacity-50"
-      >
-        Previous
-      </button>
-
-      <button
-        type="button"
-        onClick={handleNext}
-        className="rounded-lg bg-[#7A5AF8] px-5 py-2 text-white"
-      >
-        {isLastScene ? "Finish Journey" : "Next"}
-      </button>
-    </div>
-  );
+    return (
+  <GenesisFooter
+    canContinue
+    onPrevious={state.currentScene === 0 ? undefined : handlePrevious}
+    onContinue={handleNext}
+    continueLabel={isLastScene ? "Finish Journey" : "Continue"}
+  />
+);
+ 
 }
