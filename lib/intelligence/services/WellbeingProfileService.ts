@@ -1,28 +1,28 @@
 import { WellbeingEvidence } from "../types/evidence";
 import { WellbeingProfile } from "../types/wellbeing";
 import { WellbeingProfileEngine } from "../engines/WellbeingProfileEngine";
-import { WellbeingProfileRepository } from "../repositories/WellbeingProfileRepository";
+import { FirestoreWellbeingProfileRepository } from "../repositories/FirestoreWellbeingProfileRepository";
 import { WellbeingProfileFactory } from "../factories/WellbeingProfileFactory";
 
 export class WellbeingProfileService {
   private engine = new WellbeingProfileEngine();
 
   private repository =
-    new WellbeingProfileRepository();
+    new FirestoreWellbeingProfileRepository();
 
-  getProfile(
+  async getProfile(
     userId: string
-  ): WellbeingProfile | null {
-    return this.repository.getByUserId(userId);
+  ): Promise<WellbeingProfile | null> {
+    return await this.repository.getByUserId(userId);
   }
 
-  updateProfile(
+  async updateProfile(
     userId: string,
     evidence: WellbeingEvidence[]
-  ): WellbeingProfile {
+  ): Promise<WellbeingProfile> {
 
     const existingProfile =
-      this.repository.getByUserId(userId);
+      await this.repository.getByUserId(userId);
 
     const profile =
       existingProfile ??
@@ -34,7 +34,7 @@ export class WellbeingProfileService {
         evidence
       );
 
-    this.repository.save(
+    await this.repository.save(
       userId,
       updated
     );

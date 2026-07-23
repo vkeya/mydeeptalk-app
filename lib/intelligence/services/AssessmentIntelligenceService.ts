@@ -13,10 +13,10 @@ export interface AssessmentIntelligenceInput {
 export class AssessmentIntelligenceService {
   private wellbeingService = new WellbeingProfileService();
 
-  processAssessment(
+  async processAssessment(
     userId: string,
     input: AssessmentIntelligenceInput
-  ): WellbeingProfile | null {
+  ): Promise<WellbeingProfile | null> {
 
     const evidence =
       AssessmentEvidenceAdapter.build(input);
@@ -25,7 +25,7 @@ export class AssessmentIntelligenceService {
       return null;
     }
 
-    return this.wellbeingService.updateProfile(
+    return await this.wellbeingService.updateProfile(
       userId,
       [evidence]
     );
