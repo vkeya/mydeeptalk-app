@@ -1,47 +1,27 @@
 import { PreparationEngine } from "../engines/PreparationEngine";
+import { AssessmentAdapter } from "../adapters/AssessmentAdapter";
 import {
   PreparationInput,
   PreparationSummary,
 } from "../types/preparation";
 
-/**
- * ------------------------------------------------------------------
- * Preparation Service
- * ------------------------------------------------------------------
- *
- * Coordinates data collection for therapist session preparation.
- *
- * Responsibilities:
- * - Collect data from platform services
- * - Normalize the data
- * - Pass structured input to the engine
- *
- * It does not contain business logic.
- */
 export class PreparationService {
   private engine = new PreparationEngine();
+
+  private assessmentAdapter = new AssessmentAdapter();
 
   async generatePreparation(
     input: PreparationInput
   ): Promise<PreparationSummary> {
-    // Future integrations:
-    // - Assessments
-    // - Journal
-    // - Homework
-    // - Session history
-    // - Client profile
+
+    const assessment =
+      await this.assessmentAdapter.getSnapshot(
+        input.clientId
+      );
+
+    // We'll use this in the next sprint.
+    void assessment;
 
     return this.engine.generate(input);
   }
 }
-
-// Future data sources:
-//
-// ✓ Client Profile
-// ✓ Previous Sessions
-// ✓ Assessments
-// ✓ Journal
-// ✓ Homework
-// ✓ Therapist Notes
-// ✓ Healing Timeline
-// ✓ Outcome Intelligence
