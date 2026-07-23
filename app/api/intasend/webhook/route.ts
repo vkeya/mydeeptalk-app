@@ -137,14 +137,6 @@ export async function POST(request: Request) {
     }
 
     const booking = bookingSnap.data();
-	
-	if (booking.googleEventId) {
-  return NextResponse.json({
-    success: true,
-    bookingId,
-    message: "Calendar event already exists.",
-  });
-}
 
     await updateDoc(bookingRef, {
       paymentStatus: "paid",
@@ -189,23 +181,13 @@ export async function POST(request: Request) {
           therapistEmail: booking.therapistEmail,
           sessionDate: booking.sessionDate,
           sessionTime: booking.sessionTime,
-		  
-		  timeZone: booking.therapistTimezone || "Africa/Nairobi",
           
         });
 
         await updateDoc(bookingRef, {
           meetingLink: meetEvent.meetingLink || "",
           googleEventId: meetEvent.eventId || "",
-		  
-		  googleCalendarLink: meetEvent.htmlLink || "",
-          calendarStatus: meetEvent.status || "created",
-          calendarOrganizer: meetEvent.organizer || "",
-		  calendarSequence: meetEvent.sequence,
-  
           calendarCreatedAt: serverTimestamp(),
-          calendarUpdatedAt: serverTimestamp(),
-		  
           updatedAt: serverTimestamp(),
         });
       } else {

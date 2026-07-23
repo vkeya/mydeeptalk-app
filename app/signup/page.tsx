@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import { WelcomeEmail } from "@/emails";
+import { welcomeEmailTemplate } from "@/lib/emailTemplates";
 import { ArrowLeft } from "lucide-react";
 import { IMAGES } from "@/lib/images";
 
@@ -25,94 +25,55 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-async function handleSignup(e: React.FormEvent) {
-  e.preventDefault();
-
-  if (!acceptedLegal) {
-    setError(
-      "Please accept the Terms and Conditions and Privacy Policy to continue."
-    );
-    return;
-  }
-
-  if (role === "client" && !alias.trim()) {
-    setError("Please choose a privacy name / alias.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-    setError("");
-
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
-    const user = userCredential.user;
-
-    console.log("Sending verification email to:", user.email);
-
-    try {
-      await sendEmailVerification(user);
-
-      console.log("✅ Firebase accepted verification request.");
-    } catch (verificationError) {
-      console.error(
-        "❌ Verification email failed:",
-        verificationError
-      );
+  async function handleSignup(e: React.FormEvent) {
+    e.preventDefault();
+    if (!acceptedLegal) {
+      setError("Please accept the Terms and Conditions and Privacy Policy to continue.");
+      return;
     }
-
-    const emailResponse = await fetch("/api/send-email", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    to: email,
-    subject: "Welcome to MyDeepTalk",
-    html: WelcomeEmail({
-  fullName,
-}),
-  }),
-});
-
-const emailResult = await emailResponse.json();
-
-console.log("WELCOME EMAIL:", emailResult);
-
-if (!emailResponse.ok) {
-  console.error("Failed to send welcome email:", emailResult);
-}
-
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      fullName,
-      ...(role === "client" && { alias: alias.trim() }),
-      email,
-      role,
-      provider: "email",
-      emailVerified: false,
-      ageConfirmed18: true,
-      termsAccepted: true,
-      privacyAccepted: true,
-      legalAccepted: true,
-      legalAcceptedAt: serverTimestamp(),
-      termsVersion: "2026-06",
-      privacyVersion: "2026-06",
-      createdAt: serverTimestamp(),
-    });
-
-    router.push("/verify-email");
-  } catch (err: any) {
-    console.error(err);
-    setError(err.message);
-  } finally {
-    setLoading(false);
+    if (role === "client" && !alias.trim()) {
+      setError("Please choose a privacy name / alias.");
+      return;
+    }
+    try {
+      setLoading(true);
+      setError("");
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      await sendEmailVerification(user);
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: email,
+          subject: "Welcome to MyDeepTalk 💙",
+          html: welcomeEmailTemplate(fullName),
+        }),
+      });
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        fullName,
+        ...(role === "client" && { alias: alias.trim() }),
+        email,
+        role,
+        provider: "email",
+        emailVerified: false,
+        ageConfirmed18: true,
+        termsAccepted: true,
+        privacyAccepted: true,
+        legalAccepted: true,
+        legalAcceptedAt: serverTimestamp(),
+        termsVersion: "2026-06",
+        privacyVersion: "2026-06",
+        createdAt: serverTimestamp(),
+      });
+      router.push("/verify-email");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   return (
     <div className="flex min-h-screen">

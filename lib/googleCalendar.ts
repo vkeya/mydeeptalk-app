@@ -1,5 +1,4 @@
 import { google } from "googleapis";
-import { fromZonedTime } from "date-fns-tz";
 
 type MeetEventInput = {
   clientName: string;
@@ -36,41 +35,15 @@ export async function createGoogleMeetEvent({
     auth: oauth2Client,
   });
 
-  const localDateTime = `${sessionDate}T${sessionTime}:00`;
-
-// Convert the therapist's local time into UTC
-const startDateTime = fromZonedTime(localDateTime, timeZone);
-
-// Session duration remains 60 minutes
-const endDateTime = new Date(
-  startDateTime.getTime() + 60 * 60 * 1000
-);
+  const startDateTime = new Date(`${sessionDate}T${sessionTime}:00+03:00`);
+  const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
 
   const event = await calendar.events.insert({
     calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
     conferenceDataVersion: 1,
     requestBody: {
-      summary: `MyDeepTalk Therapy Session`,
-
-description: `
-Welcome to your MyDeepTalk therapy session.
-
-━━━━━━━━━━━━━━━━━━━━━━
-
-Client:
-${clientName}
-
-Therapist:
-${therapistName}
-
-━━━━━━━━━━━━━━━━━━━━━━
-
-Please join using the Google Meet link attached to this calendar invitation.
-
-If you need to reschedule or cancel your session, please do so through your MyDeepTalk account.
-
-Thank you for choosing MyDeepTalk.
-`,
+      summary: `MyDeepTalk Session: ${clientName} with ${therapistName}`,
+      description: "Welcome to your MyDeepTalk Therapy Session",
       start: {
   dateTime: startDateTime.toISOString(),
   timeZone,
@@ -92,17 +65,14 @@ Thank you for choosing MyDeepTalk.
   });
 
   return {
-  eventId: event.data.id || "",
-  meetingLink: event.data.hangoutLink || "",
-
-  htmlLink: event.data.htmlLink || "",
-  status: event.data.status || "",
-  organizer: event.data.organizer?.email || "",
-  sequence: event.data.sequence ?? 0,
-};
+    eventId: event.data.id || "",
+    meetingLink: event.data.hangoutLink || "",
+  };
 }
 
 export async function deleteGoogleCalendarEvent(eventId: string) {
+  if (!eventId) return;
+
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET
@@ -122,4 +92,3 @@ export async function deleteGoogleCalendarEvent(eventId: string) {
     eventId,
   });
 }
-
