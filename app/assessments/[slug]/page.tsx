@@ -200,6 +200,25 @@ try {
           message:
             matchingResult?.message ||
             "Your assessment has been completed.",
+			
+		
+		  wellbeingDimension:
+        matchingResult?.wellbeingDimension,
+      
+      strengths:
+        matchingResult?.strengths,
+      
+      growthAreas:
+        matchingResult?.growthAreas,
+      
+      reflectionPrompt:
+        matchingResult?.reflectionPrompt,
+      
+      recommendedJourney:
+        matchingResult?.recommendedJourney,
+      
+      nextAction:
+        matchingResult?.nextAction,
 
         })
 

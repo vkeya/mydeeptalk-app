@@ -10,10 +10,28 @@ type AssessmentResult = {
   assessmentId: string;
   title: string;
   category?: string;
+
   score: number;
   maxScore: number;
+
   level: string;
   message: string;
+
+  wellbeingDimension?: string;
+
+  strengths?: string[];
+
+  growthAreas?: string[];
+
+  reflectionPrompt?: string;
+
+  recommendedJourney?: string;
+
+  nextAction?:
+    | "journal"
+    | "journey"
+    | "therapist"
+    | "assessment";
 };
 
 
@@ -30,10 +48,6 @@ export default function AssessmentResultPage() {
   const [result, setResult] =
     useState<AssessmentResult | null>(null);
 
-
-
-
-
   useEffect(() => {
 
 
@@ -41,8 +55,6 @@ export default function AssessmentResultPage() {
       sessionStorage.getItem(
         "assessmentResult"
       );
-
-
 
     if (stored) {
 
@@ -54,11 +66,6 @@ export default function AssessmentResultPage() {
 
 
   }, []);
-
-
-
-
-
 
 
   if (!result) {
@@ -252,9 +259,238 @@ export default function AssessmentResultPage() {
 
           </p>
 
+{result.wellbeingDimension && (
+  <section
+    className="
+    mt-8
+    rounded-3xl
+    bg-white
+    p-8
+    shadow-lg
+    "
+  >
+    <h3 className="text-2xl font-bold text-[#0F4C5C]">
+      Your Wellbeing Snapshot
+    </h3>
 
+    <div className="mt-6 grid gap-6 md:grid-cols-2">
 
+      <div className="rounded-2xl bg-[#F7F3EC] p-5">
+        <p className="text-sm font-bold uppercase text-gray-500">
+          Wellbeing Dimension
+        </p>
 
+        <p className="mt-2 text-xl font-bold text-[#0F4C5C]">
+          {result.wellbeingDimension}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-[#F7F3EC] p-5">
+        <p className="text-sm font-bold uppercase text-gray-500">
+          Current Result
+        </p>
+
+        <p className="mt-2 text-xl font-bold text-[#0F4C5C]">
+          {result.level}
+        </p>
+      </div>
+
+    </div>
+
+    <p className="mt-6 leading-7 text-gray-700">
+      This assessment contributes to your Living Wellbeing Profile
+      and helps personalise your future recommendations and
+      self-discovery journey.
+    </p>
+
+  </section>
+)}
+
+{result.strengths && result.strengths.length > 0 && (
+
+  <section
+    className="
+    mt-8
+    rounded-3xl
+    bg-white
+    p-8
+    shadow-lg
+    "
+  >
+
+    <h3
+      className="
+      text-2xl
+      font-bold
+      text-[#0F4C5C]
+      "
+    >
+      Your Strengths
+    </h3>
+
+    <p className="mt-2 text-gray-600">
+      Every assessment identifies positive qualities you can continue
+      building on.
+    </p>
+
+    <ul className="mt-6 space-y-4">
+
+      {result.strengths.map((strength) => (
+
+        <li
+          key={strength}
+          className="
+          flex
+          items-start
+          gap-3
+          rounded-2xl
+          bg-[#F7F3EC]
+          p-4
+          "
+        >
+
+          <span className="text-xl">
+            ✓
+          </span>
+
+          <span className="font-semibold text-gray-700">
+            {strength}
+          </span>
+
+        </li>
+
+      ))}
+
+    </ul>
+
+  </section>
+
+)}
+
+{result.growthAreas && result.growthAreas.length > 0 && (
+
+  <section
+    className="
+    mt-8
+    rounded-3xl
+    bg-white
+    p-8
+    shadow-lg
+    "
+  >
+
+    <h3
+      className="
+      text-2xl
+      font-bold
+      text-[#0F4C5C]
+      "
+    >
+      Areas To Explore
+    </h3>
+
+    <p className="mt-2 text-gray-600">
+      These are opportunities for continued personal growth and
+      emotional wellbeing.
+    </p>
+
+    <ul className="mt-6 space-y-4">
+
+      {result.growthAreas.map((area) => (
+
+        <li
+          key={area}
+          className="
+          flex
+          items-start
+          gap-3
+          rounded-2xl
+          bg-[#F7F3EC]
+          p-4
+          "
+        >
+
+          <span className="text-xl">
+            •
+          </span>
+
+          <span className="font-semibold text-gray-700">
+            {area}
+          </span>
+
+        </li>
+
+      ))}
+
+    </ul>
+
+  </section>
+
+)}
+
+{result.reflectionPrompt && (
+
+  <section
+    className="
+    mt-8
+    rounded-3xl
+    border
+    border-[#D7C8A5]
+    bg-[#FFFDF8]
+    p-8
+    shadow-lg
+    "
+  >
+
+    <p
+      className="
+      text-sm
+      font-bold
+      uppercase
+      tracking-wide
+      text-[#8B6F3D]
+      "
+    >
+      Reflection
+    </p>
+
+    <h3
+      className="
+      mt-3
+      text-2xl
+      font-bold
+      text-[#0F4C5C]
+      "
+    >
+      Take a Moment
+    </h3>
+
+    <p
+      className="
+      mt-5
+      text-lg
+      italic
+      leading-8
+      text-gray-700
+      "
+    >
+      "{result.reflectionPrompt}"
+    </p>
+
+    <p
+      className="
+      mt-6
+      leading-7
+      text-gray-600
+      "
+    >
+      There is no right or wrong answer. Spend a few minutes reflecting
+      before moving to your next step.
+    </p>
+
+  </section>
+
+)}
 
 
 
@@ -305,10 +541,54 @@ export default function AssessmentResultPage() {
 
           </div>
 
+<section
+  className="
+  mt-8
+  rounded-3xl
+  bg-gradient-to-r
+  from-[#0F4C5C]
+  to-[#2C7A7B]
+  p-8
+  text-white
+  shadow-lg
+  "
+>
+  <p className="font-bold uppercase tracking-wide">
+    Recommended Next Step
+  </p>
 
+  <h3 className="mt-3 text-3xl font-bold">
 
+    {result.nextAction === "journey" &&
+      "Continue Your Self-Discovery Journey"}
 
+    {result.nextAction === "journal" &&
+      "Spend Time Reflecting In Your Journal"}
 
+    {result.nextAction === "therapist" &&
+      "Connect With A MyDeepTalk Therapist"}
+
+    {result.nextAction === "assessment" &&
+      "Explore Another Assessment"}
+
+  </h3>
+
+  <p className="mt-4 leading-8">
+
+    {result.nextAction === "journey" &&
+      "Your responses suggest that continuing your guided self-discovery journey is a meaningful next step."}
+
+    {result.nextAction === "journal" &&
+      "Writing about your experiences can help you better understand your thoughts and emotions."}
+
+    {result.nextAction === "therapist" &&
+      "Speaking with a qualified therapist can provide personalised guidance and support."}
+
+    {result.nextAction === "assessment" &&
+      "Exploring another assessment can help you build a broader understanding of your wellbeing."}
+
+  </p>
+</section>
 
 
 

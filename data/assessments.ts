@@ -148,28 +148,93 @@ export const assessments: Assessment[] = [
     results: [
 
       {
-        minScore: 0,
-        maxScore: 9,
-        level: "Low Anxiety Indicators",
-        message:
-          "Your responses suggest fewer anxiety indicators at this time. Continue maintaining healthy coping habits and emotional wellbeing practices.",
-      },
+  minScore: 0,
+  maxScore: 9,
+
+  level: "Low Anxiety Indicators",
+
+  message:
+    "Your responses suggest fewer anxiety indicators at this time. Continue maintaining healthy coping habits and emotional wellbeing practices.",
+
+  wellbeingDimension: "Emotional Regulation",
+
+  strengths: [
+    "Good emotional awareness",
+    "Healthy coping habits",
+    "Emotional stability",
+  ],
+
+  growthAreas: [
+    "Maintain healthy stress management routines",
+  ],
+
+  reflectionPrompt:
+    "What routines or habits help you stay calm during challenging moments?",
+
+  recommendedJourney: "meeting-yourself",
+
+  nextAction: "journey",
+},
 
       {
-        minScore: 10,
-        maxScore: 19,
-        level: "Moderate Anxiety Indicators",
-        message:
-          "Your responses suggest some anxiety indicators. Talking with a mental health professional may help you understand your experiences and develop coping strategies.",
-      },
+  minScore: 10,
+  maxScore: 19,
+
+  level: "Moderate Anxiety Indicators",
+
+  message:
+    "Your responses suggest some anxiety indicators. Talking with a mental health professional may help you understand your experiences and develop coping strategies.",
+
+  wellbeingDimension: "Emotional Regulation",
+
+  strengths: [
+    "Growing self-awareness",
+    "Recognises emotional challenges",
+  ],
+
+  growthAreas: [
+    "Managing anxious thoughts",
+    "Building relaxation habits",
+    "Reducing daily stress",
+  ],
+
+  reflectionPrompt:
+    "What situations tend to increase your anxiety, and what has helped you cope in the past?",
+
+  recommendedJourney: "meeting-yourself",
+
+  nextAction: "journal",
+},
 
       {
-        minScore: 20,
-        maxScore: 30,
-        level: "Higher Anxiety Indicators",
-        message:
-          "Your responses suggest stronger anxiety indicators. Professional support may help you explore these experiences and identify helpful strategies.",
-      },
+  minScore: 20,
+  maxScore: 30,
+
+  level: "Higher Anxiety Indicators",
+
+  message:
+    "Your responses suggest stronger anxiety indicators. Professional support may help you explore these experiences and identify helpful strategies.",
+
+  wellbeingDimension: "Emotional Regulation",
+
+  strengths: [
+    "Has taken an important step by completing this assessment",
+    "Shows willingness to understand emotional wellbeing",
+  ],
+
+  growthAreas: [
+    "Managing overwhelming thoughts",
+    "Developing healthy coping strategies",
+    "Seeking additional support",
+  ],
+
+  reflectionPrompt:
+    "What has been the most difficult part of managing your anxiety recently, and who can support you through it?",
+
+  recommendedJourney: "meeting-yourself",
+
+  nextAction: "therapist",
+},
 
     ],
 
