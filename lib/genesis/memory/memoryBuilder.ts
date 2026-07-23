@@ -7,6 +7,23 @@ import {
   GenesisDiscovery,
 } from "@/types/genesisDiscovery";
 
+/**
+ * Adds a value only if it doesn't already exist
+ * (case-insensitive).
+ */
+function pushUnique(
+  target: string[],
+  value: string
+) {
+  if (
+    !target.some(
+      (item) => item.toLowerCase() === value.toLowerCase()
+    )
+  ) {
+    target.push(value);
+  }
+}
+
 export function buildMemory(
   memory: GenesisMemory,
   discoveries: GenesisDiscovery[]
@@ -15,56 +32,79 @@ export function buildMemory(
 
   discoveries.forEach((discovery) => {
     switch (discovery.category) {
-      case DiscoveryCategory.Identity:
-        if (
-          !updated.identity.descriptors.includes(discovery.title)
-        ) {
-          updated.identity.descriptors.push(discovery.title);
+      case DiscoveryCategory.Identity: {
+        switch (discovery.sceneId) {
+          case "identity":
+            pushUnique(
+              updated.identity.descriptors,
+              discovery.title
+            );
+            break;
+
+          case "public-self":
+            pushUnique(
+              updated.identity.publicTraits,
+              discovery.title
+            );
+            break;
+
+          case "private-self":
+            pushUnique(
+              updated.identity.privateTraits,
+              discovery.title
+            );
+            break;
+
+          case "labels":
+            pushUnique(
+              updated.identity.labels,
+              discovery.title
+            );
+            break;
+
+          default:
+            pushUnique(
+              updated.identity.descriptors,
+              discovery.title
+            );
         }
+
         break;
+      }
 
       case DiscoveryCategory.Emotion:
-        if (
-          !updated.emotions.recurring.includes(discovery.title)
-        ) {
-          updated.emotions.recurring.push(discovery.title);
-        }
+        pushUnique(
+          updated.emotions.recurring,
+          discovery.title
+        );
         break;
 
       case DiscoveryCategory.Value:
-        if (
-          !updated.values.topValues.includes(discovery.title)
-        ) {
-          updated.values.topValues.push(discovery.title);
-        }
+        pushUnique(
+          updated.values.topValues,
+          discovery.title
+        );
         break;
 
       case DiscoveryCategory.Strength:
-        if (
-          !updated.strengths.strengths.includes(discovery.title)
-        ) {
-          updated.strengths.strengths.push(discovery.title);
-        }
+        pushUnique(
+          updated.strengths.strengths,
+          discovery.title
+        );
         break;
 
       case DiscoveryCategory.Relationship:
-        if (
-          !updated.relationships.recurringPatterns.includes(
-            discovery.title
-          )
-        ) {
-          updated.relationships.recurringPatterns.push(
-            discovery.title
-          );
-        }
+        pushUnique(
+          updated.relationships.recurringPatterns,
+          discovery.title
+        );
         break;
 
       case DiscoveryCategory.Purpose:
-        if (
-          !updated.purpose.aspirations.includes(discovery.title)
-        ) {
-          updated.purpose.aspirations.push(discovery.title);
-        }
+        pushUnique(
+          updated.purpose.aspirations,
+          discovery.title
+        );
         break;
     }
   });

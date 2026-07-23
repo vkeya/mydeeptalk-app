@@ -19,7 +19,7 @@
  */
 import { GenesisMemory } from "./genesisMemory";
 import { DiscoveryResult } from "./genesisDiscoveryRule";
-
+import { KnowledgeRelationship } from "./genesisRelationshipTypes";
 
 import { GenesisConcept } from "./genesisConcept";
 import { GenesisInsight } from "./genesisInsight";
@@ -38,15 +38,6 @@ export type KnowledgeNodeType =
   | "purpose"
   | "pattern";
 
-export type KnowledgeRelationship =
-  | "supports"
-  | "contradicts"
-  | "influences"
-  | "causes"
-  | "reinforces"
-  | "weakens"
-  | "derived-from"
-  | "related-to";
   
 export interface KnowledgeNode {
   id: string;

@@ -1,3 +1,5 @@
+import { KnowledgeRelationship } from "./genesisRelationshipTypes";
+
 export type RelationshipEvidence =
   | "discovery"
   | "memory"
@@ -39,13 +41,7 @@ export interface ResolvedRelationship {
 
   target: string;
 
-  relationship:
-    | "supports"
-    | "conflicts"
-    | "causes"
-    | "strengthens"
-    | "reflects"
-    | "influences";
+  relationship: KnowledgeRelationship;
 
   confidence: number;
 

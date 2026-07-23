@@ -1,3 +1,21 @@
+/**
+ * ------------------------------------------------------------------
+ * Project Genesis
+ * Memory Domain
+ * ------------------------------------------------------------------
+ *
+ * Represents the long-term cognitive memory accumulated through
+ * Genesis journeys.
+ *
+ * Memory captures enduring personal information before it is
+ * transformed into higher-level knowledge and insights.
+ *
+ * This model is intentionally independent of UI, persistence,
+ * and processing engines.
+ * ------------------------------------------------------------------
+ */
+
+
 export type ConceptType =
   | "identity"
   | "emotion"

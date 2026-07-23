@@ -1,3 +1,20 @@
+/**
+ * ------------------------------------------------------------------
+ * Project Genesis
+ * Hypothesis Domain
+ * ------------------------------------------------------------------
+ *
+ * Represents provisional beliefs generated from concepts,
+ * relationships and insights.
+ *
+ * Unlike insights, hypotheses remain open to confirmation,
+ * refinement or rejection as additional evidence is collected.
+ *
+ * This model is independent of UI, persistence and processing.
+ * ------------------------------------------------------------------
+ */
+
+
 export type HypothesisStatus =
   | "emerging"
   | "supported"

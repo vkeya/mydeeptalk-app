@@ -83,9 +83,20 @@ export class InsightEngine {
         (d) => d.category === category
       ).length;
 
-    const score =
-      memoryCount * 0.10 +
-      discoveryCount * 0.20;
+    const matchingDiscoveries =
+  discoveries.discoveries.filter(
+    (d) => d.category === category
+  );
+
+const discoveryConfidence =
+  matchingDiscoveries.reduce(
+    (sum, d) => sum + d.confidence,
+    0
+  );
+
+const score =
+  memoryCount * 0.10 +
+  discoveryConfidence * 0.20;
 
     return Math.min(score, 1);
   }

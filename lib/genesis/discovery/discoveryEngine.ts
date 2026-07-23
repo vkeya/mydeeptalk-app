@@ -27,29 +27,32 @@ const normalized = response.trim().toLowerCase();
 );
 
 sceneRules.forEach((rule) => {
+  if (!normalized.includes(rule.trigger.toLowerCase())) {
+    return;
+  }
 
-      discoveries.push({
-  id: crypto.randomUUID(),
+  discoveries.push({
+    id: crypto.randomUUID(),
 
-  category: rule.category,
+    category: rule.category,
 
-  sceneId: rule.sceneId,
+    sceneId: rule.sceneId,
 
-  title: rule.title,
+    title: rule.title,
 
-  description: rule.description,
+    description: rule.description,
 
-  response,
+    response,
 
-  confidence: rule.confidence,
+    confidence: rule.confidence,
 
-  sourceExperience: experienceId,
+    sourceExperience: experienceId,
 
-  createdAt: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+  });
+
+  matchedRules.push(rule);
 });
-
-      matchedRules.push(rule);
-    });
 
     return {
       discoveries: this.deduplicate(discoveries),

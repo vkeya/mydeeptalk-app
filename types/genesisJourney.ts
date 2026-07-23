@@ -8,6 +8,7 @@ import { ResolvedRelationship } from "@/types/genesisRelationship";
 import { IdentityGraph } from "@/types/genesisIdentityGraph";
 import { AdaptivePrompt } from "@/types/genesisAdaptivePrompt";
 import { JourneyReflection } from "@/types/genesisReflection";
+import { CognitiveSnapshot } from "./genesisSnapshot";
 
 export enum JourneyProcessingStage {
   Discovery = "discovery",
@@ -51,7 +52,7 @@ export interface JourneyProcessResult {
 
   graph: IdentityGraph;
 
-  adaptivePrompt?: AdaptivePrompt;
+  snapshot: CognitiveSnapshot;
 
-  reflection?: JourneyReflection;
+  adaptivePrompt: AdaptivePrompt;
 }

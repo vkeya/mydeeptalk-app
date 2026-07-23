@@ -9,6 +9,7 @@ export interface DiscoveryRule {
   category: DiscoveryCategory;
 
   trigger: string;
+triggers?: string[];
   title: string;
   confidence: number;
   description?: string;

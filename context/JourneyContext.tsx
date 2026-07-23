@@ -41,6 +41,8 @@ export interface JourneyState {
   desiredEmotion: string;
 
   journeyIntention: string;
+  
+  childhoodReflection: string;
   journalEntry: string;
 
   completedExperiences: string[];
@@ -78,9 +80,13 @@ interface JourneyContextType {
   
   setIdentityAnswer: (answer: string) => void;
   setJournalEntry: (entry: string) => void;
+  setChildhoodReflection: (
+  childhoodReflection: string
+) => void;
 
   resetJourney: () => void;
 }
+
 
 const initialState: JourneyState = {
   experienceId: "",
@@ -100,6 +106,8 @@ const initialState: JourneyState = {
   selectedEmotion: "",
   journeyIntention: "",
   desiredEmotion: "",
+  
+  childhoodReflection: "",
   journalEntry: "",
 
   completedExperiences: [],
@@ -151,6 +159,15 @@ const setStrengths = (strengths: string[]) => {
   setState((prev) => ({
     ...prev,
     strengths,
+  }));
+};
+
+const setChildhoodReflection = (
+  childhoodReflection: string
+) => {
+  setState((prev) => ({
+    ...prev,
+    childhoodReflection,
   }));
 };
   
@@ -375,6 +392,7 @@ setMemory(updatedMemory);
   setStrengths,
 
   setIdentityAnswer,
+  setChildhoodReflection,
   setJournalEntry,
 
   resetJourney,

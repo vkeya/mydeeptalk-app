@@ -1,4 +1,3 @@
-
 import { JourneyState } from "@/context/JourneyContext";
 import { JourneyResponse } from "@/types/genesisJourneyResponse";
 
@@ -6,8 +5,15 @@ export function buildYourStoryResponse(
   state: JourneyState
 ): JourneyResponse {
   return {
-    experienceId: "your-story",
+    experienceId: state.experienceId,
 
-    responses: [],
+    responses: [
+      {
+        sceneId: "childhood",
+        response: state.childhoodReflection,
+      },
+    ].filter(
+      (item) => item.response.trim().length > 0
+    ),
   };
 }

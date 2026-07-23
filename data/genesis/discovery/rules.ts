@@ -122,4 +122,134 @@ export const discoveryRules: DiscoveryRule[] = [
     title: "Hope",
     confidence: 0.9,
   },
+  
+  {
+  id: "childhood-family",
+  sceneId: "childhood",
+  category: DiscoveryCategory.Identity,
+
+  trigger: "family",
+
+  triggers: [
+    "family",
+    "mother",
+    "father",
+    "parents",
+    "grandmother",
+    "grandfather",
+    "uncle",
+    "aunt"
+  ],
+
+  title: "Family Influence",
+
+  confidence: 0.8,
+},
+
+  // -----------------------------
+  // Your Story
+  // -----------------------------
+  {
+    id: "story-resilience",
+    sceneId: "turning-points",
+    category: DiscoveryCategory.Strength,
+
+    trigger: "overcame",
+
+    triggers: [
+      "overcame",
+      "survived",
+      "recovered",
+      "persevered",
+      "resilient",
+      "stronger"
+    ],
+
+    title: "Resilience",
+
+    confidence: 0.9,
+  },
+
+  {
+    id: "story-loss",
+    sceneId: "turning-points",
+    category: DiscoveryCategory.Emotion,
+
+    trigger: "loss",
+
+    triggers: [
+      "loss",
+      "grief",
+      "death",
+      "passed away",
+      "divorce",
+      "heartbreak"
+    ],
+
+    title: "Loss",
+
+    confidence: 0.9,
+  },
+
+  {
+    id: "story-purpose",
+    sceneId: "current-chapter",
+    category: DiscoveryCategory.Purpose,
+
+    trigger: "purpose",
+
+    triggers: [
+      "purpose",
+      "calling",
+      "mission",
+      "dream",
+      "future",
+      "vision"
+    ],
+
+    title: "Purpose",
+
+    confidence: 0.9,
+  },
+
+  {
+    id: "story-growth",
+    sceneId: "chapters",
+    category: DiscoveryCategory.Identity,
+
+    trigger: "learned",
+
+    triggers: [
+      "learned",
+      "changed",
+      "grew",
+      "transformed",
+      "became"
+    ],
+
+    title: "Personal Growth",
+
+    confidence: 0.85,
+  },
+
+  {
+    id: "story-family",
+    sceneId: "chapters",
+    category: DiscoveryCategory.Identity,
+
+    trigger: "family",
+
+    triggers: [
+      "family",
+      "mother",
+      "father",
+      "parents",
+      "siblings",
+      "children"
+    ],
+
+    title: "Family Influence",
+
+    confidence: 0.85,
+  },
 ];
