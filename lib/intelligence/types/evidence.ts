@@ -1,3 +1,5 @@
+import { WellbeingDimension } from "../framework/dimensions";
+
 export type EvidenceSource =
   | "assessment"
   | "genesis"
@@ -6,3 +8,19 @@ export type EvidenceSource =
   | "homework"
   | "reflection"
   | "system";
+
+export interface WellbeingEvidence {
+  source: EvidenceSource;
+
+  dimension: WellbeingDimension;
+
+  score: number;
+
+  confidence: number;
+
+  evidenceId: string;
+
+  createdAt: Date;
+
+  metadata?: Record<string, unknown>;
+}

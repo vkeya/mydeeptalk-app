@@ -9,13 +9,15 @@ import {
   collection,
   serverTimestamp,
 } from "firebase/firestore";
-
+import { AssessmentIntelligenceService } from "@/lib/intelligence/services/AssessmentIntelligenceService";
 
 export default function AssessmentQuestionnairePage() {
 
   const params = useParams();
   const router = useRouter();
   
+  const assessmentIntelligence =
+  new AssessmentIntelligenceService();
   
 
   const slug = Array.isArray(params.slug)
@@ -141,7 +143,20 @@ export default function AssessmentQuestionnairePage() {
         );
 		
 		const user = auth.currentUser;
-
+if (
+  user &&
+  matchingResult?.wellbeingDimension
+) {		
+assessmentIntelligence.processAssessment(
+  user.uid,
+  {
+    assessmentId: assessment.id,
+    score: totalScore,
+    maxScore: assessment.questions.length * 3,
+    wellbeingDimension: matchingResult?.wellbeingDimension,
+  }
+);
+}
 try {
   await addDoc(collection(db, "assessmentResults"), {
     assessmentId: assessment.id,

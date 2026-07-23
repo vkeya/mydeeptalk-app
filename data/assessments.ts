@@ -1,3 +1,6 @@
+import { WellbeingDimension } from "@/lib/intelligence/framework/dimensions";
+
+
 export type AssessmentQuestion = {
   id: string;
   question: string;
@@ -17,7 +20,7 @@ export type AssessmentResultLevel = {
   message: string;
 
   // Assessment 2.0
-  wellbeingDimension?: string;
+  wellbeingDimension?: WellbeingDimension;
 
   strengths?: string[];
 
@@ -156,7 +159,7 @@ export const assessments: Assessment[] = [
   message:
     "Your responses suggest fewer anxiety indicators at this time. Continue maintaining healthy coping habits and emotional wellbeing practices.",
 
-  wellbeingDimension: "Emotional Regulation",
+  wellbeingDimension: WellbeingDimension.EmotionalRegulation,
 
   strengths: [
     "Good emotional awareness",
@@ -185,7 +188,7 @@ export const assessments: Assessment[] = [
   message:
     "Your responses suggest some anxiety indicators. Talking with a mental health professional may help you understand your experiences and develop coping strategies.",
 
-  wellbeingDimension: "Emotional Regulation",
+  wellbeingDimension: WellbeingDimension.EmotionalRegulation,
 
   strengths: [
     "Growing self-awareness",
@@ -215,7 +218,7 @@ export const assessments: Assessment[] = [
   message:
     "Your responses suggest stronger anxiety indicators. Professional support may help you explore these experiences and identify helpful strategies.",
 
-  wellbeingDimension: "Emotional Regulation",
+  wellbeingDimension: WellbeingDimension.EmotionalRegulation,
 
   strengths: [
     "Has taken an important step by completing this assessment",
