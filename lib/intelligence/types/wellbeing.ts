@@ -1,13 +1,19 @@
 import { WellbeingDimension } from "../framework/dimensions";
 
+export type WellbeingTrend =
+  | "improving"
+  | "stable"
+  | "declining"
+  | "unknown";
+
 export interface DimensionScore {
   dimension: WellbeingDimension;
 
-  score: number;          // 0 - 100
+  score: number;
 
-  confidence: number;     // 0 - 100
+  confidence: number;
 
-  trend: "improving" | "stable" | "declining" | "unknown";
+  trend: WellbeingTrend;
 
   lastUpdated: Date;
 
@@ -16,6 +22,10 @@ export interface DimensionScore {
 
 export interface WellbeingProfile {
   clientId: string;
+
+  version: "1.0";
+
+  frameworkVersion: "MWF-1.0";
 
   dimensions: DimensionScore[];
 
@@ -30,4 +40,6 @@ export interface WellbeingProfile {
   therapistAttention: boolean;
 
   generatedAt: Date;
+
+  updatedAt: Date;
 }

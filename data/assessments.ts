@@ -11,8 +11,27 @@ export type AssessmentQuestion = {
 export type AssessmentResultLevel = {
   minScore: number;
   maxScore: number;
+
+  // Existing fields
   level: string;
   message: string;
+
+  // Assessment 2.0
+  wellbeingDimension?: string;
+
+  strengths?: string[];
+
+  growthAreas?: string[];
+
+  reflectionPrompt?: string;
+
+  recommendedJourney?: string;
+
+  nextAction?:
+    | "journal"
+    | "journey"
+    | "therapist"
+    | "assessment";
 };
 
 
@@ -48,7 +67,7 @@ export const assessments: Assessment[] = [
 
     category: "Mental Wellness",
 
-    duration: "2 minutes",
+    duration: "10 minutes",
 
 
     questions: [
@@ -168,7 +187,7 @@ export const assessments: Assessment[] = [
 
     category: "Work & Lifestyle",
 
-    duration: "2 minutes",
+    duration: "10 minutes",
 
 
     questions: [
@@ -288,7 +307,7 @@ export const assessments: Assessment[] = [
 
     category: "Recovery & Support",
 
-    duration: "2 minutes",
+    duration: "10 minutes",
 
 
     questions: [

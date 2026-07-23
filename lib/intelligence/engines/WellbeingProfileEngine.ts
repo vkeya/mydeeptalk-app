@@ -1,4 +1,5 @@
 import { WellbeingProfile } from "../types/wellbeing";
+import { Recommendation } from "../types/recommendation";
 
 export class WellbeingProfileEngine {
 
@@ -7,5 +8,17 @@ export class WellbeingProfileEngine {
     return profile;
 
   }
+
+}
+
+export class RecommendationEngine {
+
+    generate(
+        profile: WellbeingProfile
+    ): Recommendation[] {
+
+        return [];
+
+    }
 
 }
