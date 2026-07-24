@@ -132,6 +132,8 @@ export default function AssessmentQuestionnairePage() {
             0
           );
 
+console.log("Reached end of assessment");
+console.log("Total score:", totalScore);
 
 
 
@@ -141,8 +143,13 @@ export default function AssessmentQuestionnairePage() {
             totalScore >= result.minScore &&
             totalScore <= result.maxScore
         );
+		console.log("Matching result:", matchingResult);
 		
 		const user = auth.currentUser;
+		
+		console.log("Current user:", user);
+
+console.log("About to process assessment...");
 if (
   user &&
   matchingResult?.wellbeingDimension
@@ -157,22 +164,31 @@ assessmentIntelligence.processAssessment(
   }
 );
 }
+
+console.log("Current user UID:", user?.uid);
+console.log("Current user email:", user?.email);
+
 try {
-  await addDoc(collection(db, "assessmentResults"), {
-    assessmentId: assessment.id,
-    title: assessment.title,
-    category: assessment.category,
-    userId: user?.uid || null,
-    userEmail: user?.email || null,
-    isAnonymous: !user,
-    score: totalScore,
-    maxScore: assessment.questions.length * 3,
-    level: matchingResult?.level || "Unknown",
-    message:
-      matchingResult?.message ||
-      "Your assessment has been completed.",
-    createdAt: serverTimestamp(),
-  });
+  const docRef = await addDoc(
+    collection(db, "assessmentResults"),
+    {
+      assessmentId: assessment.id,
+      title: assessment.title,
+      category: assessment.category,
+      userId: user?.uid || null,
+      userEmail: user?.email || null,
+      isAnonymous: !user,
+      score: totalScore,
+      maxScore: assessment.questions.length * 3,
+      level: matchingResult?.level || "Unknown",
+      message:
+        matchingResult?.message ||
+        "Your assessment has been completed.",
+      createdAt: serverTimestamp(),
+    }
+  );
+
+  console.log("Assessment saved:", docRef.id);
 } catch (error) {
   console.error("Failed to save assessment:", error);
 }
