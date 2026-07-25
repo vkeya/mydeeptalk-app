@@ -1,4 +1,5 @@
 import { WellbeingDimension } from "../framework/dimensions";
+import { Recommendation } from "./recommendation";
 
 export type WellbeingTrend =
   | "improving"
@@ -27,15 +28,15 @@ export interface WellbeingProfile {
 
   frameworkVersion: "MWF-1.0";
 
+  overallScore: number;
+
   dimensions: DimensionScore[];
 
   strengths: WellbeingDimension[];
 
   growthAreas: WellbeingDimension[];
-
-  recommendedJourneys: string[];
-
-  recommendedAssessments: string[];
+  
+  recommendations: Recommendation[];
 
   therapistAttention: boolean;
 

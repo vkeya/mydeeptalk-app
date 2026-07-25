@@ -305,14 +305,14 @@ export const assessments: Assessment[] = [
       {
         id: "q7",
         question:
-          "How often do you feel your workload is difficult to manage?",
+          "How often do you feel emotionally drained before your day has even begun?",
         options: standardOptions,
       },
 
       {
         id: "q8",
         question:
-          "How often does stress affect your relationships?",
+          "How often do you feel emotionally detached from people or work that once mattered to you?",
         options: standardOptions,
       },
 
@@ -326,7 +326,7 @@ export const assessments: Assessment[] = [
       {
         id: "q10",
         question:
-          "How often do you feel you need additional support managing stress?",
+          "How often do you feel that no matter how much you rest, you never fully recover your energy?",
         options: standardOptions,
       },
 
@@ -694,7 +694,7 @@ export const assessments: Assessment[] = [
     {
       id: "q10",
       question:
-        "How often have you felt that life has been emotionally overwhelming?",
+        "How often have you felt that it was difficult to imagine things getting better?",
       options: standardOptions,
     },
   ],
@@ -799,7 +799,7 @@ export const assessments: Assessment[] = [
   title: "Stress Self-Assessment",
 
   description:
-    "Reflect on how stress may be affecting your thoughts, emotions, physical wellbeing, and daily life.",
+    "Which responsibility or expectation currently takes the most emotional energy, and what is one small step that could make it feel more manageable?",
 
   category: "Mental Wellness",
 
@@ -872,7 +872,7 @@ export const assessments: Assessment[] = [
     {
       id: "q10",
       question:
-        "How often have you felt you needed additional support to manage stress?",
+        "How often has stress made it difficult to enjoy your daily life?",
       options: standardOptions,
     },
   ],

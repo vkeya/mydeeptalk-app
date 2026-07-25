@@ -1,0 +1,13 @@
+import { AssessmentScoringEngine } from "./AssessmentScoringEngine";
+
+export class AssessmentSubmissionService {
+  private scoringEngine = new AssessmentScoringEngine();
+
+  async submitAssessment() {
+    // Milestone 1:
+    // This method will gradually become the
+    // orchestration point for assessment completion.
+
+    return null;
+  }
+}

@@ -10,6 +10,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { AssessmentIntelligenceService } from "@/lib/intelligence/services/AssessmentIntelligenceService";
+import { AssessmentScoringEngine } from "@/lib/assessment/AssessmentScoringEngine";
 
 export default function AssessmentQuestionnairePage() {
 
@@ -18,6 +19,8 @@ export default function AssessmentQuestionnairePage() {
   
   const assessmentIntelligence =
   new AssessmentIntelligenceService();
+  
+  const scoringEngine = new AssessmentScoringEngine();
   
 
   const slug = Array.isArray(params.slug)
@@ -124,26 +127,24 @@ export default function AssessmentQuestionnairePage() {
     } else {
 
 
-      const totalScore =
-        Object.values(updatedAnswers)
-          .reduce(
-            (sum, value) =>
-              sum + value,
-            0
-          );
+     const scoringResult = scoringEngine.calculate({
+  values: Object.values(updatedAnswers),
+  maxScorePerQuestion: 3,
+  levels: assessment.results.map((result) => ({
+    id: result.level,
+    title: result.level,
+    minScore: result.minScore,
+    maxScore: result.maxScore,
+  })),
+});
 
-console.log("Reached end of assessment");
-console.log("Total score:", totalScore);
+const totalScore = scoringResult.totalScore;
 
-
-
-      const matchingResult =
-        assessment.results.find(
-          (result) =>
-            totalScore >= result.minScore &&
-            totalScore <= result.maxScore
-        );
-		console.log("Matching result:", matchingResult);
+const matchingResult =
+  assessment.results.find(
+    (result) =>
+      result.level === scoringResult.level?.title
+  );
 		
 		const user = auth.currentUser;
 		

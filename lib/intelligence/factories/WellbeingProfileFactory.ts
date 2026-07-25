@@ -10,6 +10,8 @@ export class WellbeingProfileFactory {
       version: "1.0",
 
       frameworkVersion: "MWF-1.0",
+	  
+	  overallScore: 0,
 
       dimensions: [],
 
@@ -17,11 +19,9 @@ export class WellbeingProfileFactory {
 
       growthAreas: [],
 
-      recommendedJourneys: [],
+recommendations: [],
 
-      recommendedAssessments: [],
-
-      therapistAttention: false,
+therapistAttention: false,
 
       generatedAt: now,
 

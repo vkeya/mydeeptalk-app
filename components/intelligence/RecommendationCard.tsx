@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { WellbeingRecommendation } from "@/lib/intelligence/services/WellbeingRecommendationService";
-
+import { WellbeingRecommendation } from "@/lib/intelligence/presenters/RecommendationPresenter";
 interface RecommendationCardProps {
   recommendation: WellbeingRecommendation;
 }

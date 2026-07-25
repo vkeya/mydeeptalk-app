@@ -2,30 +2,30 @@
 
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
+
+import WellbeingHero from "./WellbeingHero";
+import WellbeingDimensions from "./WellbeingDimensions";
 import RecommendationCard from "./RecommendationCard";
-import { WellbeingRecommendation } from "@/lib/intelligence/services/WellbeingRecommendationService";
-import { WellbeingRecommendationService } from "@/lib/intelligence/services/WellbeingRecommendationService";
+
 import { WellbeingProfile } from "@/lib/intelligence/types/wellbeing";
 import { WellbeingDashboardService } from "@/lib/intelligence/services/WellbeingDashboardService";
 
-import WellbeingProfileCard from "./WellbeingProfileCard";
+import {
+  RecommendationPresenter,
+  WellbeingRecommendation,
+} from "@/lib/intelligence/presenters/RecommendationPresenter";
 
-const dashboardService =
-  new WellbeingDashboardService();
-  
-const recommendationService =
-  new WellbeingRecommendationService();
+const dashboardService = new WellbeingDashboardService();
+const recommendationPresenter = new RecommendationPresenter();
 
 export default function WellbeingDashboard() {
-	
-  const [recommendation, setRecommendation] =
-  useState<WellbeingRecommendation | null>(null);
-  
   const [profile, setProfile] =
     useState<WellbeingProfile | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [recommendation, setRecommendation] =
+    useState<WellbeingRecommendation | null>(null);
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadProfile() {
@@ -36,26 +36,25 @@ export default function WellbeingDashboard() {
         return;
       }
 
-      const data =
-        await dashboardService.getDashboard(
-          user.uid
-        );
+      const data = await dashboardService.getDashboard(
+        user.uid
+      );
 
       setProfile(data);
-	  
-	  if (data) {
-  setRecommendation(
-    recommendationService.getRecommendation(data)
-  );
-}
+
+      if (data) {
+        setRecommendation(
+          recommendationPresenter.present(
+            data.recommendations
+          )
+        );
+      }
 
       setLoading(false);
     }
 
     loadProfile();
   }, []);
-  
-  
 
   if (loading) {
     return (
@@ -81,16 +80,16 @@ export default function WellbeingDashboard() {
   }
 
   return (
-  <>
-    <WellbeingProfileCard
-      profile={profile}
-    />
+    <div className="space-y-8">
+      <WellbeingHero profile={profile} />
 
-    {recommendation && (
-      <RecommendationCard
-        recommendation={recommendation}
-      />
-    )}
-  </>
-);
+      <WellbeingDimensions profile={profile} />
+
+      {recommendation && (
+        <RecommendationCard
+          recommendation={recommendation}
+        />
+      )}
+    </div>
+  );
 }
