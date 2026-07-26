@@ -1,76 +1,87 @@
-import {
-  AssessmentCategory,
-} from "./types/AssessmentEnums";
+import { AssessmentDefinition } from "./types/AssessmentDefinition";
 
 import {
-  AssessmentDefinition,
-} from "./types/AssessmentDefinition";
+  angerManagementAssessment,
+  anxietyAssessment,
+  burnoutAssessment,
+  depressionAssessment,
+  emotionalIntelligenceAssessment,
+  emotionalRegulationAssessment,
+  financialWellbeingAssessment,
+  griefLossAssessment,
+  lifeSatisfactionAssessment,
+  lonelinessAssessment,
+  mindfulnessAssessment,
+  optimismAssessment,
+  parentingWellbeingAssessment,
+  purposeMeaningAssessment,
+  relationshipSatisfactionAssessment,
+  resilienceAssessment,
+  selfCompassionAssessment,
+  selfEsteemAssessment,
+  sleepWellbeingAssessment,
+  socialConnectionAssessment,
+  stressAssessment,
+  substanceUseAssessment,
+  traumaAssessment,
+  workLifeBalanceAssessment,
+} from "@/data/assessment-v3";
 
-export class AssessmentCatalog {
-  private readonly assessments: Map<string, AssessmentDefinition>;
+export const AssessmentCatalog: AssessmentDefinition[] = [
+  anxietyAssessment,
+  depressionAssessment,
+  stressAssessment,
+  burnoutAssessment,
+  selfEsteemAssessment,
+  lonelinessAssessment,
+  griefLossAssessment,
+  traumaAssessment,
+  angerManagementAssessment,
+  sleepWellbeingAssessment,
+  emotionalIntelligenceAssessment,
+  lifeSatisfactionAssessment,
+  purposeMeaningAssessment,
+  relationshipSatisfactionAssessment,
+  workLifeBalanceAssessment,
+  financialWellbeingAssessment,
+  parentingWellbeingAssessment,
+  substanceUseAssessment,
+  resilienceAssessment,
+  mindfulnessAssessment,
+  socialConnectionAssessment,
+  emotionalRegulationAssessment,
+  selfCompassionAssessment,
+  optimismAssessment,
+];
 
-  constructor(definitions: AssessmentDefinition[]) {
-    this.assessments = new Map(
-      definitions.map((definition) => [
-        definition.metadata.id,
-        definition,
-      ])
+export class AssessmentCatalogService {
+  static getAll(): AssessmentDefinition[] {
+    return AssessmentCatalog;
+  }
+
+  static getById(id: string): AssessmentDefinition | undefined {
+    return AssessmentCatalog.find(
+      (assessment) => assessment.metadata.id === id
     );
   }
 
-  /**
-   * Retrieve an assessment by ID.
-   */
-  get(id: string): AssessmentDefinition {
-    const assessment = this.assessments.get(id);
-
-    if (!assessment) {
-      throw new Error(`Assessment "${id}" not found.`);
-    }
-
-    return assessment;
-  }
-
-  /**
-   * Retrieve an assessment by slug.
-   */
-  getBySlug(slug: string): AssessmentDefinition {
-    const assessment = Array.from(
-      this.assessments.values()
-    ).find(
-      (item) => item.metadata.slug === slug
-    );
-
-    if (!assessment) {
-      throw new Error(`Assessment slug "${slug}" not found.`);
-    }
-
-    return assessment;
-  }
-
-  /**
-   * Return all assessments.
-   */
-  getAll(): AssessmentDefinition[] {
-    return Array.from(this.assessments.values());
-  }
-
-  /**
-   * Return assessments by category.
-   */
-  getByCategory(
-    category: AssessmentCategory
-  ): AssessmentDefinition[] {
-    return this.getAll().filter(
-      (assessment) =>
-        assessment.metadata.category === category
+  static getBySlug(slug: string): AssessmentDefinition | undefined {
+    return AssessmentCatalog.find(
+      (assessment) => assessment.metadata.slug === slug
     );
   }
 
-  /**
-   * Check existence.
-   */
-  has(id: string): boolean {
-    return this.assessments.has(id);
+  static getByCategory(category: string): AssessmentDefinition[] {
+    return AssessmentCatalog.filter(
+      (assessment) => assessment.metadata.category === category
+    );
+  }
+
+  static has(id: string): boolean {
+    return AssessmentCatalog.some(
+      (assessment) => assessment.metadata.id === id
+    );
   }
 }
+
+export default AssessmentCatalogService;

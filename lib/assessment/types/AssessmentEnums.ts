@@ -4,17 +4,25 @@
  */
 
 export enum AssessmentCategory {
-  Clinical = "clinical",
-  EmotionalSkills = "emotional-skills",
-  Identity = "identity",
+  MentalWellbeing = "mental-wellbeing",
+
+  EmotionalWellbeing = "emotional-wellbeing",
+
+  PhysicalWellbeing = "physical-wellbeing",
+
   Relationships = "relationships",
+
   Lifestyle = "lifestyle",
-  Flourishing = "flourishing",
+
+  PersonalGrowth = "personal-growth",
 }
 
 export enum ScoringDirection {
   Positive = "positive",
   Negative = "negative",
+
+  Normal = "positive",
+  Reverse = "negative",
 }
 
 export enum AssessmentStatus {

@@ -1,63 +1,91 @@
 import { randomUUID } from "crypto";
 
-import { AssessmentDefinition } from "./types/AssessmentDefinition";
+import { AssessmentCatalogService } from "./AssessmentCatalog";
+import { scoreAssessment } from "./scoring/AssessmentScoringEngine";
+import { AssessmentResultBuilder } from "./AssessmentResultBuilder";
+import { AssessmentRecommendationEngine } from "./AssessmentRecommendationEngine";
+
 import { AssessmentResponse } from "./types/AssessmentResponse";
 import { AssessmentSession } from "./types/AssessmentSession";
-import { AssessmentStatus } from "./types/AssessmentEnums";
 
-import { scoreAssessment } from "./scoring/AssessmentScoringEngine";
-import { buildAssessmentResult } from "./builders/AssessmentResultBuilder";
-import { buildRecommendations } from "./recommendations/AssessmentRecommendationEngine";
+
+export interface AssessmentRuntimeOptions {
+  userId: string;
+  startedAt?: Date;
+}
 
 export class AssessmentRuntime {
-  completeAssessment(
-    userId: string,
-    definition: AssessmentDefinition,
-    response: AssessmentResponse
-  ): AssessmentSession {
+ static run(
+  assessmentSlug: string,
+  response: AssessmentResponse,
+  options: AssessmentRuntimeOptions
+): AssessmentSession {
+
+    const assessment =
+      AssessmentCatalogService.getBySlug(assessmentSlug);
+
+    if (!assessment) {
+      throw new Error(
+        `Assessment "${assessmentSlug}" not found.`
+      );
+    }
+
     const score = scoreAssessment(
-      definition,
+      assessment,
       response
     );
 
-    const result = buildAssessmentResult(
-      definition,
-      score
-    );
+    const result =
+      AssessmentResultBuilder.build(
+        assessment,
+        score
+      );
 
     const recommendations =
-      buildRecommendations(result);
+      AssessmentRecommendationEngine.build(
+        result
+      );
 
-    const now = new Date().toISOString();
+    const completedAt = new Date();
+
+const startedAt =
+  options.startedAt ?? completedAt;
+
+const durationSeconds =
+  Math.max(
+    0,
+    Math.floor(
+      (completedAt.getTime() -
+        startedAt.getTime()) /
+        1000
+    )
+  );
 
     return {
-  id: randomUUID(),
 
-  userId,
+      id: randomUUID(),
 
-  assessmentId: definition.metadata.id,
+      userId: options.userId,
 
-  assessmentVersion: definition.metadata.version,
+      assessment,
 
-  status: "completed",
+      version: assessment.metadata.version,
 
-  response,
+      responses: response,
 
-  score,
+      score,
 
-  result,
+      result,
 
-  recommendations,
+      recommendations,
 
-  startedAt: now,
+      startedAt,
 
-  completedAt: now,
+completedAt,
 
-  createdAt: now,
-
-  updatedAt: now,
-};
+durationSeconds,
+    };
   }
 }
-export const assessmentRuntime =
-  new AssessmentRuntime();
+
+export default AssessmentRuntime;

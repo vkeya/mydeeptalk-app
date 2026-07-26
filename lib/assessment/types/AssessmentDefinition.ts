@@ -7,7 +7,7 @@ import {
 import { WellbeingDimensionId } from "./AssessmentDimensions";
 
 /**
- * Metadata describing an assessment.
+ * Assessment metadata
  */
 export interface AssessmentMetadata {
   id: string;
@@ -18,11 +18,14 @@ export interface AssessmentMetadata {
   description: string;
   shortDescription?: string;
 
-  estimatedMinutes: number;
+  estimatedDurationMinutes: number;
 
   category: AssessmentCategory;
 
-  status: AssessmentStatus;
+  status?: AssessmentStatus;
+
+  icon?: string;
+  color?: string;
 
   tags?: string[];
 
@@ -31,12 +34,12 @@ export interface AssessmentMetadata {
 }
 
 /**
- * A selectable answer option.
+ * One answer option
  */
-export interface AssessmentOption {
+export interface AssessmentQuestionOption {
   id: string;
 
-  label: string;
+  text: string;
 
   value: number;
 
@@ -44,7 +47,7 @@ export interface AssessmentOption {
 }
 
 /**
- * A single assessment question.
+ * One assessment question
  */
 export interface AssessmentQuestion {
   id: string;
@@ -53,30 +56,19 @@ export interface AssessmentQuestion {
 
   description?: string;
 
-  options: AssessmentOption[];
+  options: AssessmentQuestionOption[];
 
-  /**
-   * Positive = higher score improves wellbeing.
-   * Negative = higher score indicates greater concern.
-   */
   scoringDirection: ScoringDirection;
 
-  /**
-   * One or more wellbeing dimensions influenced
-   * by this question.
-   */
   wellbeingDimensions: WellbeingDimensionId[];
 
-  /**
-   * Default = 1
-   */
   weight?: number;
 
   tags?: string[];
 }
 
 /**
- * One result band.
+ * Assessment result band
  */
 export interface AssessmentResultDefinition {
   id: string;
@@ -92,6 +84,8 @@ export interface AssessmentResultDefinition {
   growthAreas: string[];
 
   reflectionQuestion: string;
+  
+  
 
   minScore: number;
 
@@ -99,14 +93,12 @@ export interface AssessmentResultDefinition {
 }
 
 /**
- * Complete assessment definition.
+ * Complete assessment definition
  */
 export interface AssessmentDefinition {
   metadata: AssessmentMetadata;
 
-  primaryDimension: WellbeingDimensionId;
-
-  secondaryDimensions?: WellbeingDimensionId[];
+  wellbeingDimensions: WellbeingDimensionId[];
 
   questions: AssessmentQuestion[];
 

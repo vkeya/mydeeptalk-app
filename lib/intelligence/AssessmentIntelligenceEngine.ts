@@ -27,10 +27,10 @@ export function buildWellbeingProfile(
   }
 
   const latestSession = sessions.reduce((latest, current) =>
-    new Date(current.createdAt) > new Date(latest.createdAt)
-      ? current
-      : latest
-  );
+  current.completedAt > latest.completedAt
+    ? current
+    : latest
+);
 
   const dimensions: DimensionProfile[] = latestSession.score.dimensionScores.map(
     (dimensionScore) => ({
@@ -38,7 +38,9 @@ export function buildWellbeingProfile(
       score: dimensionScore.normalizedScore,
       trend: "unknown",
       confidence: 0,
-      contributingAssessments: [latestSession.assessmentId],
+      contributingAssessments: [
+  latestSession.assessment.metadata.id,
+],
     })
   );
 

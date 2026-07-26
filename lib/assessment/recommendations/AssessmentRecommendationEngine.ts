@@ -8,6 +8,12 @@ import { AssessmentResult } from "../types/AssessmentResult";
 
 import { RecommendationPriority } from "../types/AssessmentEnums";
 
+
+const HIGH_CONCERN_THRESHOLD = 40;
+
+const MODERATE_CONCERN_THRESHOLD = 70;
+
+const DEFAULT_REASSESSMENT_DAYS = 30;
 /**
  * Build recommendations from an interpreted assessment.
  */
@@ -18,9 +24,11 @@ export function buildRecommendations(
   const recommendations: AssessmentRecommendation[] = [];
 
   const score = result.score.normalizedScore;
-
+  
+  const growthAreas =
+  result.interpretation.growthAreas;
   // High concern
-  if (score <= 40) {
+  if (score <= HIGH_CONCERN_THRESHOLD) {
 
     recommendations.push({
       id: "professional-support",
@@ -45,7 +53,7 @@ export function buildRecommendations(
   }
 
   // Moderate concern
-  else if (score <= 70) {
+  else if (score <= MODERATE_CONCERN_THRESHOLD) {
 
     recommendations.push({
       id: "journal",
@@ -85,6 +93,10 @@ export function buildRecommendations(
   }
 
   return {
+	  
+	  // Future:
+// Generate recommendations based on
+// wellbeing dimensions and growth areas.
 
     primary: recommendations[0],
 
@@ -92,7 +104,7 @@ export function buildRecommendations(
 
     optional: [],
 
-    reassessmentDays: 30,
+    reassessmentDays: DEFAULT_REASSESSMENT_DAYS,
   };
 
 }
