@@ -18,14 +18,18 @@ import JourneyProgress from "@/components/dashboard/client/JourneyProgress";
 import InsightCard from "@/components/dashboard/client/InsightCard";
 import ContinueHealing from "@/components/dashboard/client/ContinueHealing";
 import ToolkitGrid from "@/components/dashboard/client/ToolkitGrid";
-import { welcomeEngine } from "@/lib/dashboard/engines/WelcomeEngine";
+import { dashboardService } from "@/lib/dashboard/dashboardService";
+import { DashboardViewModel } from "@/lib/dashboard/types";
 
 
 export default function DashboardPage() {
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
+  const [dashboard, setDashboard] =
+  useState<DashboardViewModel | null>(null);
+  
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -61,10 +65,14 @@ if (!userData.onboardingCompleted) {
   return;
 }
 
-if (!userData.profile?.completed) {
+/*if (!userData.profile?.completed) {
   router.push("/profile-completion");
   return;
-}
+}*/
+
+const dashboardData = await dashboardService.build(user.uid);
+
+setDashboard(dashboardData);
 
 setUserData(userData);
 setLoading(false);
@@ -100,114 +108,144 @@ setLoading(false);
       onLogout={handleLogout}
     >
       <WelcomeHero
-    name={displayName}
+  name={dashboard?.welcome.userName ?? displayName}
 />
 
 <TodaysFocus
-  title="Complete today's emotional check-in"
-  description="Taking a few moments to reflect on how you're feeling today helps you build self-awareness and allows MyDeepTalk to better support your healing journey."
-  buttonText="Start Check-In"
+  title={
+    dashboard?.todaysFocus.title ??
+    "Complete today's emotional check-in"
+  }
+  description={
+    dashboard?.todaysFocus.description ??
+    "Taking a few moments to reflect on how you're feeling today helps you build self-awareness and allows MyDeepTalk to better support your healing journey."
+  }
+  buttonText={
+    dashboard?.todaysFocus.actionLabel ??
+    "Start Check-In"
+  }
 />
 
 <JourneyProgress
-    wellbeingScore={72}
-    streak={14}
-    journalEntries={18}
-    genesisProgress={42}
+    wellbeingScore={
+        dashboard?.progress.wellbeingScore ?? 72
+    }
+    streak={
+        dashboard?.progress.streak ?? 14
+    }
+    journalEntries={
+        dashboard?.progress.journalEntries ?? 18
+    }
+    genesisProgress={
+        dashboard?.progress.genesisProgress ?? 42
+    }
 />
 
 <InsightCard
-    title="You're building consistency"
-    message="Over the past week you've taken time to check in with yourself several times. Small moments of reflection often become the foundation for lasting emotional growth. Keep showing up for yourself."
+    title={
+        dashboard?.insight.title ??
+        "You're building consistency"
+    }
+    message={
+        dashboard?.insight.message ??
+        "Over the past week you've taken time to check in with yourself several times. Small moments of reflection often become the foundation for lasting emotional growth. Keep showing up for yourself."
+    }
     actionText="Open Journal"
 />
 
 <ContinueHealing
-  activities={[
-    {
-      id: "genesis",
-      icon: "🌱",
-      title: "Continue Genesis",
-      description: "Resume Chapter 4: Meeting Yourself.",
-      action: "Continue",
-      badge: "In Progress",
-    },
-    {
-      id: "journal",
-      icon: "📖",
-      title: "Journal Reflection",
-      description: "Your last reflection was two days ago.",
-      action: "Write",
-    },
-    {
-      id: "therapy",
-      icon: "👩‍⚕️",
-      title: "Upcoming Therapy Session",
-      description: "Tomorrow at 2:00 PM.",
-      action: "View",
-    },
-  ]}
+  activities={
+    dashboard?.continueHealing.activities ?? [
+      {
+  id: "genesis",
+  icon: "🌱",
+  title: "Continue Genesis",
+  description: "Resume Chapter 4: Meeting Yourself.",
+  actionLabel: "Continue",
+  href: "/genesis",
+  badge: "In Progress",
+},
+      {
+  id: "journal",
+  icon: "📖",
+  title: "Journal Reflection",
+  description: "Your last reflection was two days ago.",
+  actionLabel: "Write",
+  href: "/journal",
+},
+      {
+  id: "therapy",
+  icon: "👩‍⚕️",
+  title: "Upcoming Therapy Session",
+  description: "Tomorrow at 2:00 PM.",
+  actionLabel: "View",
+  href: "/my-bookings",
+},
+    ]
+  }
 />
 
 <ToolkitGrid
-    items={[
-        {
-            id: "journal",
-            title: "Journal",
-            description: "Capture your thoughts and reflections.",
-            href: "/journal",
-            icon: "📖",
-        },
-        {
-            id: "ai",
-            title: "AI Companion",
-            description: "Talk through what is on your mind.",
-            href: "/ai",
-            icon: "🤖",
-        },
-        {
-            id: "assessments",
-            title: "Assessments",
-            description: "Understand yourself through guided assessments.",
-            href: "/assessments",
-            icon: "🧠",
-        },
-        {
-            id: "therapists",
-            title: "Find a Therapist",
-            description: "Connect with licensed professionals.",
-            href: "/therapists",
-            icon: "👩‍⚕️",
-        },
-        {
-            id: "circles",
-            title: "Healing Circles",
-            description: "Grow together with your community.",
-            href: "/healing-circles",
-            icon: "🤝",
-        },
-        {
-            id: "sessions",
-            title: "My Sessions",
-            description: "View your upcoming and past sessions.",
-            href: "/sessions",
-            icon: "📅",
-        },
-        {
-            id: "gift",
-            title: "Gift Therapy",
-            description: "Support someone else's healing journey.",
-            href: "/gift-therapy",
-            icon: "🎁",
-        },
-        {
-            id: "profile",
-            title: "My Profile",
-            description: "Manage your account and preferences.",
-            href: "/profile",
-            icon: "⚙️",
-        },
-    ]}
+    items={
+        dashboard?.toolkit.tools ?? [
+            {
+                id: "journal",
+                title: "Journal",
+                description: "Capture your thoughts and reflections.",
+                href: "/journal",
+                icon: "📖",
+            },
+            {
+                id: "ai",
+                title: "AI Companion",
+                description: "Talk through what is on your mind.",
+                href: "/ai",
+                icon: "🤖",
+            },
+            {
+                id: "assessments",
+                title: "Assessments",
+                description: "Understand yourself through guided assessments.",
+                href: "/assessments",
+                icon: "🧠",
+            },
+            {
+                id: "therapists",
+                title: "Find a Therapist",
+                description: "Connect with licensed professionals.",
+                href: "/therapists",
+                icon: "👩‍⚕️",
+            },
+            {
+                id: "circles",
+                title: "Healing Circles",
+                description: "Grow together with your community.",
+                href: "/healing-circles",
+                icon: "🤝",
+            },
+            {
+                id: "sessions",
+                title: "My Sessions",
+                description: "View your upcoming and past sessions.",
+                href: "/sessions",
+                icon: "📅",
+            },
+            {
+                id: "gift",
+                title: "Gift Therapy",
+                description: "Support someone else's healing journey.",
+                href: "/gift-therapy",
+                icon: "🎁",
+            },
+            {
+                id: "profile",
+                title: "My Profile",
+                description: "Manage your account and preferences.",
+                href: "/profile",
+                icon: "⚙️",
+            },
+        ]
+    }
 />
 	  
 	  <DashboardAnnouncement />

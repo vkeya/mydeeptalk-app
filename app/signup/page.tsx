@@ -125,7 +125,7 @@ if (!passwordValid) {
   termsVersion: "2026-06",
   privacyVersion: "2026-06",
 
-  onboardingCompleted: true,
+  onboardingCompleted: false,
   onboarding: {
     ...onboarding,
     completedAt: serverTimestamp(),
@@ -162,7 +162,7 @@ async function handleGoogleSignup() {
         role,
         emailVerified: true,
 
-        onboardingCompleted: true,
+        onboardingCompleted: false,
         onboarding: {
           ...onboarding,
           completedAt: serverTimestamp(),

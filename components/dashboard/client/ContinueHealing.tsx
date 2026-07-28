@@ -1,11 +1,4 @@
-interface HealingActivity {
-  id: string;
-  title: string;
-  description: string;
-  action: string;
-  icon: string;
-  badge?: string;
-}
+import { HealingActivity } from "@/lib/dashboard/types";
 
 interface ContinueHealingProps {
   activities: HealingActivity[];
@@ -75,7 +68,7 @@ export default function ContinueHealing({
               <button
                 className="rounded-full bg-[#0F4C5C] px-6 py-3 text-white transition hover:bg-[#0B3945]"
               >
-                {activity.action}
+                {activity.actionLabel}
               </button>
 
             </div>

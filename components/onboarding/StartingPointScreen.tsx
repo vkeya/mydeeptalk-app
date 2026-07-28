@@ -1,5 +1,7 @@
 "use client";
 
+import { auth, db } from "@/lib/firebase";
+import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import StartingPointCard from "./StartingPointCard";
 import { useRouter } from "next/navigation";
@@ -23,8 +25,20 @@ useEffect(() => {
   }
 }, []);
 
-function handleFinish() {
-  router.push("/signup");
+async function handleFinish() {
+  const user = auth.currentUser;
+
+  if (!user) {
+    router.push("/login");
+    return;
+  }
+
+  await updateDoc(doc(db, "users", user.uid), {
+    onboardingCompleted: true,
+    "onboarding.completedAt": serverTimestamp(),
+  });
+
+  router.push("/dashboard");
 }
 
   return (
