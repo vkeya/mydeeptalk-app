@@ -6,19 +6,26 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsAppButton from "@/components/FloatingWhatsAppButton";
 
-const AUTH_ROUTES = ["/login", "/signup", "/forgot-password", "/verify-email"];
-
+const NO_LAYOUT_ROUTES = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/verify-email",
+  "/onboarding",
+];
 export default function NavigationWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isAuth = AUTH_ROUTES.some(
-    (r) => pathname === r || pathname.startsWith(r + "/"),
-  );
+  const hideLayout = NO_LAYOUT_ROUTES.some(
+  (route) => pathname === route || pathname.startsWith(route + "/")
+);
 
-  if (isAuth) return <>{children}</>;
+if (hideLayout) {
+  return <>{children}</>;
+}
 
   return (
     <>

@@ -31,12 +31,12 @@ export default function HeroSection() {
 
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
-              href="/signup"
-              className="group inline-flex items-center gap-2 rounded-full bg-[#0F4C5C] px-8 py-4 font-semibold text-white transition hover:bg-[#0b3945]"
-            >
-              Start Your Journey
-              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Link>
+  href="/onboarding"
+  className="group inline-flex items-center gap-2 rounded-full bg-[#0F4C5C] px-8 py-4 font-semibold text-white transition hover:bg-[#0b3945]"
+>
+  Start Your Journey
+  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+</Link>
 
             <Link
               href="/assessments"

@@ -49,11 +49,11 @@ export default function WellbeingDimensions({
     <section className="rounded-3xl bg-white p-8 shadow-lg">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-[#0F4C5C]">
-          Your Wellbeing
+          Your Wellbeing Profile
         </h2>
 
         <p className="mt-2 text-gray-600">
-          Every dimension reflects an important part of your personal growth.
+          Your profile evolves as you complete assessments, reflect in your journal, and continue your healing journey.
         </p>
       </div>
 

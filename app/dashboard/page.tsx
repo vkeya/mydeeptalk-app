@@ -11,6 +11,14 @@ import DashboardAnnouncement from "@/components/DashboardAnnouncement";
 import WellbeingDashboard from "@/components/intelligence/WellbeingDashboard";
 import { DashboardCard } from "@/components/dashboard/types";
 import DashboardCardGrid from "@/components/dashboard/DashboardCardGrid";
+import LatestCheckIn from "@/components/dashboard/LatestCheckIn";
+import WelcomeHero from "@/components/dashboard/client/WelcomeHero";
+import TodaysFocus from "@/components/dashboard/client/TodaysFocus";
+import JourneyProgress from "@/components/dashboard/client/JourneyProgress";
+import InsightCard from "@/components/dashboard/client/InsightCard";
+import ContinueHealing from "@/components/dashboard/client/ContinueHealing";
+import ToolkitGrid from "@/components/dashboard/client/ToolkitGrid";
+import { welcomeEngine } from "@/lib/dashboard/engines/WelcomeEngine";
 
 
 export default function DashboardPage() {
@@ -31,21 +39,35 @@ export default function DashboardPage() {
         return;
       }
 
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-	  
-	  console.log("DASHBOARD USER CHECK:", {
-       authUid: user.uid,
-       authEmail: user.email,
-       firestoreExists: userSnap.exists(),
-       firestoreData: userSnap.exists() ? userSnap.data() : null,
+     const userRef = doc(db, "users", user.uid);
+const userSnap = await getDoc(userRef);
+
+console.log("DASHBOARD USER CHECK:", {
+  authUid: user.uid,
+  authEmail: user.email,
+  firestoreExists: userSnap.exists(),
+  firestoreData: userSnap.exists() ? userSnap.data() : null,
 });
 
-      if (userSnap.exists()) {
-        setUserData(userSnap.data());
-      }
+if (!userSnap.exists()) {
+  router.push("/onboarding");
+  return;
+}
 
-      setLoading(false);
+const userData = userSnap.data();
+
+if (!userData.onboardingCompleted) {
+  router.push("/onboarding");
+  return;
+}
+
+if (!userData.profile?.completed) {
+  router.push("/profile-completion");
+  return;
+}
+
+setUserData(userData);
+setLoading(false);
     });
 
     return () => unsubscribe();
@@ -77,20 +99,116 @@ export default function DashboardPage() {
       role={role}
       onLogout={handleLogout}
     >
-      <section className="mb-10 rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-8 text-white shadow-lg md:p-10">
-        <p className="mb-3 font-bold uppercase tracking-wide text-white">
-          MyDeepTalk Dashboard
-        </p>
+      <WelcomeHero
+    name={displayName}
+/>
 
-        <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">
-          Welcome, {displayName}
-        </h1>
+<TodaysFocus
+  title="Complete today's emotional check-in"
+  description="Taking a few moments to reflect on how you're feeling today helps you build self-awareness and allows MyDeepTalk to better support your healing journey."
+  buttonText="Start Check-In"
+/>
 
-        <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-white md:text-lg">
-          Supporting emotional wellness, healing, self-discovery, and meaningful
-          connection.
-        </p>
-      </section>
+<JourneyProgress
+    wellbeingScore={72}
+    streak={14}
+    journalEntries={18}
+    genesisProgress={42}
+/>
+
+<InsightCard
+    title="You're building consistency"
+    message="Over the past week you've taken time to check in with yourself several times. Small moments of reflection often become the foundation for lasting emotional growth. Keep showing up for yourself."
+    actionText="Open Journal"
+/>
+
+<ContinueHealing
+  activities={[
+    {
+      id: "genesis",
+      icon: "🌱",
+      title: "Continue Genesis",
+      description: "Resume Chapter 4: Meeting Yourself.",
+      action: "Continue",
+      badge: "In Progress",
+    },
+    {
+      id: "journal",
+      icon: "📖",
+      title: "Journal Reflection",
+      description: "Your last reflection was two days ago.",
+      action: "Write",
+    },
+    {
+      id: "therapy",
+      icon: "👩‍⚕️",
+      title: "Upcoming Therapy Session",
+      description: "Tomorrow at 2:00 PM.",
+      action: "View",
+    },
+  ]}
+/>
+
+<ToolkitGrid
+    items={[
+        {
+            id: "journal",
+            title: "Journal",
+            description: "Capture your thoughts and reflections.",
+            href: "/journal",
+            icon: "📖",
+        },
+        {
+            id: "ai",
+            title: "AI Companion",
+            description: "Talk through what is on your mind.",
+            href: "/ai",
+            icon: "🤖",
+        },
+        {
+            id: "assessments",
+            title: "Assessments",
+            description: "Understand yourself through guided assessments.",
+            href: "/assessments",
+            icon: "🧠",
+        },
+        {
+            id: "therapists",
+            title: "Find a Therapist",
+            description: "Connect with licensed professionals.",
+            href: "/therapists",
+            icon: "👩‍⚕️",
+        },
+        {
+            id: "circles",
+            title: "Healing Circles",
+            description: "Grow together with your community.",
+            href: "/healing-circles",
+            icon: "🤝",
+        },
+        {
+            id: "sessions",
+            title: "My Sessions",
+            description: "View your upcoming and past sessions.",
+            href: "/sessions",
+            icon: "📅",
+        },
+        {
+            id: "gift",
+            title: "Gift Therapy",
+            description: "Support someone else's healing journey.",
+            href: "/gift-therapy",
+            icon: "🎁",
+        },
+        {
+            id: "profile",
+            title: "My Profile",
+            description: "Manage your account and preferences.",
+            href: "/profile",
+            icon: "⚙️",
+        },
+    ]}
+/>
 	  
 	  <DashboardAnnouncement />
 
@@ -103,15 +221,7 @@ export default function DashboardPage() {
 
 function ClientDashboard() {
   const cards: DashboardCard[] = [
-    {
-      icon: "🧑‍⚕️",
-      title: "Find a Therapist",
-      description:
-        "Answer a few preparation questions, then browse verified therapists by specialty, language, gender, experience, and availability.",
-      href: "/pre-booking-intake",
-      buttonText: "Start Booking",
-      primary: true,
-    },
+ 
     {
       icon: "📅",
       title: "My Sessions",
@@ -120,6 +230,16 @@ function ClientDashboard() {
       href: "/my-bookings",
       buttonText: "View Sessions",
     },
+	
+	{
+  icon: "📈",
+  title: "My Check-Ins",
+  description:
+    "Review all your emotional wellness assessments, monitor your progress over time, and revisit previous insights.",
+  href: "/my-checkins",
+  buttonText: "View History",
+},
+
 	{
       icon: "🎁",
       title: "Gift Therapy",
@@ -151,17 +271,25 @@ function ClientDashboard() {
   return (
   <>
     <SectionTitle
-      title="Your Healing Journey"
-      description="Start with awareness, then connect with support when you need it."
-    />
+  title="Your Wellness Journey"
+  description="Start with awareness, then connect with support when you need it."
+/>
 
-    <WellbeingDashboard />
+<WellbeingDashboard />
 
-    <div className="mt-10">
-      <DashboardCardGrid cards={cards} />
-    </div>
+<LatestCheckIn />
 
-    <WellnessTools />
+<HealingHub />
+
+<SectionTitle
+  title="My Workspace"
+  description="Manage your sessions, history, healing circles, gifts, and other tools."
+/>
+<div className="mt-10">
+  <DashboardCardGrid cards={cards} />
+</div>
+
+
   </>
 );
 }
@@ -270,10 +398,90 @@ function SectionTitle({
   );
 }
 
+function HealingHub() {
+  return (
+    <section className="mt-12">
+      <SectionTitle
+        title="Continue Your Wellness Journey"
+        description="Choose the next step in your journey of healing, growth, and self-discovery."
+      />
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="card-soft rounded-3xl p-8">
+          <div className="text-5xl">📖</div>
+
+          <h3 className="mt-5 text-2xl font-bold text-[#0F4C5C]">
+            Journal
+          </h3>
+		  
+
+          <p className="mt-3 text-base leading-7 text-gray-700">
+            Capture today's thoughts and reflect on your emotional journey.
+          </p>
+		  
+		  <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#0b3945]">
+  Open Journal →
+</div>
+        </div>
+		
+        <div className="card-soft rounded-3xl p-8">
+          <div className="text-5xl">🤖</div>
+
+          <h3 className="mt-5 text-2xl font-bold text-[#0F4C5C]">
+            MyDeepTalk AI
+          </h3>
+
+
+
+          <p className="mt-3 text-base leading-7 text-gray-700">
+            Continue exploring today's emotions through an AI-guided conversation.
+          </p>
+		  
+		  <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#0b3945]">
+  Start Conversation →
+</div>
+        </div>
+		
+		<div className="card-soft rounded-3xl p-8">
+  <div className="text-5xl">🌱</div>
+
+  <h3 className="mt-5 text-2xl font-bold text-[#0F4C5C]">
+    Continue Genesis
+  </h3>
+
+  <p className="mt-3 text-base leading-7 text-gray-700">
+    Continue your guided self-discovery journey and unlock the next chapter of personal growth.
+  </p>
+
+  <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white">
+    Continue Journey →
+  </div>
+</div>
+
+<div className="card-soft rounded-3xl p-8">
+  <div className="text-5xl">👩‍⚕️</div>
+
+  <h3 className="mt-5 text-2xl font-bold text-[#0F4C5C]">
+    Find a Therapist
+  </h3>
+
+  <p className="mt-3 text-base leading-7 text-gray-700">
+    Connect with a verified therapist whenever you need professional guidance and support.
+  </p>
+
+  <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white">
+    Find Therapist →
+  </div>
+</div>
+      </div>
+    </section>
+  );
+}
 
 
 function WellnessTools({ title = "Wellness Tools" }: { title?: string }) {
   return (
+  <>
     <section className="mt-12">
       <SectionTitle
         title={title}
@@ -302,7 +510,7 @@ function WellnessTools({ title = "Wellness Tools" }: { title?: string }) {
         </Link>
 
         <Link
-          href="/assessments"
+          href="/assessment"
           className="group rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
         >
           <div className="text-5xl">🧠</div>
@@ -322,5 +530,21 @@ function WellnessTools({ title = "Wellness Tools" }: { title?: string }) {
         </Link>
       </div>
     </section>
+	
+	<section className="card-soft mt-8 rounded-3xl p-8">
+  <p className="eyebrow">
+    Continue Your Wellness Journey
+  </p>
+
+  <h2 className="mt-2 text-3xl font-bold text-slate-900">
+    Your next steps
+  </h2>
+
+  <p className="mt-4 max-w-2xl text-slate-600">
+    Continue your growth through journaling, guided conversations,
+    Genesis experiences, or professional support.
+  </p>
+</section>
+</>
   );
 }

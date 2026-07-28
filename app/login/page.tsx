@@ -10,10 +10,46 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { ArrowLeft } from "lucide-react";
 import { IMAGES } from "@/lib/images";
+
+function getLoginErrorMessage(code: string) {
+  switch (code) {
+    case "auth/invalid-credential":
+      return "Incorrect email or password.";
+
+    case "auth/user-not-found":
+      return "No account was found with that email address.";
+
+    case "auth/wrong-password":
+      return "Incorrect email or password.";
+
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+
+    case "auth/user-disabled":
+      return "This account has been disabled. Please contact support.";
+
+    case "auth/network-request-failed":
+      return "Network error. Please check your internet connection.";
+
+    case "auth/too-many-requests":
+      return "Too many login attempts. Please wait a few minutes and try again.";
+
+    case "auth/account-exists-with-different-credential":
+      return "This email is already associated with another sign-in method.";
+
+    default:
+      return "We couldn't sign you in. Please try again.";
+  }
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,27 +57,70 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  
+
+async function redirectAfterLogin(uid: string, emailVerified: boolean) {
+  if (!emailVerified) {
+    router.push("/verify-email");
+    return;
+  }
+
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    router.push("/onboarding");
+    return;
+  }
+
+  const userData = userSnap.data();
+
+  if (!userData.onboardingCompleted) {
+    router.push("/onboarding");
+    return;
+  }
+
+  switch (userData.role) {
+  case "admin":
+    router.push("/admin");
+    return;
+
+  case "therapist":
+    router.push("/therapist/dashboard");
+    return;
+
+  case "client":
+  default:
+    router.push("/dashboard");
+    return;
+}
+}
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/dashboard");
+      const userCredential = await signInWithEmailAndPassword(
+  auth,
+  email,
+  password
+);
+
+await redirectAfterLogin(
+  userCredential.user.uid,
+  userCredential.user.emailVerified
+);
     } catch (error: any) {
-      setMessage(error.message || "Could not log in.");
-    } finally {
+  setMessage(getLoginErrorMessage(error.code));
+} finally {
       setLoading(false);
     }
   }
 
   async function handleGoogleLogin() {
-    if (!acceptedTerms) {
-      setMessage("Please accept the Terms and Conditions and Privacy Policy first.");
-      return;
-    }
+    
     setLoading(true);
     setMessage("");
     try {
@@ -85,10 +164,14 @@ export default function LoginPage() {
           { merge: true }
         );
       }
-      router.push("/dashboard");
+      await redirectAfterLogin(user.uid, true);
     } catch (error: any) {
-      setMessage(error.message || "Could not continue with Google.");
-    } finally {
+  if (error.code === "auth/popup-closed-by-user") {
+    return;
+  }
+
+  setMessage(getLoginErrorMessage(error.code));
+} finally {
       setLoading(false);
     }
   }
@@ -183,14 +266,24 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-gray-900 placeholder:text-gray-400 transition focus:border-[#0F4C5C] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0F4C5C]/10"
-              />
+              <div className="relative">
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="••••••••"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 pr-20 text-gray-900 placeholder:text-gray-400 transition focus:border-[#0F4C5C] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0F4C5C]/10"
+  />
+
+  <button
+    type="button"
+    onClick={() => setShowPassword((v) => !v)}
+    className="absolute inset-y-0 right-3 flex items-center text-sm font-semibold text-gray-500 hover:text-[#0F4C5C]"
+  >
+    {showPassword ? "Hide" : "Show"}
+  </button>
+</div>
             </div>
 
             <button
@@ -202,25 +295,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl bg-[#F7F3EC] px-4 py-3.5 text-sm font-semibold text-gray-700">
-            <input
-              type="checkbox"
-              checked={acceptedTerms}
-              onChange={(e) => setAcceptedTerms(e.target.checked)}
-              className="mt-0.5"
-            />
-            <span>
-              I agree to the{" "}
-              <Link href="/terms" className="font-bold text-[#0F4C5C] underline">
-                Terms
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="font-bold text-[#0F4C5C] underline">
-                Privacy Policy
-              </Link>
-              .
-            </span>
-          </label>
+          
 
           <div className="mt-4 flex items-center gap-4">
             <div className="h-px flex-1 bg-gray-200" />

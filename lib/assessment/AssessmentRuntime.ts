@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+
 
 import { AssessmentCatalogService } from "./AssessmentCatalog";
 import { scoreAssessment } from "./scoring/AssessmentScoringEngine";
@@ -63,7 +63,11 @@ const durationSeconds =
 
     return {
 
-      id: randomUUID(),
+     id:
+  globalThis.crypto?.randomUUID?.() ??
+  `assessment-${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2)}`,
 
       userId: options.userId,
 

@@ -80,16 +80,10 @@ export default function WellbeingDashboard() {
   }
 
   return (
-    <div className="space-y-8">
-      <WellbeingHero profile={profile} />
+  <div className="space-y-8">
+    <WellbeingHero profile={profile} />
 
-      <WellbeingDimensions profile={profile} />
-
-      {recommendation && (
-        <RecommendationCard
-          recommendation={recommendation}
-        />
-      )}
-    </div>
-  );
+    <WellbeingDimensions profile={profile} />
+  </div>
+);
 }

@@ -88,11 +88,11 @@ export function scoreAssessment(
     );
 
   const result =
-    definition.results.find(
-      (result) =>
-        normalizedScore >= result.minScore &&
-        normalizedScore <= result.maxScore
-    );
+  definition.results.find(
+    (result) =>
+      rawScore >= result.minScore &&
+      rawScore <= result.maxScore
+  );
 
   if (!result) {
     throw new Error(
