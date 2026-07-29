@@ -18,7 +18,7 @@ export class AssessmentService {
   ): Promise<AssessmentDashboardSummary> {
     // Placeholder until the Assessment repository is implemented.
 
-    await dashboardRepository.getUser(userId);
+    await dashboardRepository.getUserProfile(userId);
 
     return {
       completedAssessments: 0,

@@ -20,7 +20,7 @@ export class GenesisService {
     // Placeholder until the Genesis repository is implemented.
     // This method defines the contract the dashboard will consume.
 
-    await dashboardRepository.getUser(userId);
+    await dashboardRepository.getUserProfile(userId);
 
     return {
       currentJourney: null,

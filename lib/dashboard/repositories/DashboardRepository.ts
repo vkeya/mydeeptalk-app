@@ -1,7 +1,7 @@
 import { HealingActivity } from "../types";
 
 export interface DashboardRepository {
-  getUser(userId: string): Promise<unknown>;
+  getUserProfile(userId: string): Promise<any>;
 
   getLatestAssessment(userId: string): Promise<unknown>;
 

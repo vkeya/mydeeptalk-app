@@ -17,7 +17,7 @@ export class JournalService {
   ): Promise<JournalDashboardSummary> {
     // Placeholder until the Journal repository is implemented.
 
-    await dashboardRepository.getUser(userId);
+    await dashboardRepository.getUserProfile(userId);
 
     return {
       latestEntryDate: null,

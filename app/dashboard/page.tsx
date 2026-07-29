@@ -20,7 +20,7 @@ import ContinueHealing from "@/components/dashboard/client/ContinueHealing";
 import ToolkitGrid from "@/components/dashboard/client/ToolkitGrid";
 import { dashboardService } from "@/lib/dashboard/dashboardService";
 import { DashboardViewModel } from "@/lib/dashboard/types";
-
+import ComingSoonModal from "@/components/common/ComingSoonModal";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -28,6 +28,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [dashboard, setDashboard] =
   useState<DashboardViewModel | null>(null);
+  
   
   
   useEffect(() => {
@@ -65,10 +66,10 @@ if (!userData.onboardingCompleted) {
   return;
 }
 
-/*if (!userData.profile?.completed) {
+if (!userData.profile?.completed) {
   router.push("/profile-completion");
   return;
-}*/
+}
 
 const dashboardData = await dashboardService.build(user.uid);
 
@@ -85,6 +86,7 @@ setLoading(false);
     await signOut(auth);
     router.push("/login");
   }
+  
 
   if (loading) {
     return (
@@ -98,7 +100,9 @@ setLoading(false);
   
   const displayName =
   role === "client"
-    ? userData?.alias || userData?.fullName || "Friend"
+    ? userData?.profile?.privacyName ||
+      userData?.fullName ||
+      "Friend"
     : userData?.fullName || "Friend";
 
   return (
@@ -111,20 +115,6 @@ setLoading(false);
   name={dashboard?.welcome.userName ?? displayName}
 />
 
-<TodaysFocus
-  title={
-    dashboard?.todaysFocus.title ??
-    "Complete today's emotional check-in"
-  }
-  description={
-    dashboard?.todaysFocus.description ??
-    "Taking a few moments to reflect on how you're feeling today helps you build self-awareness and allows MyDeepTalk to better support your healing journey."
-  }
-  buttonText={
-    dashboard?.todaysFocus.actionLabel ??
-    "Start Check-In"
-  }
-/>
 
 <JourneyProgress
     wellbeingScore={
@@ -206,7 +196,7 @@ setLoading(false);
                 id: "assessments",
                 title: "Assessments",
                 description: "Understand yourself through guided assessments.",
-                href: "/assessments",
+                href: "/assessment",
                 icon: "🧠",
             },
             {
@@ -220,28 +210,28 @@ setLoading(false);
                 id: "circles",
                 title: "Healing Circles",
                 description: "Grow together with your community.",
-                href: "/healing-circles",
+                href: "/healing-circle",
                 icon: "🤝",
             },
             {
                 id: "sessions",
                 title: "My Sessions",
                 description: "View your upcoming and past sessions.",
-                href: "/sessions",
+                href: "/my-bookings",
                 icon: "📅",
             },
             {
                 id: "gift",
                 title: "Gift Therapy",
                 description: "Support someone else's healing journey.",
-                href: "/gift-therapy",
+                href: "/gift-session",
                 icon: "🎁",
             },
             {
                 id: "profile",
                 title: "My Profile",
                 description: "Manage your account and preferences.",
-                href: "/profile",
+                href: "/profile-completion",
                 icon: "⚙️",
             },
         ]
@@ -253,6 +243,8 @@ setLoading(false);
       {role === "client" && <ClientDashboard />}
       {role === "therapist" && <TherapistDashboard />}
       {role === "admin" && <AdminDashboard />}
+	  
+	  
     </DashboardLayout>
   );
 }
@@ -437,6 +429,22 @@ function SectionTitle({
 }
 
 function HealingHub() {
+	const [comingSoon, setComingSoon] = useState({
+  open: false,
+  title: "",
+  description: "",
+});
+	
+	const handleComingSoon = (
+  title: string,
+  description: string
+) => {
+  setComingSoon({
+    open: true,
+    title,
+    description,
+  });
+};
   return (
     <section className="mt-12">
       <SectionTitle
@@ -445,22 +453,25 @@ function HealingHub() {
       />
 
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="card-soft rounded-3xl p-8">
-          <div className="text-5xl">📖</div>
+		
+		<div className="card-soft rounded-3xl p-8">
+  <div className="text-5xl">👩‍⚕️</div>
 
-          <h3 className="mt-5 text-2xl font-bold text-[#0F4C5C]">
-            Journal
-          </h3>
-		  
+  <h3 className="mt-5 text-2xl font-bold text-[#0F4C5C]">
+    Find a Therapist
+  </h3>
 
-          <p className="mt-3 text-base leading-7 text-gray-700">
-            Capture today's thoughts and reflect on your emotional journey.
-          </p>
-		  
-		  <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#0b3945]">
-  Open Journal →
+  <p className="mt-3 text-base leading-7 text-gray-700">
+    Connect with a verified therapist whenever you need professional guidance and support.
+  </p>
+
+  <Link
+  href="/therapists"
+  className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white"
+>
+  Find a Therapist →
+</Link>
 </div>
-        </div>
 		
         <div className="card-soft rounded-3xl p-8">
           <div className="text-5xl">🤖</div>
@@ -469,15 +480,21 @@ function HealingHub() {
             MyDeepTalk AI
           </h3>
 
-
-
           <p className="mt-3 text-base leading-7 text-gray-700">
             Continue exploring today's emotions through an AI-guided conversation.
           </p>
 		  
-		  <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#0b3945]">
-  Start Conversation →
-</div>
+		  <button
+  onClick={() =>
+    handleComingSoon(
+      "MyDeepTalk AI",
+      "Your personalized AI companion is currently under development. It will help you understand your emotions, explore your thoughts, and support your healing journey."
+    )
+  }
+  className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#0b3945]"
+>
+  Coming Soon →
+</button>
         </div>
 		
 		<div className="card-soft rounded-3xl p-8">
@@ -491,27 +508,34 @@ function HealingHub() {
     Continue your guided self-discovery journey and unlock the next chapter of personal growth.
   </p>
 
-  <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white">
-    Continue Journey →
-  </div>
+  <button
+  onClick={() =>
+    handleComingSoon(
+      "Project Genesis",
+      "Project Genesis is our guided self-discovery journey. We're carefully crafting this experience to help you discover yourself one meaningful step at a time."
+    )
+  }
+  className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#0b3945]"
+>
+  Coming Soon →
+</button>
 </div>
 
-<div className="card-soft rounded-3xl p-8">
-  <div className="text-5xl">👩‍⚕️</div>
 
-  <h3 className="mt-5 text-2xl font-bold text-[#0F4C5C]">
-    Find a Therapist
-  </h3>
-
-  <p className="mt-3 text-base leading-7 text-gray-700">
-    Connect with a verified therapist whenever you need professional guidance and support.
-  </p>
-
-  <div className="mt-6 inline-block rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-bold text-white">
-    Find Therapist →
-  </div>
-</div>
       </div>
+	  
+	  <ComingSoonModal
+  open={comingSoon.open}
+  title={comingSoon.title}
+  description={comingSoon.description}
+  onClose={() =>
+    setComingSoon({
+      open: false,
+      title: "",
+      description: "",
+    })
+  }
+/>
     </section>
   );
 }

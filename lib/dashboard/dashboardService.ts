@@ -12,7 +12,8 @@ import { checkInService } from "@/lib/checkin/CheckInService";
 
 export class DashboardService {
   async build(userId: string): Promise<DashboardViewModel> {
-	  
+
+const profile = await dashboardRepository.getUserProfile(userId);	  
 	 const genesis = await genesisService.getDashboardSummary(userId);
 
 const journal = await journalService.getDashboardSummary(userId);
@@ -28,11 +29,15 @@ const checkIn = await checkInService.getDashboardSummary(userId);
 
 	
 	return dashboardBuilder.build({
-      welcome: {
-        greeting: "Good afternoon",
-        userName: "Victor",
-        encouragement: "Every small step you take today matters.",
-      },
+     welcome: {
+  greeting: "Good afternoon", // we'll make this dynamic next
+  userName:
+    profile?.profile?.privacyName ??
+    profile?.fullName ??
+    "Friend",
+  encouragement:
+    "Every small step you take today matters.",
+},
 
       todaysFocus: {
         title: "Complete today's emotional check-in",

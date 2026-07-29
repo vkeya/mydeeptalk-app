@@ -58,7 +58,7 @@ export default function LatestCheckIn() {
           </p>
 
           <Link
-            href="/assessments"
+            href="/assessment"
             className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#0F4C5C] px-6 py-3 font-bold text-white transition hover:bg-[#0b3945]"
           >
             <ClipboardList size={18} />

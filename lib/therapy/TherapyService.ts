@@ -18,7 +18,7 @@ export class TherapyService {
   ): Promise<TherapyDashboardSummary> {
     // Placeholder until the Therapy repository is implemented.
 
-    await dashboardRepository.getUser(userId);
+    await dashboardRepository.getUserProfile(userId);
 
     return {
       upcomingSessions: 0,

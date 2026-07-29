@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { assessmentSessionService } from "@/lib/assessment/AssessmentSessionService";
 import { AssessmentSession } from "@/lib/assessment/types/AssessmentSession";
+import { useRouter } from "next/navigation";
+import ComingSoonModal from "@/components/common/ComingSoonModal";
 import {
   CheckCircle2,
   Lightbulb,
@@ -21,6 +23,12 @@ export default function AssessmentResultPage() {
 	
 	const params = useParams();
 const sessionId = params.sessionId as string;
+const router = useRouter();
+const [comingSoon, setComingSoon] = useState({
+  open: false,
+  title: "",
+  description: "",
+});
 	
   useEffect(() => {
   async function loadSession() {
@@ -48,8 +56,24 @@ const sessionId = params.sessionId as string;
   loadSession();
 }, [sessionId]);
 	
+const handleJournal = () => {
+  router.push("/journal");
+};
 
+const handleTherapist = () => {
+  router.push("/therapists");
+};
 
+const handleComingSoon = (
+  title: string,
+  description: string
+) => {
+  setComingSoon({
+    open: true,
+    title,
+    description,
+  });
+};
   if (!session) {
     return (
       <main className="mx-auto max-w-4xl p-8">
@@ -209,7 +233,10 @@ const sessionId = params.sessionId as string;
 
           <div className="mt-8 grid gap-5 md:grid-cols-2">
 
-  <button className="card-soft rounded-2xl p-6 text-left transition hover:shadow-lg">
+  <button
+  onClick={handleJournal}
+  className="card-soft rounded-2xl p-6 text-left transition hover:shadow-lg"
+>
     <BookOpen className="mb-4 h-8 w-8 text-[#0D5C63]" />
 
     <h4 className="text-lg font-semibold">
@@ -221,7 +248,15 @@ const sessionId = params.sessionId as string;
     </p>
   </button>
 
-  <button className="card-soft rounded-2xl p-6 text-left transition hover:shadow-lg">
+  <button
+  onClick={() =>
+  handleComingSoon(
+    "MyDeepTalk AI",
+    "Your personalized AI companion is currently under development. It will help you understand your emotions, explore your thoughts, and support your healing journey through intelligent conversations."
+  )
+}
+  className="card-soft rounded-2xl p-6 text-left transition hover:shadow-lg"
+>
     <Brain className="mb-4 h-8 w-8 text-[#0D5C63]" />
 
     <h4 className="text-lg font-semibold">
@@ -233,7 +268,15 @@ const sessionId = params.sessionId as string;
     </p>
   </button>
 
-  <button className="card-soft rounded-2xl p-6 text-left transition hover:shadow-lg">
+  <button
+  onClick={() =>
+  handleComingSoon(
+    "Project Genesis",
+    "Project Genesis is our guided self-discovery journey. We're carefully crafting this experience to help you discover yourself one meaningful step at a time."
+  )
+}
+  className="card-soft rounded-2xl p-6 text-left transition hover:shadow-lg"
+>
     <Compass className="mb-4 h-8 w-8 text-[#0D5C63]" />
 
     <h4 className="text-lg font-semibold">
@@ -245,7 +288,10 @@ const sessionId = params.sessionId as string;
     </p>
   </button>
 
-  <button className="card-soft rounded-2xl p-6 text-left transition hover:shadow-lg">
+  <button
+  onClick={handleTherapist}
+  className="card-soft rounded-2xl p-6 text-left transition hover:shadow-lg"
+>
     <Stethoscope className="mb-4 h-8 w-8 text-[#0D5C63]" />
 
     <h4 className="text-lg font-semibold">
@@ -282,6 +328,18 @@ const sessionId = params.sessionId as string;
         </div>
 
       </div>
+<ComingSoonModal
+  open={comingSoon.open}
+  title={comingSoon.title}
+  description={comingSoon.description}
+  onClose={() =>
+    setComingSoon({
+      open: false,
+      title: "",
+      description: "",
+    })
+  }
+/>
 
     </main>
   );

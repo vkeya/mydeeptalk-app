@@ -18,7 +18,7 @@ export class CheckInService {
   ): Promise<CheckInDashboardSummary> {
     // Placeholder until the Check-In repository is implemented.
 
-    await dashboardRepository.getUser(userId);
+    await dashboardRepository.getUserProfile(userId);
 
     return {
       latestCheckInDate: null,

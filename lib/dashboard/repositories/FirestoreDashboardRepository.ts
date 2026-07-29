@@ -7,7 +7,9 @@ import { HealingActivity } from "../types";
 export class FirestoreDashboardRepository
   implements DashboardRepository
 {
-  async getUser(userId: string): Promise<unknown> {
+	
+  
+  async getUserProfile(userId: string): Promise<any> {
   const snapshot = await getDoc(
     doc(db, "users", userId)
   );
