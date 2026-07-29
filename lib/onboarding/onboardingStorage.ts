@@ -25,5 +25,7 @@ export function saveOnboardingData(data: Partial<OnboardingData>) {
 }
 
 export function clearOnboardingData() {
-  localStorage.removeItem("onboarding");
+  if (typeof window === "undefined") return;
+
+  localStorage.removeItem(STORAGE_KEY);
 }

@@ -21,6 +21,8 @@ import { profileService } from "@/lib/profile/profileService";
 const TOTAL_STEPS = 5;
 
 export default function ProfileCompletionPage() {
+	
+	 console.log("PROFILE COMPLETION PAGE LOADED");
   const router = useRouter();
 
   const [step, setStep] = useState(1);

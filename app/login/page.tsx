@@ -76,10 +76,13 @@ async function redirectAfterLogin(uid: string, emailVerified: boolean) {
 
   const userData = userSnap.data();
 
-  if (!userData.onboardingCompleted) {
-    router.push("/onboarding");
-    return;
-  }
+  if (
+  userData.role === "client" &&
+  !userData.onboardingCompleted
+) {
+  router.push("/onboarding");
+  return;
+}
 
   switch (userData.role) {
   case "admin":
@@ -87,7 +90,7 @@ async function redirectAfterLogin(uid: string, emailVerified: boolean) {
     return;
 
   case "therapist":
-    router.push("/therapist/dashboard");
+    router.push("/dashboard");
     return;
 
   case "client":

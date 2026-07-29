@@ -126,10 +126,8 @@ if (!passwordValid) {
   privacyVersion: "2026-06",
 
   onboardingCompleted: false,
-  onboarding: {
-    ...onboarding,
-    completedAt: serverTimestamp(),
-  },
+
+onboarding: {},
 
   createdAt: serverTimestamp(),
 });
@@ -163,10 +161,8 @@ async function handleGoogleSignup() {
         emailVerified: true,
 
         onboardingCompleted: false,
-        onboarding: {
-          ...onboarding,
-          completedAt: serverTimestamp(),
-        },
+
+onboarding: {},
 
         createdAt: serverTimestamp(),
       },

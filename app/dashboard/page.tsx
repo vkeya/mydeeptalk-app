@@ -47,13 +47,6 @@ export default function DashboardPage() {
      const userRef = doc(db, "users", user.uid);
 const userSnap = await getDoc(userRef);
 
-console.log("DASHBOARD USER CHECK:", {
-  authUid: user.uid,
-  authEmail: user.email,
-  firestoreExists: userSnap.exists(),
-  firestoreData: userSnap.exists() ? userSnap.data() : null,
-});
-
 if (!userSnap.exists()) {
   router.push("/onboarding");
   return;
@@ -61,12 +54,18 @@ if (!userSnap.exists()) {
 
 const userData = userSnap.data();
 
-if (!userData.onboardingCompleted) {
+if (
+  userData.role === "client" &&
+  !userData.onboardingCompleted
+) {
   router.push("/onboarding");
   return;
 }
 
-if (!userData.profile?.completed) {
+if (
+  userData.role === "client" &&
+  !userData.profile?.completed
+) {
   router.push("/profile-completion");
   return;
 }
@@ -114,7 +113,8 @@ setLoading(false);
       <WelcomeHero
   name={dashboard?.welcome.userName ?? displayName}
 />
-
+{role === "client" && (
+<>
 
 <JourneyProgress
     wellbeingScore={
@@ -237,6 +237,8 @@ setLoading(false);
         ]
     }
 />
+</>
+)}
 	  
 	  <DashboardAnnouncement />
 
@@ -246,7 +248,7 @@ setLoading(false);
 	  
 	  
     </DashboardLayout>
-  );
+ );
 }
 
 function ClientDashboard() {

@@ -5,9 +5,11 @@ import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import StartingPointCard from "./StartingPointCard";
 import { useRouter } from "next/navigation";
+
 import {
   getOnboardingData,
   saveOnboardingData,
+  clearOnboardingData,
 } from "@/lib/onboarding/onboardingStorage";
 import OnboardingLayout from "./OnboardingLayout";
 import OnboardingNavigation from "./OnboardingNavigation";
@@ -26,17 +28,35 @@ useEffect(() => {
 }, []);
 
 async function handleFinish() {
+ 
+
   const user = auth.currentUser;
 
   if (!user) {
+    
     router.push("/login");
     return;
   }
 
-  await updateDoc(doc(db, "users", user.uid), {
-    onboardingCompleted: true,
-    "onboarding.completedAt": serverTimestamp(),
-  });
+  const docRef = doc(db, "users", user.uid);
+
+  const onboarding = getOnboardingData();
+ 
+
+  await updateDoc(docRef, {
+  onboardingCompleted: true,
+
+  "onboarding.guide": onboarding.guide,
+  "onboarding.checkIn": onboarding.checkIn,
+  "onboarding.startingPoint": onboarding.startingPoint,
+  "onboarding.completedAt": serverTimestamp(),
+});
+
+
+
+  clearOnboardingData();
+
+ 
 
   router.push("/dashboard");
 }
