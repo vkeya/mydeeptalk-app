@@ -1,5 +1,6 @@
 "use client";
 
+import { buildDashboardState } from "@/lib/dashboard/dashboardStateBuilder";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -17,6 +18,7 @@ import TodaysFocus from "@/components/dashboard/client/TodaysFocus";
 import JourneyProgress from "@/components/dashboard/client/JourneyProgress";
 import InsightCard from "@/components/dashboard/client/InsightCard";
 import ContinueHealing from "@/components/dashboard/client/ContinueHealing";
+import IntelligencePanel from "@/components/dashboard/client/IntelligencePanel";
 import ToolkitGrid from "@/components/dashboard/client/ToolkitGrid";
 import { dashboardService } from "@/lib/dashboard/dashboardService";
 import { DashboardViewModel } from "@/lib/dashboard/types";
@@ -28,6 +30,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [dashboard, setDashboard] =
   useState<DashboardViewModel | null>(null);
+  const dashboardState = buildDashboardState();
   
   
   
@@ -116,19 +119,24 @@ setLoading(false);
 {role === "client" && (
 <>
 
+
+
 <JourneyProgress
-    wellbeingScore={
-        dashboard?.progress.wellbeingScore ?? 72
-    }
-    streak={
-        dashboard?.progress.streak ?? 14
-    }
-    journalEntries={
-        dashboard?.progress.journalEntries ?? 18
-    }
-    genesisProgress={
-        dashboard?.progress.genesisProgress ?? 42
-    }
+  wellbeingScore={dashboardState.progress.wellbeingScore}
+  streak={dashboardState.progress.streak}
+  journalEntries={dashboardState.progress.journalEntries}
+  genesisProgress={dashboardState.progress.genesisProgress}
+/>
+
+<IntelligencePanel
+  title={
+    dashboard?.intelligence.insights[0]?.title ??
+    "Welcome"
+  }
+  message={
+    dashboard?.intelligence.insights[0]?.description ??
+    ""
+  }
 />
 
 <InsightCard

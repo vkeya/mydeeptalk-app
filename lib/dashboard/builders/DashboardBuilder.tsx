@@ -1,3 +1,4 @@
+import { DashboardIntelligence } from "../dashboardIntelligence";
 import {
   ContinueHealingModel,
   DashboardViewModel,
@@ -18,6 +19,7 @@ export class DashboardBuilder {
     continueHealing: ContinueHealingModel;
     toolkit: ToolkitModel;
     timeline: HealingTimelineModel;
+	intelligence: DashboardIntelligence;
   }): DashboardViewModel {
     return {
       welcome: params.welcome,
@@ -27,6 +29,7 @@ export class DashboardBuilder {
       continueHealing: params.continueHealing,
       toolkit: params.toolkit,
       timeline: params.timeline,
+	  intelligence: params.intelligence,
     };
   }
 }

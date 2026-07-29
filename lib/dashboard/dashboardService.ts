@@ -9,6 +9,8 @@ import { journalService } from "@/lib/journal/JournalService";
 import { assessmentService } from "@/lib/assessment/AssessmentService";
 import { therapyService } from "@/lib/therapy/TherapyService";
 import { checkInService } from "@/lib/checkin/CheckInService";
+import { generateDashboardIntelligence } from "./dashboardIntelligence";
+
 
 export class DashboardService {
   async build(userId: string): Promise<DashboardViewModel> {
@@ -27,6 +29,13 @@ const checkIn = await checkInService.getDashboardSummary(userId);
 	 const healingActivities =
        await dashboardRepository.getHealingActivities(userId);
 
+const intelligence = generateDashboardIntelligence({
+  genesis,
+  assessment,
+  journal,
+  therapy,
+  checkIn,
+});
 	
 	return dashboardBuilder.build({
      welcome: {
@@ -79,8 +88,10 @@ continueHealing: continueHealingEngine.build({
 }),
 
       timeline: {
-        milestones: [],
-      },
+  milestones: [],
+},
+
+intelligence,
     });
   }
 }

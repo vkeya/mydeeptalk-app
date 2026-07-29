@@ -1,3 +1,5 @@
+import { DashboardIntelligence } from "./dashboardIntelligence";
+
 // =====================================================
 // Dashboard View Model
 // =====================================================
@@ -10,6 +12,9 @@ export interface DashboardViewModel {
   continueHealing: ContinueHealingModel;
   toolkit: ToolkitModel;
   timeline: HealingTimelineModel;
+
+  // Dashboard Intelligence
+  intelligence: DashboardIntelligence;
 }
 
 // =====================================================

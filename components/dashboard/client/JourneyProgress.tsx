@@ -1,8 +1,8 @@
 interface JourneyProgressProps {
-  wellbeingScore: number;
-  streak: number;
-  journalEntries: number;
-  genesisProgress: number;
+    wellbeingScore: number | null;
+    streak: number;
+    journalEntries: number;
+    genesisProgress: number;
 }
 
 export default function JourneyProgress({
@@ -15,7 +15,7 @@ export default function JourneyProgress({
     {
       icon: "❤️",
       title: "Wellbeing",
-      value: `${wellbeingScore}%`,
+      value: wellbeingScore !== null ? wellbeingScore : "--",
       subtitle: "Current emotional wellbeing",
     },
     {
