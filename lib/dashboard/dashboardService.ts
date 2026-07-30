@@ -48,6 +48,16 @@ const intelligence = generateDashboardIntelligence({
     "Every small step you take today matters.",
 },
 
+checkIn: {
+  hasCheckedInToday:
+    checkIn.latestCheckInDate !== null,
+
+  currentMood: checkIn.currentMood,
+
+  latestCheckInDate:
+    checkIn.latestCheckInDate,
+},
+
       todaysFocus: {
         title: "Complete today's emotional check-in",
         description:

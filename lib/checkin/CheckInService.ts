@@ -2,6 +2,8 @@ import { dashboardRepository } from "@/lib/dashboard/repositories/FirestoreDashb
 import { DashboardAction } from "@/lib/dashboard/contracts/DashboardAction";
 import { DashboardDomainSummary } from "@/lib/dashboard/contracts/DashboardDomainSummary";
 
+import { CheckIn } from "@/types/checkIn";
+import { FirestoreCheckInRepository } from "@/lib/checkin/repositories/FirestoreCheckInRepository";
 
 export interface CheckInDashboardSummary
   extends DashboardDomainSummary {
@@ -13,16 +15,56 @@ export interface CheckInDashboardSummary
 }
 
 export class CheckInService {
+  private repository = new FirestoreCheckInRepository();
+
+  /**
+   * Creates a new Daily Check-In.
+   */
+  async createCheckIn(checkIn: CheckIn): Promise<void> {
+    await this.repository.create(checkIn);
+  }
+
+  /**
+   * Returns the latest Daily Check-In.
+   */
+  async getLatestCheckIn(
+    userId: string
+  ): Promise<CheckIn | null> {
+    return this.repository.getLatest(userId);
+  }
+
+  /**
+   * Returns today's Daily Check-In.
+   */
+  async getTodayCheckIn(
+    userId: string
+  ): Promise<CheckIn | null> {
+    return this.repository.getToday(userId);
+  }
+
+  /**
+   * Returns a user's Daily Check-In history.
+   */
+  async getHistory(
+    userId: string
+  ): Promise<CheckIn[]> {
+    return this.repository.getHistory(userId);
+  }
+
+  /**
+   * Dashboard summary.
+   * This will evolve as Dashboard Intelligence grows.
+   */
   async getDashboardSummary(
     userId: string
   ): Promise<CheckInDashboardSummary> {
-    // Placeholder until the Check-In repository is implemented.
-
     await dashboardRepository.getUserProfile(userId);
 
+    const latest = await this.repository.getLatest(userId);
+
     return {
-      latestCheckInDate: null,
-      currentMood: null,
+      latestCheckInDate: latest?.completedAt ?? null,
+      currentMood: latest?.mood ?? null,
       streak: 0,
       nextRecommendedCheckIn: null,
       nextAction: null,

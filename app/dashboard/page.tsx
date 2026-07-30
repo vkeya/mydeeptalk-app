@@ -115,6 +115,12 @@ setLoading(false);
     >
       <WelcomeHero
   name={dashboard?.welcome.userName ?? displayName}
+  hasCheckedInToday={
+    dashboard?.checkIn.hasCheckedInToday ?? false
+  }
+  currentMood={
+    dashboard?.checkIn.currentMood ?? null
+  }
 />
 {role === "client" && (
 <>

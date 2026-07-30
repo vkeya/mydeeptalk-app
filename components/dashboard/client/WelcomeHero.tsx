@@ -1,10 +1,23 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 interface WelcomeHeroProps {
   name: string;
+
+  hasCheckedInToday: boolean;
+
+  currentMood?: string | null;
 }
 
 export default function WelcomeHero({
   name,
+  hasCheckedInToday,
+  currentMood,
 }: WelcomeHeroProps) {
+	
+	const router = useRouter();
+	
   const hour = new Date().getHours();
 
   const greeting =
@@ -32,10 +45,24 @@ export default function WelcomeHero({
       </p>
 
       <div className="mt-8">
-        <button className="rounded-full bg-white px-8 py-4 font-bold text-[#0F4C5C] transition hover:scale-105">
-          How are you feeling today?
-        </button>
-      </div>
+  {hasCheckedInToday ? (
+    <div className="inline-flex items-center rounded-full bg-white px-8 py-4 font-bold text-[#0F4C5C]">
+      ✅ Today's Check-In Complete
+      {currentMood && (
+        <span className="ml-3 text-[#2C7A7B]">
+          • {currentMood}
+        </span>
+      )}
+    </div>
+  ) : (
+    <button
+      onClick={() => router.push("/check-in")}
+      className="rounded-full bg-white px-8 py-4 font-bold text-[#0F4C5C] transition hover:scale-105"
+    >
+      How are you feeling today?
+    </button>
+  )}
+</div>
 
     </section>
   );

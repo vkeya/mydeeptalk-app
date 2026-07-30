@@ -6,6 +6,9 @@ import { DashboardIntelligence } from "./dashboardIntelligence";
 
 export interface DashboardViewModel {
   welcome: WelcomeSection;
+
+  checkIn: CheckInWidgetModel;
+
   todaysFocus: TodaysFocusModel;
   progress: JourneyProgressModel;
   insight: InsightModel;
@@ -13,7 +16,6 @@ export interface DashboardViewModel {
   toolkit: ToolkitModel;
   timeline: HealingTimelineModel;
 
-  // Dashboard Intelligence
   intelligence: DashboardIntelligence;
 }
 
@@ -25,6 +27,12 @@ export interface WelcomeSection {
   greeting: string;
   userName: string;
   encouragement: string;
+}
+
+export interface CheckInWidgetModel {
+  hasCheckedInToday: boolean;
+  currentMood: string | null;
+  latestCheckInDate: Date | null;
 }
 
 // =====================================================
