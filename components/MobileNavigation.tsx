@@ -84,10 +84,10 @@ export default function MobileNavigation({
         <>
           <div
             onClick={() => setOpen(false)}
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm"
           />
 
-          <div className="fixed left-0 top-0 z-50 flex h-full w-[320px] flex-col bg-white shadow-2xl">
+          <div className="fixed inset-y-0 left-0 z-[100] flex h-screen w-[85vw] max-w-sm flex-col bg-white shadow-2xl">
 
             {/* Header */}
 

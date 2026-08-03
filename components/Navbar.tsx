@@ -35,7 +35,7 @@ export default function Navbar() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#F7F3EC]/80 backdrop-blur">
+    <nav className="sticky top-0 z-30 bg-[#F7F3EC]/80 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8 md:py-5">
         {/* Logo */}
         <Link href="/" className="flex items-center">
