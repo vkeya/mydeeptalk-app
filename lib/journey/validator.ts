@@ -1,21 +1,23 @@
+// lib/journey/validator.ts
+
 export class JourneyValidator {
-  canStartJourney() {
+  canStartJourney(): boolean {
     return true;
   }
 
-  canOpenChapter() {
+  canOpenChapter(): boolean {
     return true;
   }
 
-  canOpenExperience() {
+  canOpenExperience(): boolean {
     return true;
   }
 
-  canCompleteActivity() {
+  canCompleteActivity(): boolean {
     return true;
   }
 
-  canClaimAchievement() {
+  canClaimAchievement(): boolean {
     return true;
   }
 }

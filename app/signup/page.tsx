@@ -7,110 +7,178 @@ import { useRouter } from "next/navigation";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import { WelcomeEmail } from "@/emails";
+import { welcomeEmailTemplate } from "@/lib/emailTemplates";
 import { ArrowLeft } from "lucide-react";
 import { IMAGES } from "@/lib/images";
+import {
+  getOnboardingData,
+  clearOnboardingData,
+} from "@/lib/onboarding/onboardingStorage";
+
+function getPasswordChecks(password: string) {
+  return {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /\d/.test(password),
+    special: /[^A-Za-z0-9]/.test(password),
+  };
+}
+
+function getSignupErrorMessage(code: string) {
+  switch (code) {
+    case "auth/email-already-in-use":
+      return "An account with this email already exists.";
+
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+
+    case "auth/weak-password":
+      return "Please choose a stronger password.";
+
+    case "auth/network-request-failed":
+      return "Network error. Please check your internet connection and try again.";
+
+    case "auth/too-many-requests":
+      return "Too many attempts. Please wait a few minutes before trying again.";
+	  
+	case "auth/account-exists-with-different-credential":
+      return "An account already exists with this email. Please sign in using your original method.";
+
+    default:
+      return "We couldn't create your account. Please try again.";
+  }
+}
 
 export default function SignupPage() {
   const router = useRouter();
   const [fullName, setFullName] = useState("");
-  const [alias, setAlias] = useState("");
+  
   const [email, setEmail] = useState("");
+  const googleProvider = new GoogleAuthProvider();
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const passwordChecks = getPasswordChecks(password);
+
+  const passwordValid = Object.values(passwordChecks).every(Boolean);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [role, setRole] = useState("client");
   const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-async function handleSignup(e: React.FormEvent) {
-  e.preventDefault();
-
-  if (!acceptedLegal) {
-    setError(
-      "Please accept the Terms and Conditions and Privacy Policy to continue."
-    );
-    return;
-  }
-
-  if (role === "client" && !alias.trim()) {
-    setError("Please choose a privacy name / alias.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-    setError("");
-
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
-    const user = userCredential.user;
-
-    console.log("Sending verification email to:", user.email);
-
-    try {
-      await sendEmailVerification(user);
-
-      console.log("✅ Firebase accepted verification request.");
-    } catch (verificationError) {
-      console.error(
-        "❌ Verification email failed:",
-        verificationError
-      );
+  async function handleSignup(e: React.FormEvent) {
+    e.preventDefault();
+    if (!acceptedLegal) {
+      setError("Please accept the Terms and Conditions and Privacy Policy to continue.");
+      return;
     }
-
-    const emailResponse = await fetch("/api/send-email", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    to: email,
-    subject: "Welcome to MyDeepTalk",
-    html: WelcomeEmail({
-  fullName,
-}),
-  }),
-});
-
-const emailResult = await emailResponse.json();
-
-console.log("WELCOME EMAIL:", emailResult);
-
-if (!emailResponse.ok) {
-  console.error("Failed to send welcome email:", emailResult);
+   
+	
+	if (password !== confirmPassword) {
+  setError("Passwords do not match.");
+  return;
 }
 
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      fullName,
-      ...(role === "client" && { alias: alias.trim() }),
-      email,
-      role,
-      provider: "email",
-      emailVerified: false,
-      ageConfirmed18: true,
-      termsAccepted: true,
-      privacyAccepted: true,
-      legalAccepted: true,
-      legalAcceptedAt: serverTimestamp(),
-      termsVersion: "2026-06",
-      privacyVersion: "2026-06",
-      createdAt: serverTimestamp(),
-    });
+if (!passwordValid) {
+  setError("Please create a stronger password.");
+  return;
+}
 
-    router.push("/verify-email");
+    try {
+      setLoading(true);
+      setError("");
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+	  const onboarding = getOnboardingData();
+      await sendEmailVerification(user);
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: email,
+          subject: "Welcome to MyDeepTalk 💙",
+          html: welcomeEmailTemplate(fullName),
+        }),
+      });
+      await setDoc(doc(db, "users", user.uid), {
+  uid: user.uid,
+  fullName,
+  
+  email,
+  role,
+  provider: "email",
+  emailVerified: false,
+
+  ageConfirmed18: true,
+  termsAccepted: true,
+  privacyAccepted: true,
+  legalAccepted: true,
+  legalAcceptedAt: serverTimestamp(),
+  termsVersion: "2026-06",
+  privacyVersion: "2026-06",
+
+  onboardingCompleted: false,
+
+onboarding: {},
+
+  createdAt: serverTimestamp(),
+});
+clearOnboardingData();
+      router.push("/verify-email");
+    } catch (err: any) {
+  setError(getSignupErrorMessage(err.code));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+async function handleGoogleSignup() {
+  try {
+    setGoogleLoading(true);
+    setError("");
+
+    const onboarding = getOnboardingData();
+
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        uid: user.uid,
+        fullName: user.displayName ?? "",
+        email: user.email,
+        provider: "google",
+        role,
+        emailVerified: true,
+
+        onboardingCompleted: false,
+
+onboarding: {},
+
+        createdAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+
+    clearOnboardingData();
+
+    router.push("/dashboard");
   } catch (err: any) {
-    console.error(err);
-    setError(err.message);
+  if (err.code === "auth/popup-closed-by-user") {
+    return;
+  }
+    setError(getSignupErrorMessage(err.code));
   } finally {
-    setLoading(false);
+    setGoogleLoading(false);
   }
 }
 
@@ -174,6 +242,30 @@ if (!emailResponse.ok) {
               {error}
             </div>
           )}
+		  
+		  <button
+  type="button"
+  onClick={handleGoogleSignup}
+  disabled={loading || googleLoading}
+  className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-300 bg-white py-3.5 font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
+>
+  <Image
+    src="/images/google.png"
+    alt="Google"
+    width={20}
+    height={20}
+  />
+
+  {googleLoading ? "Signing you in..." : "Continue with Google"}
+</button>
+
+<div className="my-6 flex items-center">
+  <div className="h-px flex-1 bg-gray-200" />
+  <span className="mx-4 text-sm text-gray-500">
+    or continue with email
+  </span>
+  <div className="h-px flex-1 bg-gray-200" />
+</div>
 
           <form onSubmit={handleSignup} className="mt-8 space-y-5">
             <div>
@@ -190,24 +282,7 @@ if (!emailResponse.ok) {
               />
             </div>
 
-            {role === "client" && (
-              <div>
-                <label className="mb-1.5 block text-sm font-bold text-gray-700">
-                  Privacy Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Name shown to therapists instead of your real name"
-                  value={alias}
-                  onChange={(e) => setAlias(e.target.value)}
-                  required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-gray-900 placeholder:text-gray-400 transition focus:border-[#0F4C5C] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0F4C5C]/10"
-                />
-                <p className="mt-1.5 text-xs font-semibold text-gray-400">
-                  This keeps your real identity private.
-                </p>
-              </div>
-            )}
+       
 
             <div>
               <label className="mb-1.5 block text-sm font-bold text-gray-700">
@@ -227,29 +302,126 @@ if (!emailResponse.ok) {
               <label className="mb-1.5 block text-sm font-bold text-gray-700">
                 Password
               </label>
-              <input
-                type="password"
-                placeholder="Create a strong password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-gray-900 placeholder:text-gray-400 transition focus:border-[#0F4C5C] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0F4C5C]/10"
-              />
+              <div className="relative">
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="Create a strong password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 pr-12 text-gray-900 placeholder:text-gray-400 transition focus:border-[#0F4C5C] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0F4C5C]/10"
+  />
+
+  <button
+    type="button"
+    onClick={() => setShowPassword((v) => !v)}
+    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-[#0F4C5C]"
+  >
+    {showPassword ? "Hide" : "Show"}
+  </button>
+</div>
+
+<div className="mt-3 space-y-1 text-sm">
+  <p className={passwordChecks.length ? "text-green-600" : "text-gray-500"}>
+    ✓ At least 8 characters
+  </p>
+
+  <p className={passwordChecks.uppercase ? "text-green-600" : "text-gray-500"}>
+    ✓ One uppercase letter
+  </p>
+
+  <p className={passwordChecks.lowercase ? "text-green-600" : "text-gray-500"}>
+    ✓ One lowercase letter
+  </p>
+
+  <p className={passwordChecks.number ? "text-green-600" : "text-gray-500"}>
+    ✓ One number
+  </p>
+
+  <p className={passwordChecks.special ? "text-green-600" : "text-gray-500"}>
+    ✓ One special character
+  </p>
+</div>
+
+<div className="relative">
+  <input
+    type={showConfirmPassword ? "text" : "password"}
+    placeholder="Confirm your password"
+    value={confirmPassword}
+    onChange={(e) => setConfirmPassword(e.target.value)}
+    required
+    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 pr-12 text-gray-900 placeholder:text-gray-400 transition focus:border-[#0F4C5C] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0F4C5C]/10"
+  />
+
+  <button
+    type="button"
+    onClick={() => setShowConfirmPassword((v) => !v)}
+    className="absolute inset-y-0 right-3 flex items-center text-sm font-medium text-gray-500 hover:text-[#0F4C5C]"
+  >
+    {showConfirmPassword ? "Hide" : "Show"}
+  </button>
+</div>
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-bold text-gray-700">
-                I am joining as
-              </label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-gray-900 transition focus:border-[#0F4C5C] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0F4C5C]/10"
-              >
-                <option value="client">Client — I am seeking support</option>
-                <option value="therapist">Therapist — I offer support</option>
-              </select>
-            </div>
+  <label className="mb-3 block text-sm font-bold text-gray-700">
+    How will you use MyDeepTalk?
+  </label>
+
+  <div className="space-y-3">
+    <button
+      type="button"
+      onClick={() => setRole("client")}
+      className={`w-full rounded-2xl border p-4 text-left transition ${
+        role === "client"
+          ? "border-[#0F4C5C] bg-[#F4FBFC]"
+          : "border-gray-200 hover:border-[#0F4C5C]/40"
+      }`}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-semibold text-[#0F4C5C]">
+            ❤️ Find Healing & Growth
+          </h3>
+
+          <p className="mt-1 text-sm text-gray-600">
+            I'm looking for self-discovery, emotional wellness, and professional support.
+          </p>
+        </div>
+
+        {role === "client" && (
+          <span className="text-xl text-[#0F4C5C]">✓</span>
+        )}
+      </div>
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setRole("therapist")}
+      className={`w-full rounded-2xl border p-4 text-left transition ${
+        role === "therapist"
+          ? "border-[#0F4C5C] bg-[#F4FBFC]"
+          : "border-gray-200 hover:border-[#0F4C5C]/40"
+      }`}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-semibold text-[#0F4C5C]">
+            🩺 I'm a Mental Health Professional
+          </h3>
+
+          <p className="mt-1 text-sm text-gray-600">
+            I want to offer therapy and support clients through MyDeepTalk.
+          </p>
+        </div>
+
+        {role === "therapist" && (
+          <span className="text-xl text-[#0F4C5C]">✓</span>
+        )}
+      </div>
+    </button>
+  </div>
+</div>
 
             <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-[#F7F3EC] px-4 py-3.5 text-sm font-semibold text-gray-700">
               <input
@@ -281,7 +453,7 @@ if (!emailResponse.ok) {
 
             <button
               type="submit"
-              disabled={loading || !acceptedLegal}
+              disabled={loading || googleLoading || !acceptedLegal}
               className="w-full rounded-full bg-[#0F4C5C] py-3.5 font-bold text-white transition hover:bg-[#0b3945] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Creating account…" : "Create Account"}
