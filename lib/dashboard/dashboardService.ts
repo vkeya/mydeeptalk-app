@@ -39,13 +39,26 @@ const intelligence = generateDashboardIntelligence({
 	
 	return dashboardBuilder.build({
      welcome: {
-  greeting: "Good afternoon", // we'll make this dynamic next
+  greeting: "Good afternoon",
+
   userName:
     profile?.profile?.privacyName ??
     profile?.fullName ??
     "Friend",
-  encouragement:
-    "Every small step you take today matters.",
+
+  title:
+    checkIn.currentMood
+      ? "Thank you for checking in today."
+      : "Your healing journey begins today.",
+
+  message:
+    checkIn.currentMood
+      ? `You shared that you're feeling ${checkIn.currentMood}. We'll use today's reflection to personalize your healing journey.`
+      : "Take one minute to complete today's emotional check-in. Every small step matters.",
+
+ actionLabel: "Continue Your Healing",
+
+actionHref: "/check-in",
 },
 
 checkIn: {

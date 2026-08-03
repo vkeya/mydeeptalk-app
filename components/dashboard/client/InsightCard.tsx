@@ -1,14 +1,14 @@
 interface InsightCardProps {
   title: string;
   message: string;
-  actionText?: string;
+  actionLabel?: string;
   onAction?: () => void;
 }
 
 export default function InsightCard({
   title,
   message,
-  actionText,
+  actionLabel,
   onAction,
 }: InsightCardProps) {
   return (
@@ -38,12 +38,12 @@ export default function InsightCard({
           {message}
         </p>
 
-        {actionText && (
+        {actionLabel && (
           <button
             onClick={onAction}
             className="mt-8 rounded-full border border-[#0F4C5C] px-6 py-3 font-semibold text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white"
           >
-            {actionText}
+            {actionLabel}
           </button>
         )}
 

@@ -52,7 +52,7 @@ export default function SelfAssessmentSection() {
             </p>
 
             <Link
-              href="/assessments"
+              href="/assessment"
               className="mt-8 inline-block rounded-full bg-[#0F4C5C] px-8 py-4 font-semibold text-white transition hover:bg-[#0b3945]"
             >
               Explore Assessments

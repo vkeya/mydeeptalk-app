@@ -26,7 +26,14 @@ export interface DashboardViewModel {
 export interface WelcomeSection {
   greeting: string;
   userName: string;
-  encouragement: string;
+
+  title: string;
+
+  message: string;
+
+  actionLabel: string;
+
+  actionHref: string;
 }
 
 export interface CheckInWidgetModel {

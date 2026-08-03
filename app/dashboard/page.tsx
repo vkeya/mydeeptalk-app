@@ -114,13 +114,12 @@ setLoading(false);
       onLogout={handleLogout}
     >
       <WelcomeHero
+  greeting={dashboard?.welcome.greeting ?? "Welcome"}
   name={dashboard?.welcome.userName ?? displayName}
-  hasCheckedInToday={
-    dashboard?.checkIn.hasCheckedInToday ?? false
-  }
-  currentMood={
-    dashboard?.checkIn.currentMood ?? null
-  }
+  title={dashboard?.welcome.title ?? ""}
+  message={dashboard?.welcome.message ?? ""}
+  actionLabel={dashboard?.welcome.actionLabel ?? ""}
+  actionHref={dashboard?.welcome.actionHref ?? "#"}
 />
 {role === "client" && (
 <>
@@ -154,7 +153,7 @@ setLoading(false);
         dashboard?.insight.message ??
         "Over the past week you've taken time to check in with yourself several times. Small moments of reflection often become the foundation for lasting emotional growth. Keep showing up for yourself."
     }
-    actionText="Open Journal"
+    actionLabel="Open Journal"
 />
 
 <ContinueHealing

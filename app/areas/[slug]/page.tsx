@@ -4,68 +4,74 @@ import { notFound } from "next/navigation";
 
 const areas = {
   relationships: {
-    icon: "❤️",
-    title: "Relationships",
-    subtitle:
-      "Strengthen connection, rebuild trust, and communicate better.",
-    description:
-      "Relationships can bring love and belonging, but they can also become painful when communication breaks down or trust is damaged.",
+  icon: "❤️",
+  title: "Relationships",
+  subtitle:
+    "Strengthen connection, rebuild trust, and communicate better.",
+  description:
+    "Relationships can bring love and belonging, but they can also become painful when communication breaks down or trust is damaged.",
 
-    experiences: [
-      "Marriage difficulties",
-      "Communication problems",
-      "Trust and betrayal",
-      "Emotional distance",
-      "Dating challenges",
-      "Attachment wounds",
-      "Loneliness",
-      "Divorce recovery",
-    ],
+  didYouKnow:
+    "Healthy relationships are built through consistent communication, trust, and emotional safety—not perfection. Small moments of understanding often have the greatest impact on long-term connection.",
 
-    signs: [
-      "You feel unseen or unheard.",
-      "Arguments keep repeating.",
-      "Trust has been broken.",
-      "You withdraw instead of expressing yourself.",
-      "You feel lonely even around people.",
-    ],
+  experiences: [
+    "Marriage difficulties",
+    "Communication problems",
+    "Trust and betrayal",
+    "Emotional distance",
+    "Dating challenges",
+    "Attachment wounds",
+    "Loneliness",
+    "Divorce recovery",
+  ],
 
-    journalPrompts: [
-      "Where do I feel most unseen in my relationships?",
-      "What do I need but struggle to ask for?",
-      "What relationship pattern keeps repeating in my life?",
-    ],
-  },
+  signs: [
+    "You feel unseen or unheard.",
+    "Arguments keep repeating.",
+    "Trust has been broken.",
+    "You withdraw instead of expressing yourself.",
+    "You feel lonely even around people.",
+  ],
+
+  journalPrompts: [
+    "Where do I feel most unseen in my relationships?",
+    "What do I need but struggle to ask for?",
+    "What relationship pattern keeps repeating in my life?",
+  ],
+},
 
   parenting: {
-    icon: "👨‍👩‍👧‍👦",
-    title: "Parenting",
-    subtitle:
-      "Support for raising children while caring for yourself.",
-    description:
-      "Parenting can be deeply meaningful and deeply exhausting.",
+  icon: "👨‍👩‍👧‍👦",
+  title: "Parenting",
+  subtitle:
+    "Support for raising children while caring for yourself.",
+  description:
+    "Parenting can be deeply meaningful and deeply exhausting.",
 
-    experiences: [
-      "Parenting stress",
-      "Single parenting",
-      "Co-parenting",
-      "Raising teenagers",
-      "Family communication",
-      "Parent burnout",
-    ],
+  didYouKnow:
+    "Children benefit most from caregivers who are emotionally present, not perfect. Taking care of your own wellbeing is one of the greatest gifts you can give your family.",
 
-    signs: [
-      "You feel emotionally drained.",
-      "You feel guilty or not enough.",
-      "You struggle to care for yourself.",
-    ],
+  experiences: [
+    "Parenting stress",
+    "Single parenting",
+    "Co-parenting",
+    "Raising teenagers",
+    "Family communication",
+    "Parent burnout",
+  ],
 
-    journalPrompts: [
-      "What part of parenting feels heaviest right now?",
-      "What support do I need but rarely ask for?",
-      "How can I care for myself while caring for my family?",
-    ],
-  },
+  signs: [
+    "You feel emotionally drained.",
+    "You feel guilty or not enough.",
+    "You struggle to care for yourself.",
+  ],
+
+  journalPrompts: [
+    "What part of parenting feels heaviest right now?",
+    "What support do I need but rarely ask for?",
+    "How can I care for myself while caring for my family?",
+  ],
+},
   
   "trauma-healing": {
   icon: "🌿",
@@ -73,6 +79,10 @@ const areas = {
   subtitle: "Gentle support for painful experiences and emotional wounds.",
   description:
     "Some experiences stay with us long after they happen. MyDeepTalk offers a gentle place to begin understanding grief, betrayal, shame, loss, and painful memories without judgment.",
+
+  didYouKnow:
+    "Healing from trauma is rarely a straight line. Progress often comes through small moments of safety, self-compassion, and support rather than dramatic breakthroughs.",
+
   experiences: [
     "Childhood wounds",
     "Grief and loss",
@@ -83,6 +93,7 @@ const areas = {
     "Forgiveness",
     "Life after loss",
   ],
+
   signs: [
     "Painful memories still affect your present.",
     "You struggle to trust people.",
@@ -90,6 +101,7 @@ const areas = {
     "You carry shame, guilt, or fear.",
     "You avoid certain conversations, people, or places.",
   ],
+
   journalPrompts: [
     "What pain have I learned to hide?",
     "What would safety feel like for me?",
@@ -103,6 +115,9 @@ const areas = {
   subtitle: "Build resilience and healthier ways of coping.",
   description:
     "Emotional wellness is about understanding what you feel, why you feel it, and how to respond in healthier ways.",
+
+  didYouKnow:
+    "Simply naming what you're feeling can help reduce emotional intensity. Developing emotional awareness is one of the first steps toward building resilience.",
 
   experiences: [
     "Anxiety",
@@ -137,6 +152,9 @@ const areas = {
   description:
     "Recovery is not only about stopping a behaviour; it is about understanding the pain, habits, triggers, and unmet needs underneath it.",
 
+  didYouKnow:
+    "Recovery is about more than breaking a habit. Understanding the emotions, needs, and experiences beneath addictive behaviours creates a stronger foundation for lasting change.",
+
   experiences: [
     "Pornography addiction",
     "Alcohol addiction",
@@ -169,6 +187,9 @@ const areas = {
   subtitle: "Understand yourself and build a life aligned with who you are.",
   description:
     "Many people feel lost not because they lack ability, but because they have never had space to understand themselves.",
+
+  didYouKnow:
+    "Many people feel lost not because they lack ability, but because they have never had the opportunity to understand their values, strengths, and authentic identity.",
 
   experiences: [
     "Identity",
@@ -203,6 +224,9 @@ const areas = {
   description:
     "Many men carry pressure silently: career expectations, fatherhood, identity, relationships, loneliness, and emotional pain.",
 
+  didYouKnow:
+    "Many men experience loneliness, stress, and emotional struggles in silence. Asking for support is a sign of courage and self-awareness, not weakness.",
+
   experiences: [
     "Fatherhood",
     "Masculinity",
@@ -235,6 +259,9 @@ const areas = {
   subtitle: "Support for women navigating life's many roles.",
   description:
     "Women often carry many roles at once: partner, mother, professional, caregiver, leader, and friend.",
+
+  didYouKnow:
+    "Women often balance many responsibilities every day. Caring for your own emotional wellbeing helps you sustain the energy needed to care for others.",
 
   experiences: [
     "Motherhood",
@@ -269,6 +296,9 @@ const areas = {
   description:
     "For many people, healing is emotional and spiritual. MyDeepTalk respects faith, values, hope, forgiveness, identity, and purpose while helping users process real emotional struggles.",
 
+  didYouKnow:
+    "For many people, emotional healing and spiritual growth complement one another. Hope, purpose, compassion, and forgiveness can become important sources of strength during difficult seasons.",
+
   experiences: [
     "Faith and mental health",
     "Hope",
@@ -300,6 +330,9 @@ const areas = {
   subtitle: "Support when change feels overwhelming.",
   description:
     "Life transitions can shake your identity, confidence, relationships, and sense of direction. MyDeepTalk helps you process change and find stability during uncertain seasons.",
+
+  didYouKnow:
+    "Major life transitions often bring uncertainty and emotional discomfort. These seasons can also become opportunities for personal growth, resilience, and discovering new possibilities.",
 
   experiences: [
     "Career changes",
@@ -337,7 +370,10 @@ export default async function AreaPage({
   const { slug } = await params;
 
   const area = areas[slug as AreaSlug];
-
+  const relatedAreas = Object.entries(areas)
+  .filter(([key]) => key !== slug)
+  .slice(0, 4);
+  
   if (!area) {
     notFound();
   }
@@ -369,6 +405,39 @@ export default async function AreaPage({
           </p>
         </section>
 
+<section className="mt-8 rounded-3xl bg-white p-8 shadow">
+  <h2 className="text-3xl font-bold text-[#0F4C5C]">
+    Understanding {area.title}
+  </h2>
+
+  <div className="mt-6 space-y-6 leading-8 text-gray-700">
+
+    <p>
+      {area.description}
+    </p>
+
+    <p>
+      Every healing journey begins with understanding your experiences,
+      recognizing your patterns, and taking small, intentional steps toward
+      healthier emotional wellbeing. There is no perfect timeline for healing,
+      only the courage to begin.
+    </p>
+
+    <div className="rounded-2xl border-l-4 border-[#2C7A7B] bg-[#F7FBFB] p-6">
+      <p className="font-semibold text-[#0F4C5C]">
+        Remember
+      </p>
+
+      <p className="mt-2 text-gray-700">
+        Seeking understanding is not a sign of weakness. It is one of the
+        strongest steps you can take toward living a healthier, more fulfilling
+        life.
+      </p>
+    </div>
+
+  </div>
+</section>
+
         <div className="mt-8 grid gap-6 md:grid-cols-2">
 
           <section className="rounded-3xl bg-white p-8 shadow">
@@ -396,6 +465,140 @@ export default async function AreaPage({
           </section>
 
         </div>
+
+<section className="mt-8 rounded-3xl bg-[#F8FBFC] border border-[#D8ECEE] p-8 shadow-sm">
+
+  <h2 className="text-2xl font-bold text-[#0F4C5C]">
+    How MyDeepTalk Can Help
+  </h2>
+
+  <p className="mt-4 leading-8 text-gray-700">
+    Healing looks different for everyone. Whether you're taking your first step
+    or continuing your journey, MyDeepTalk combines self-awareness,
+    evidence-informed tools, and professional support to help you grow at your
+    own pace.
+  </p>
+
+  <div className="mt-8 grid gap-6 md:grid-cols-2">
+
+    <div className="rounded-2xl bg-white p-6">
+      <h3 className="font-semibold text-[#0F4C5C]">
+        💙 Daily Emotional Check-Ins
+      </h3>
+
+      <p className="mt-3 text-gray-700 leading-7">
+        Build awareness of your emotions and recognize patterns in how you feel
+        over time.
+      </p>
+    </div>
+
+    <div className="rounded-2xl bg-white p-6">
+      <h3 className="font-semibold text-[#0F4C5C]">
+        📝 Guided Assessments
+      </h3>
+
+      <p className="mt-3 text-gray-700 leading-7">
+        Better understand your emotional wellbeing through structured,
+        research-informed self-assessments.
+      </p>
+    </div>
+
+    <div className="rounded-2xl bg-white p-6">
+      <h3 className="font-semibold text-[#0F4C5C]">
+        📖 Guided Journaling
+      </h3>
+
+      <p className="mt-3 text-gray-700 leading-7">
+        Reflect privately on your thoughts, emotions, and experiences while
+        building healthier habits of self-reflection.
+      </p>
+    </div>
+
+    <div className="rounded-2xl bg-white p-6">
+      <h3 className="font-semibold text-[#0F4C5C]">
+        👩‍⚕️ Professional Therapy
+      </h3>
+
+      <p className="mt-3 text-gray-700 leading-7">
+        Connect with verified therapists whenever you feel ready for additional
+        guidance and support.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+<section className="mt-8 rounded-3xl bg-white p-8 shadow">
+  <h2 className="text-2xl font-bold text-[#0F4C5C]">
+    Recommended For You
+  </h2>
+
+  <p className="mt-3 text-gray-600 leading-7">
+    Based on this healing area, these are great places to begin your journey.
+  </p>
+
+  <div className="mt-8 grid gap-6 md:grid-cols-3">
+
+    <div className="rounded-2xl border border-slate-200 p-6">
+      <div className="text-3xl">📝</div>
+
+      <h3 className="mt-4 font-semibold text-[#0F4C5C]">
+        Free Assessment
+      </h3>
+
+      <p className="mt-3 text-gray-600">
+        Understand yourself better with a guided wellbeing assessment.
+      </p>
+
+      <Link
+        href="/assessment"
+        className="mt-5 inline-flex font-semibold text-[#2C7A7B]"
+      >
+        Start Assessment →
+      </Link>
+    </div>
+
+    <div className="rounded-2xl border border-slate-200 p-6">
+      <div className="text-3xl">💙</div>
+
+      <h3 className="mt-4 font-semibold text-[#0F4C5C]">
+        Daily Check-In
+      </h3>
+
+      <p className="mt-3 text-gray-600">
+        Track how you're feeling and build emotional awareness over time.
+      </p>
+
+      <Link
+        href="/check-in"
+        className="mt-5 inline-flex font-semibold text-[#2C7A7B]"
+      >
+        Check In →
+      </Link>
+    </div>
+
+    <div className="rounded-2xl border border-slate-200 p-6">
+      <div className="text-3xl">👩‍⚕️</div>
+
+      <h3 className="mt-4 font-semibold text-[#0F4C5C]">
+        Find a Therapist
+      </h3>
+
+      <p className="mt-3 text-gray-600">
+        Connect with a verified therapist when you're ready for professional support.
+      </p>
+
+      <Link
+        href="/therapists"
+        className="mt-5 inline-flex font-semibold text-[#2C7A7B]"
+      >
+        Browse Therapists →
+      </Link>
+    </div>
+
+  </div>
+</section>
 
         <section className="mt-8 rounded-3xl bg-white p-8 shadow">
           <h2 className="text-2xl font-bold text-[#0F4C5C]">
@@ -437,6 +640,24 @@ export default async function AreaPage({
           </div>
         </section>
 		
+		<section className="mt-8 rounded-3xl border border-[#D8ECEE] bg-[#F8FBFC] p-8 shadow-sm">
+  <div className="flex items-start gap-4">
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#2C7A7B]/10 text-2xl">
+      💡
+    </div>
+
+    <div>
+      <h2 className="text-2xl font-bold text-[#0F4C5C]">
+        Did You Know?
+      </h2>
+
+      <p className="mt-4 leading-8 text-gray-700">
+        {area.didYouKnow}
+      </p>
+    </div>
+  </div>
+</section>
+		
 		<section className="mt-8 rounded-3xl bg-white p-8 shadow">
           <h2 className="text-2xl font-bold text-[#0F4C5C]">
               When Therapy May Help
@@ -477,34 +698,148 @@ export default async function AreaPage({
          </div>
         </section>
 
+<section className="mt-10 rounded-3xl bg-white p-8 shadow">
+  <h2 className="text-2xl font-bold text-[#0F4C5C]">
+    Explore Related Healing Areas
+  </h2>
+
+  <p className="mt-3 text-gray-600">
+    Healing is interconnected. Explore other areas that may support your
+    journey.
+  </p>
+
+  <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    {relatedAreas.map(([key, related]) => (
+      <Link
+        key={key}
+        href={`/areas/${key}`}
+        className="group rounded-2xl border border-slate-200 p-5 transition hover:border-[#2C7A7B] hover:bg-[#F7FBFB] hover:shadow-md"
+      >
+       <div className="flex h-full flex-col">
+
+  <div className="text-4xl">
+    {related.icon}
+  </div>
+
+  <h3 className="mt-4 font-semibold text-[#0F4C5C]">
+    {related.title}
+  </h3>
+
+  <p className="mt-3 text-sm leading-6 text-gray-600">
+    {related.subtitle}
+  </p>
+
+  <div className="mt-auto pt-6">
+    <span className="inline-flex items-center font-semibold text-[#2C7A7B]">
+      Learn more
+      <span className="ml-2 transition group-hover:translate-x-1">
+        →
+      </span>
+    </span>
+  </div>
+
+</div>
+      </Link>
+    ))}
+  </div>
+</section>
+
         <section className="mt-10 rounded-3xl bg-gradient-to-r from-[#0F4C5C] to-[#2C7A7B] p-10 text-white">
-          <h2 className="text-3xl font-bold">
-            You can begin gently.
-          </h2>
 
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link
-              href="/assessments"
-              className="rounded-full bg-white px-6 py-3 font-semibold text-[#0F4C5C]"
-            >
-              Take Free Check-In
-            </Link>
+  <h2 className="text-3xl font-bold">
+    Recommended Next Steps
+  </h2>
 
-            <Link
-              href="/journal"
-              className="rounded-full border border-white px-6 py-3"
-            >
-              Write in Journal
-            </Link>
+  <p className="mt-4 max-w-3xl text-lg leading-8 text-white/90">
+    Healing looks different for everyone. Choose the step that feels most
+    helpful for where you are today.
+  </p>
 
-            <Link
-              href="/therapists"
-              className="rounded-full border border-white px-6 py-3"
-            >
-              Find a Therapist
-            </Link>
-          </div>
-        </section>
+  <div className="mt-10 grid gap-6 md:grid-cols-2">
+
+    {/* Assessment */}
+
+    <div className="rounded-3xl bg-white/10 p-6 backdrop-blur-sm">
+      <h3 className="text-xl font-semibold">
+        📝 Free Self-Assessment
+      </h3>
+
+      <p className="mt-3 text-white/90 leading-7">
+        Better understand your emotional wellbeing with one of our guided
+        self-assessments.
+      </p>
+
+      <Link
+        href="/assessment"
+        className="mt-6 inline-flex rounded-full bg-white px-6 py-3 font-semibold text-[#0F4C5C]"
+      >
+        Take Assessment →
+      </Link>
+    </div>
+
+    {/* Check-In */}
+
+    <div className="rounded-3xl bg-white/10 p-6 backdrop-blur-sm">
+      <h3 className="text-xl font-semibold">
+        💙 Daily Check-In
+      </h3>
+
+      <p className="mt-3 text-white/90 leading-7">
+        Reflect on how you're feeling today and begin building emotional
+        awareness one day at a time.
+      </p>
+
+      <Link
+        href="/check-in"
+        className="mt-6 inline-flex rounded-full bg-white px-6 py-3 font-semibold text-[#0F4C5C]"
+      >
+        Begin Check-In →
+      </Link>
+    </div>
+
+    {/* Journal */}
+
+    <div className="rounded-3xl bg-white/10 p-6 backdrop-blur-sm">
+      <h3 className="text-xl font-semibold">
+        📖 Guided Journal
+      </h3>
+
+      <p className="mt-3 text-white/90 leading-7">
+        Explore your thoughts through private reflection and discover patterns
+        in your emotions and experiences.
+      </p>
+
+      <Link
+        href="/journal"
+        className="mt-6 inline-flex rounded-full bg-white px-6 py-3 font-semibold text-[#0F4C5C]"
+      >
+        Open Journal →
+      </Link>
+    </div>
+
+    {/* Therapist */}
+
+    <div className="rounded-3xl bg-white/10 p-6 backdrop-blur-sm">
+      <h3 className="text-xl font-semibold">
+        👩‍⚕️ Speak to a Therapist
+      </h3>
+
+      <p className="mt-3 text-white/90 leading-7">
+        Connect with a verified therapist for professional guidance and support
+        tailored to your needs.
+      </p>
+
+      <Link
+        href="/therapists"
+        className="mt-6 inline-flex rounded-full bg-white px-6 py-3 font-semibold text-[#0F4C5C]"
+      >
+        Find a Therapist →
+      </Link>
+    </div>
+
+  </div>
+
+</section>
 
       </div>
     </main>

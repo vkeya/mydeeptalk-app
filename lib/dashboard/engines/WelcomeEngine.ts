@@ -14,22 +14,16 @@ export class WelcomeEngine {
     return {
       greeting,
       userName,
-      encouragement: this.getEncouragement(),
+
+      title: "Your healing journey begins today.",
+
+      message:
+        "Take one minute to complete today's emotional check-in. Every small step matters.",
+
+      actionLabel: "Begin Today's Check-In",
+
+      actionHref: "/check-in",
     };
-  }
-
-  private getEncouragement(): string {
-    const messages = [
-      "Every small step you take today matters.",
-      "Healing happens one moment at a time.",
-      "Thank you for showing up for yourself today.",
-      "Growth isn't about perfection. It's about consistency.",
-      "You are continuing a journey that matters.",
-    ];
-
-    return messages[
-      Math.floor(Math.random() * messages.length)
-    ];
   }
 }
 

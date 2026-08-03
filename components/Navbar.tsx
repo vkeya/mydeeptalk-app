@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ArrowRight, LayoutDashboard, LogIn } from "lucide-react";
+import MobileNavigation from "@/components/MobileNavigation";
 
 const navLinks = [
   { href: "/", label: "Welcome" },
@@ -71,33 +72,48 @@ export default function Navbar() {
         {/* Buttons */}
        {/* Buttons */}
 <div className="flex items-center gap-3 md:gap-4">
-  {isLoggedIn ? (
-    <Link
-      href="/dashboard"
-      className="inline-flex items-center gap-2 rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0b3945] md:px-6 md:text-base"
-    >
-      <LayoutDashboard className="h-4 w-4" />
-      Dashboard
-    </Link>
-  ) : (
-    <>
-      <Link
-        href="/login"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0F4C5C] md:text-base"
-      >
-        <LogIn className="h-4 w-4" />
-        Login
-      </Link>
 
+  {/* Mobile */}
+  <div className="lg:hidden">
+    <MobileNavigation
+      isLoggedIn={isLoggedIn}
+      navLinks={navLinks}
+    />
+  </div>
+
+  {/* Desktop */}
+  <div className="hidden lg:flex items-center gap-3 md:gap-4">
+
+    {isLoggedIn ? (
       <Link
-        href="/signup"
-        className="group inline-flex items-center gap-2 rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0b3945] md:px-6 md:text-base"
+        href="/dashboard"
+        className="inline-flex items-center gap-2 rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0b3945] md:px-6 md:text-base"
       >
-        Get Started
-        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        <LayoutDashboard className="h-4 w-4" />
+        Dashboard
       </Link>
-    </>
-  )}
+    ) : (
+      <>
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0F4C5C] md:text-base"
+        >
+          <LogIn className="h-4 w-4" />
+          Login
+        </Link>
+
+        <Link
+          href="/signup"
+          className="group inline-flex items-center gap-2 rounded-full bg-[#0F4C5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0b3945] md:px-6 md:text-base"
+        >
+          Get Started
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </Link>
+      </>
+    )}
+
+  </div>
+
 </div>
       </div>
     </nav>
