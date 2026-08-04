@@ -1,16 +1,39 @@
 import { dashboardRepository } from "@/lib/dashboard/repositories/FirestoreDashboardRepository";
 import { DashboardAction } from "@/lib/dashboard/contracts/DashboardAction";
 import { DashboardDomainSummary } from "@/lib/dashboard/contracts/DashboardDomainSummary";
-
+import { checkInAnalytics } from "@/lib/dashboard/analytics/CheckInAnalytics";
 import { CheckIn } from "@/types/checkIn";
 import { FirestoreCheckInRepository } from "@/lib/checkin/repositories/FirestoreCheckInRepository";
 
 export interface CheckInDashboardSummary
   extends DashboardDomainSummary {
+
+  // Latest activity
   latestCheckInDate: Date | null;
+
   currentMood: string | null;
+
+  // Engagement
   streak: number;
+
+  checkInsThisWeek: number;
+
+  checkInsThisMonth: number;
+
+  // Insights
+  averageMood: string | null;
+
+  moodTrend:
+    | "improving"
+    | "stable"
+    | "declining"
+    | "unknown";
+
+  wellbeingScore: number;
+
+  // Guidance
   nextRecommendedCheckIn: Date | null;
+
   nextAction: DashboardAction | null;
 }
 
@@ -62,13 +85,25 @@ export class CheckInService {
 
     const latest = await this.repository.getLatest(userId);
 
-    return {
-      latestCheckInDate: latest?.completedAt ?? null,
-      currentMood: latest?.mood ?? null,
-      streak: 0,
-      nextRecommendedCheckIn: null,
-      nextAction: null,
-    };
+    const history = await this.repository.getHistory(userId);
+
+const analytics =
+  checkInAnalytics.analyze(history);
+
+return {
+  latestCheckInDate: latest?.completedAt ?? null,
+  currentMood: latest?.mood ?? null,
+
+  streak: analytics.streak,
+  checkInsThisWeek: analytics.checkInsThisWeek,
+  checkInsThisMonth: analytics.checkInsThisMonth,
+  averageMood: analytics.averageMood,
+  moodTrend: analytics.moodTrend,
+  wellbeingScore: analytics.wellbeingScore,
+
+  nextRecommendedCheckIn: null,
+  nextAction: null,
+};
   }
 }
 

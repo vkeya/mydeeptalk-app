@@ -69,12 +69,9 @@ export default function TherapistProfilePage() {
         if (therapistSnap.exists()) {
   const data = therapistSnap.data();
 
-  console.log("THERAPIST PROFILE DATA:", data);
 
   setTherapist(data as Therapist);
 }
-		
-		console.log("Therapist data:", therapist);
 
         const reviewsSnap = await getDocs(collection(db, "reviews"));
 

@@ -22,38 +22,14 @@ interface MobileNavigationProps {
 }
 
 const healingAreas = [
-  {
-    href: "/areas/relationships",
-    label: "❤️ Relationships",
-  },
-  {
-    href: "/areas/parenting",
-    label: "👨‍👩‍👧 Parenting",
-  },
-  {
-    href: "/areas/trauma-healing",
-    label: "🌿 Trauma & Healing",
-  },
-  {
-    href: "/areas/mental-emotional-wellness",
-    label: "🧠 Mental Wellness",
-  },
-  {
-    href: "/areas/addiction-recovery",
-    label: "🔄 Addiction & Recovery",
-  },
-  {
-    href: "/areas/self-discovery-purpose",
-    label: "✨ Self Discovery",
-  },
-  {
-    href: "/areas/mens-wellness",
-    label: "👨 Men's Wellness",
-  },
-  {
-    href: "/areas/womens-wellness",
-    label: "👩 Women's Wellness",
-  },
+  { href: "/areas/relationships", label: "❤️ Relationships" },
+  { href: "/areas/parenting", label: "👨‍👩‍👧 Parenting" },
+  { href: "/areas/trauma-healing", label: "🌿 Trauma & Healing" },
+  { href: "/areas/mental-emotional-wellness", label: "🧠 Mental Wellness" },
+  { href: "/areas/addiction-recovery", label: "🔄 Addiction & Recovery" },
+  { href: "/areas/self-discovery-purpose", label: "✨ Self Discovery" },
+  { href: "/areas/mens-wellness", label: "👨 Men's Wellness" },
+  { href: "/areas/womens-wellness", label: "👩 Women's Wellness" },
   {
     href: "/areas/faith-spiritual-wellness",
     label: "🙏 Faith & Spiritual Wellness",
@@ -71,97 +47,111 @@ export default function MobileNavigation({
   const [open, setOpen] = useState(false);
   const [showAreas, setShowAreas] = useState(false);
 
+  const closeMenu = () => setOpen(false);
+
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-xl p-2 text-[#0F4C5C]"
+        className="rounded-lg p-2 text-[#0F4C5C]"
+        aria-label="Open menu"
       >
         <Menu className="h-7 w-7" />
       </button>
 
       {open && (
         <>
+          {/* Overlay */}
           <div
-            onClick={() => setOpen(false)}
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm"
+            onClick={closeMenu}
           />
 
-          <div className="fixed left-0 top-0 z-50 flex h-full w-[320px] flex-col bg-white shadow-2xl">
+          {/* Drawer */}
+          <aside className="fixed inset-y-0 left-0 z-[100] flex h-screen w-[85vw] max-w-sm flex-col bg-white shadow-2xl">
 
             {/* Header */}
-
-            <div className="flex items-center justify-between border-b p-6">
-
-              <h2 className="text-2xl font-bold text-[#0F4C5C]">
-                MyDeepTalk
-              </h2>
+            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+              <div>
+                <h2 className="text-xl font-bold text-[#0F4C5C]">
+                  MyDeepTalk
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Your healing journey starts here.
+                </p>
+              </div>
 
               <button
-                onClick={() => setOpen(false)}
-                className="rounded-lg p-2"
+                onClick={closeMenu}
+                className="rounded-lg p-2 hover:bg-slate-100"
+                aria-label="Close menu"
               >
                 <X className="h-6 w-6" />
               </button>
-
             </div>
 
             {/* Navigation */}
+            <div className="flex-1 overflow-y-auto px-6 py-6">
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-2">
+              <div className="space-y-2">
 
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="block rounded-xl px-4 py-3 transition hover:bg-[#F7F3EC]"
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={closeMenu}
+                    className="block rounded-xl px-4 py-3 text-gray-700 transition hover:bg-[#F7F3EC] hover:text-[#0F4C5C]"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+
+                <button
+                  onClick={() => setShowAreas(!showAreas)}
+                  className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-gray-700 transition hover:bg-[#F7F3EC]"
                 >
-                  {link.label}
-                </Link>
-              ))}
+                  <span>❤️ Healing Areas</span>
 
-              <button
-                onClick={() => setShowAreas(!showAreas)}
-                className="flex w-full items-center justify-between rounded-xl px-4 py-3 hover:bg-[#F7F3EC]"
-              >
-                <span>❤️ Healing Areas</span>
+                  {showAreas ? (
+                    <ChevronDown className="h-5 w-5" />
+                  ) : (
+                    <ChevronRight className="h-5 w-5" />
+                  )}
+                </button>
 
-                {showAreas ? (
-                  <ChevronDown className="h-5 w-5" />
-                ) : (
-                  <ChevronRight className="h-5 w-5" />
+                {showAreas && (
+                  <div className="ml-4 border-l border-slate-200 pl-4">
+
+                    <div className="space-y-1">
+
+                      {healingAreas.map((area) => (
+                        <Link
+                          key={area.href}
+                          href={area.href}
+                          onClick={closeMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-gray-600 transition hover:bg-[#F7F3EC] hover:text-[#0F4C5C]"
+                        >
+                          {area.label}
+                        </Link>
+                      ))}
+
+                    </div>
+
+                  </div>
                 )}
-              </button>
 
-              {showAreas && (
-                <div className="ml-4 space-y-1">
-
-                  {healingAreas.map((area) => (
-                    <Link
-                      key={area.href}
-                      href={area.href}
-                      onClick={() => setOpen(false)}
-                      className="block rounded-lg px-3 py-2 text-sm hover:bg-[#F7F3EC]"
-                    >
-                      {area.label}
-                    </Link>
-                  ))}
-
-                </div>
-              )}
+              </div>
 
             </div>
 
             {/* Footer */}
-
-            <div className="border-t p-6">
+            <div className="border-t border-slate-200 p-6">
 
               {isLoggedIn ? (
                 <Link
                   href="/dashboard"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center justify-center gap-2 rounded-full bg-[#0F4C5C] px-5 py-3 font-semibold text-white"
+                  onClick={closeMenu}
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-[#0F4C5C] px-5 py-3 font-semibold text-white transition hover:bg-[#0B3945]"
                 >
                   <LayoutDashboard className="h-5 w-5" />
                   Dashboard
@@ -171,8 +161,8 @@ export default function MobileNavigation({
 
                   <Link
                     href="/login"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-full border border-[#0F4C5C] px-5 py-3 font-semibold text-[#0F4C5C]"
+                    onClick={closeMenu}
+                    className="flex w-full items-center justify-center gap-2 rounded-full border border-[#0F4C5C] px-5 py-3 font-semibold text-[#0F4C5C] transition hover:bg-[#F7F3EC]"
                   >
                     <LogIn className="h-5 w-5" />
                     Login
@@ -180,8 +170,8 @@ export default function MobileNavigation({
 
                   <Link
                     href="/signup"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-center rounded-full bg-[#0F4C5C] px-5 py-3 font-semibold text-white"
+                    onClick={closeMenu}
+                    className="flex w-full items-center justify-center rounded-full bg-[#0F4C5C] px-5 py-3 font-semibold text-white transition hover:bg-[#0B3945]"
                   >
                     Get Started
                   </Link>
@@ -191,7 +181,8 @@ export default function MobileNavigation({
 
             </div>
 
-          </div>
+          </aside>
+
         </>
       )}
     </>

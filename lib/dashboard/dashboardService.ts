@@ -10,7 +10,9 @@ import { assessmentService } from "@/lib/assessment/AssessmentService";
 import { therapyService } from "@/lib/therapy/TherapyService";
 import { checkInService } from "@/lib/checkin/CheckInService";
 import { generateDashboardIntelligence } from "./dashboardIntelligence";
-
+import { journeyStateBuilder } from "@/lib/healingJourney/JourneyStateBuilder";
+import { healingJourneyEngine } from "@/lib/healingJourney/HealingJourneyEngine";
+import { dashboardJourneyAdapter } from "@/lib/healingJourney/DashboardJourneyAdapter";
 
 export class DashboardService {
   async build(userId: string): Promise<DashboardViewModel> {
@@ -36,6 +38,43 @@ const intelligence = generateDashboardIntelligence({
   therapy,
   checkIn,
 });
+
+const journeyState = journeyStateBuilder.build({
+  userId,
+
+  wellbeingScore: checkIn.wellbeingScore ?? 50,
+
+  currentMood: checkIn.currentMood,
+
+  hasCheckedInToday:
+    checkIn.latestCheckInDate !== null,
+
+  checkInStreak:
+    checkIn.streak ?? 0,
+
+  assessmentsCompleted:
+    assessment.completedAssessments ?? 0,
+
+  genesisStarted:
+    genesis.progress > 0,
+
+  genesisCompleted:
+    genesis.progress >= 100,
+
+  genesisProgress:
+    genesis.progress ?? 0,
+
+  journalEntries:
+  journal.journalEntries ?? 0,
+
+  therapistSessions:
+    therapy.completedSessions ?? 0,
+
+  activeGoals: [],
+});
+
+const healingJourney =
+  healingJourneyEngine.build(journeyState);
 	
 	return dashboardBuilder.build({
      welcome: {
@@ -47,14 +86,10 @@ const intelligence = generateDashboardIntelligence({
     "Friend",
 
   title:
-    checkIn.currentMood
-      ? "Thank you for checking in today."
-      : "Your healing journey begins today.",
+    healingJourney.recommendation.title,
 
   message:
-    checkIn.currentMood
-      ? `You shared that you're feeling ${checkIn.currentMood}. We'll use today's reflection to personalize your healing journey.`
-      : "Take one minute to complete today's emotional check-in. Every small step matters.",
+    healingJourney.recommendation.description,
 
  actionLabel: "Continue Your Healing",
 
@@ -72,28 +107,46 @@ checkIn: {
 },
 
       todaysFocus: {
-        title: "Complete today's emotional check-in",
-        description:
-          "Take a few minutes to reflect on how you're feeling today.",
-        actionLabel: "Start Check-In",
-        href: "/check-in",
-        priority: 80,
-      },
+  title: healingJourney.recommendation.title,
 
-      progress: {
-        wellbeingScore: 72,
-        streak: 14,
-        journalEntries: 18,
-        genesisProgress: 42,
-        assessmentsCompleted: 5,
-        therapistSessions: 3,
-      },
+  description:
+    healingJourney.recommendation.description,
+
+  actionLabel:
+    healingJourney.recommendation.actionLabel,
+
+  href:
+    healingJourney.recommendation.actionHref,
+
+  priority: 100,
+},
+
+      progress:
+  dashboardJourneyAdapter.toProgress(
+    healingJourney
+  ),
 
       insight: insightEngine.build({
-  title: "You're building consistency",
+  title:
+  healingJourney.progress.momentum === "accelerating"
+    ? "You're building momentum"
+    : healingJourney.progress.momentum === "steady"
+      ? "You're staying consistent"
+      : healingJourney.progress.momentum === "slowing"
+        ? "A gentle reminder"
+        : "Let's get back on track",
+
   message:
-    "You've continued showing up for yourself this week. Keep going.",
-  confidence: 0.9,
+  healingJourney.progress.momentum === "accelerating"
+    ? "Your recent actions are creating positive momentum. Keep showing up for yourself."
+    : healingJourney.progress.momentum === "steady"
+      ? "Consistency is one of the strongest predictors of long-term healing. Keep going."
+      : healingJourney.progress.momentum === "slowing"
+        ? "Small, intentional actions today can help rebuild your momentum."
+        : "Every healing journey has pauses. Today is an opportunity to take one small step forward.",
+
+  confidence: 0.95,
+
   generatedAt: new Date(),
 }),
 
