@@ -75,16 +75,61 @@ export class FirestoreCheckInRepository
   }
 
   async getToday(
-    userId: string
-  ): Promise<CheckIn | null> {
+  userId: string
+): Promise<CheckIn | null> {
+
+  const latest = await this.getLatest(userId);
+
+  if (!latest?.completedAt) {
     return null;
   }
 
+  const today = new Date();
+
+  const completed = latest.completedAt;
+
+  const isToday =
+    completed.getFullYear() === today.getFullYear() &&
+    completed.getMonth() === today.getMonth() &&
+    completed.getDate() === today.getDate();
+
+  return isToday ? latest : null;
+}
+
   async getHistory(
-    userId: string
-  ): Promise<CheckIn[]> {
-    return [];
-  }
+  userId: string
+): Promise<CheckIn[]> {
+
+  const snapshot = await getDocs(
+    query(
+      collection(db, "users", userId, "checkIns"),
+      orderBy("completedAt", "desc")
+    )
+  );
+
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+
+    return {
+      id: doc.id,
+      userId,
+
+      mood: data.mood,
+
+      emotions: data.emotions ?? [],
+
+      reflection: data.reflection ?? "",
+
+      currentNeed: data.currentNeed ?? "",
+
+      completedAt:
+        data.completedAt instanceof Timestamp
+          ? data.completedAt.toDate()
+          : new Date(),
+    };
+  });
+
+}
 
   async update(
     checkIn: CheckIn

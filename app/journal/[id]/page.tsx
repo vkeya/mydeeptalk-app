@@ -72,6 +72,12 @@ export default function JournalEntryPage() {
       }
     } catch (error) {
       console.error("DeepTalk AI error:", error);
+	  return Response.json(
+    {
+      error: String(error),
+    },
+    { status: 500 }
+);
       alert("Could not generate reflection.");
     } finally {
       setReflecting(false);

@@ -77,7 +77,7 @@ export default function MobileNavigation({
                   MyDeepTalk
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
-                  Your wellness journey starts here.
+                  Your healing journey starts here.
                 </p>
               </div>
 
@@ -110,7 +110,7 @@ export default function MobileNavigation({
                   onClick={() => setShowAreas(!showAreas)}
                   className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-gray-700 transition hover:bg-[#F7F3EC]"
                 >
-                  <span>❤️ Wellness Areas</span>
+                  <span>❤️ Healing Areas</span>
 
                   {showAreas ? (
                     <ChevronDown className="h-5 w-5" />
