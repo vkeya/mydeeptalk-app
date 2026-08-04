@@ -77,7 +77,7 @@ export default function MobileNavigation({
                   MyDeepTalk
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
-                  Your healing journey starts here.
+                  Your wellness journey starts here.
                 </p>
               </div>
 
